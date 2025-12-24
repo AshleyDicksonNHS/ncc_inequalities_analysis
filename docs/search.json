@@ -32,7 +32,7 @@
     "href": "index.html#overall-dataset-summary",
     "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
     "section": "4.1 Overall Dataset Summary",
-    "text": "4.1 Overall Dataset Summary\n\n\n\n\n\nMetric\nValue\n\n\n\n\nTotal births in 2023/24\n512,032\n\n\nNCC admissions (any source)\n64,109\n\n\nNCC admission rate\n12.52%\n\n\nBirths without NCC admission\n447,923\n\n\nNumber of variables in dataset\n59"
+    "text": "4.1 Overall Dataset Summary\n\n\n\n\n\nMetric\nValue\n\n\n\n\nTotal births in 2023/24\n512,032\n\n\nNCC admissions (any source)\n64,109\n\n\nNCC admission rate\n12.52%\n\n\nBirths without NCC admission\n447,923\n\n\nNumber of variables in dataset\n60"
   },
   {
     "objectID": "index.html#baby-demographics",
@@ -74,7 +74,7 @@
     "href": "index.html#completeness-by-key-variable",
     "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
     "section": "5.1 Completeness by Key Variable",
-    "text": "5.1 Completeness by Key Variable\n\n\n\n\n\nVariable\nComplete Records\nMissing Records\n% Complete\n\n\n\n\nNHS_Number_Baby\n512,032\n0\n100.00\n\n\nBaby_Birth_Date\n512,032\n0\n100.00\n\n\nBaby_Sex\n512,032\n0\n100.00\n\n\nEthnic_Category_Baby\n499,602\n12,430\n97.57\n\n\nGestation_Length_At_Birth\n512,032\n0\n100.00\n\n\nDelivery_Method_Code\n508,223\n3,809\n99.26\n\n\nEthnic_Category_Mother\n510,548\n1,484\n99.71\n\n\nNCC_Admitted\n512,032\n0\n100.00\n\n\nNCC_Hospital_Provider_Code\n59,458\n452,574\n11.61\n\n\nMother_CCG_Residence\n240,014\n272,018\n46.87"
+    "text": "5.1 Completeness by Key Variable\n\n\n\n\n\nVariable\nComplete Records\nMissing Records\n% Complete\n\n\n\n\nNHS_Number_Baby\n507,572\n4,460\n99.13\n\n\nBaby_Birth_Date\n512,032\n0\n100.00\n\n\nBaby_Sex\n512,032\n0\n100.00\n\n\nEthnic_Category_Baby\n499,602\n12,430\n97.57\n\n\nGestation_Length_At_Birth\n510,045\n1,987\n99.61\n\n\nDelivery_Method_Code\n508,223\n3,809\n99.26\n\n\nEthnic_Category_Mother\n510,548\n1,484\n99.71\n\n\nNCC_Admitted\n512,032\n0\n100.00\n\n\nNCC_Hospital_Provider_Code\n59,458\n452,574\n11.61\n\n\nMother_CCG_Residence\n240,014\n272,018\n46.87"
   },
   {
     "objectID": "index.html#known-data-limitations",

@@ -15,6 +15,9 @@ format:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width = 8, fig.height = 5)
+
+# Load bit64 BEFORE reading data (required for integer64 columns)
+library(bit64)
 library(tidyverse)
 library(knitr)
 library(kableExtra)
@@ -22,6 +25,10 @@ library(scales)
 
 # Load the dataset
 data <- readRDS("data/ncc_base_dataset.rds")
+
+# Convert gestation from days to weeks (stored as integer64 days)
+data <- data %>%
+  mutate(Gestation_Weeks = as.numeric(Gestation_Length_At_Birth) / 7)
 
 # Ethnicity code lookup (NHS Data Dictionary)
 ethnicity_lookup <- c(
@@ -431,15 +438,15 @@ kable(ethnicity_dist,
 #| label: fig-gestation
 #| fig-cap: "Distribution of gestation length at birth"
 
-# Create gestation categories
+# Create gestation categories (using Gestation_Weeks calculated from days)
 data_gest <- data %>%
-  filter(!is.na(Gestation_Length_At_Birth)) %>%
+  filter(!is.na(Gestation_Weeks)) %>%
   mutate(
     Gestation_Group = case_when(
-      Gestation_Length_At_Birth < 28 ~ "Extremely preterm (<28 weeks)",
-      Gestation_Length_At_Birth < 32 ~ "Very preterm (28-31 weeks)",
-      Gestation_Length_At_Birth < 37 ~ "Moderate/Late preterm (32-36 weeks)",
-      Gestation_Length_At_Birth <= 42 ~ "Term (37-42 weeks)",
+      Gestation_Weeks < 28 ~ "Extremely preterm (<28 weeks)",
+      Gestation_Weeks < 32 ~ "Very preterm (28-31 weeks)",
+      Gestation_Weeks < 37 ~ "Moderate/Late preterm (32-36 weeks)",
+      Gestation_Weeks <= 42 ~ "Term (37-42 weeks)",
       TRUE ~ "Post-term (>42 weeks)"
     ),
     Gestation_Group = factor(Gestation_Group, levels = c(
