@@ -1,0 +1,43 @@
+# Data files - NEVER commit patient data
+data/
+*.rds
+*.RData
+*.rda
+
+# R environment
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Quarto render cache
+.quarto/
+*_cache/
+*_files/
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# LaTeX intermediate files (from Rmd PDF rendering)
+*.log
+*.tex
+*.aux
+*.out
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Credentials (if any)
+*.credentials
+*.secret
+
+# Large output files (keep docs/ for GitHub Pages)
+# But exclude any HTML outside docs/
+*.html
+!docs/*.html
+
+/.quarto/
+**/*.quarto_ipynb

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/mnt/c/Program Files/R/R-4.5.2/bin/Rscript.exe\" --version)",
+      "Bash(\"/mnt/c/Program Files/R/R-4.5.2/bin/Rscript.exe\" test_table_record_counts.R)",
+      "Bash(\"/mnt/c/Program Files/R/R-4.5.2/bin/Rscript.exe\" investigate_duplicates.R)",
+      "Bash(\"/mnt/c/Program Files/R/R-4.5.2/bin/Rscript.exe\" build_ncc_base_dataset.R)",
+      "Bash(\"/mnt/c/Program Files/Quarto/bin/quarto.exe\" render index.qmd)",
+      "Bash(git init:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

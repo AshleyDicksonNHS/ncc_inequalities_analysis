@@ -1,0 +1,105 @@
+---
+title: "NCC Exploratory Notebook"
+output: html_notebook
+---
+
+```{r}
+packages <- c('odbc', 'DBI', 'rstudioapi', 'tidyverse')
+lapply(packages, library, character.only=TRUE)
+
+driver <- "ODBC Driver 17 for SQL Server"
+server <- "udalsyndataprod.sql.azuresynapse.net"
+database <- "UDAL_Warehouse"
+uid <- "ashley.dickson@udal.nhs.uk"
+```
+
+```{r}
+con <- DBI::dbConnect(odbc(),
+                 Driver = driver,
+                 Server = server,
+                 Database = database,
+                 UID = uid,
+                 Authentication = "ActiveDirectoryInteractive",
+                 Port = 1433)
+```
+
+
+```{r}
+extract <- DBI::dbGetQuery(
+  con,
+  "
+  select top 100 * 
+  from UDAL_Warehouse.MESH_APC.PbR_CC_Monthly
+  --group by CC_Type, Der_Financial_Year
+  "
+)
+extract
+```
+
+```{r}
+cc_columns <- DBI::dbGetQuery(
+  con, 
+  "select COLUMN_NAME
+  from INFORMATION_SCHEMA.COLUMNS
+  where TABLE_NAME = 'PbR_CC_Monthly'"
+)
+cc_columns
+```
+
+```{r}
+MSDS_schema <- DBI::dbGetQuery(
+  con, 
+  "select * --TABLE_NAME, COLUMN_NAME, DATA_TYPE
+  from INFORMATION_SCHEMA.COLUMNS
+  where TABLE_SCHEMA = 'MESH_MSDS'"
+)
+MSDS_schema
+```
+
+
+
+```{r}
+extract %>% 
+  ggplot(mapping = aes(x = Der_Financial_Year, 
+                       y = Records, 
+                       group = CC_Type,
+                       color = CC_Type)) +
+  geom_line() +
+  geom_point()
+```
+
+
+```{r}
+msds_extract <- DBI::dbGetQuery(
+  con,
+  "
+  select top 100 *
+  from UDAL_Warehouse.MESH_MSDS.MAT101_Booking
+  "
+)
+
+msds_extract
+```
+
+We also have a births 'base table'. Could do with checking how complete
+
+```{r}
+births_base <- DBI::dbGetQuery(
+  con,
+  "
+  select UDALYear, count(*) as 'Records'
+  from UDALLakeMart_MSDS.BirthsBaseTable
+  group by UDALYear
+  order by UDALYear desc
+  "
+)
+```
+
+```{r}
+births_base %>% 
+  ggplot(mapping = aes(x = UDALYear, 
+                       y = Records)) +
+  geom_line() +
+  geom_point()
+```
+

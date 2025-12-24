@@ -1,0 +1,85 @@
+COLUMN NAME MAPPINGS - ACTUAL VS USED IN SQL
+================================================
+
+TABLE NAMES (all underscores between number and name removed):
+- MSD401_BabyDemographics_1 → MSD401BabyDemographics_1
+- MSD301_LabourDelivery_1 → MSD301LabourDelivery_1
+- MSD001_MotherDemog_1 → MSD001MotherDemog_1
+- MSD101_PregnancyBooking_1 → MSD101PregnancyBooking_1
+- MSD402_NeonatalAdmission_1 → MSD402NeonatalAdmission_1
+
+MSD401BabyDemographics_1:
+- NHS_Number_Baby → pseudo_nhs_number_ncdr_baby
+- Mother_Person_ID → Person_ID_Mother
+- Labour_Delivery_ID → LabourDeliveryID
+- Person_Birth_Date_Baby → (derived from YearOfBirthBaby, MonthOfBirthBaby, MerOfBirthBaby)
+- Person_Birth_Time_Baby → PersonBirthTimeBaby
+- Birth_Order → BirthOrderMaternitySUS
+- Gestation_Length_At_Birth → GestationLengthBirth
+- Birth_Weight → NOT IN THIS TABLE (use MSD405CareActivityBaby_1)
+- Person_Phenotypic_Sex → PersonPhenSex
+- Ethnic_Category_Baby → EthnicCategoryBaby
+- Pregnancy_Outcome → PregOutcome
+- Delivery_Method_Code → DeliveryMethodCode
+- Delivered_in_Water_Indicator → WaterDeliveryInd
+- Presentation_of_Fetus → FetusPresentation
+- Org_Site_ID_Actual_Place_Delivery → OrgSiteIDActualDelivery
+- Apgar_Score_At_1_Minute → NOT IN THIS TABLE (use MSD405CareActivityBaby_1)
+- Apgar_Score_At_2_Minutes → NOT IN THIS TABLE
+- Apgar_Score_At_5_Minutes → NOT IN THIS TABLE (use MSD405CareActivityBaby_1)
+- Apgar_Score_At_10_Minutes → NOT IN THIS TABLE
+- Baby_First_Feed_Date → BabyFirstFeedDate
+- Baby_First_Feed_Breast_Milk_Indication_Code → BabyFirstFeedIndCode
+- Skin_to_Skin_Contact_Within_1_Hour_Indicator → SkinToSkinContact1HourInd
+- Discharge_Date_Baby_Post_Delivery_Hospital_Provider_Spell → DischargeDateBabyHosp
+- Discharge_Time_Baby_Post_Delivery_Hospital_Provider_Spell → DischargeTimeBabyHosp
+- Person_Death_Date_Baby → PersonDeathDateBaby
+- Person_Death_Time_Baby → PersonDeathTimeBaby
+
+MSD301LabourDelivery_1:
+- Labour_Delivery_ID → LabourDeliveryID
+- UniqPregID → UniqPregID (correct)
+- Labour_Delivery_Onset_Method_Code → LabourOnsetMethod
+- Onset_Established_Labour_Date → LabourOnsetDate
+- Onset_Established_Labour_Time → LabourOnsetTime
+- Org_Site_ID_Start_Intrapartum_Care → OrgSiteIDIntra
+- Maternity_Care_Setting_Start_Intrapartum_Care → SettingIntraCare
+- Maternity_Care_Setting_Actual_Place_Birth → SettingPlaceBirth (BUT THIS IS IN Baby table!)
+- Procedure_Date_Caesarean_Section → CaesareanDate
+- Procedure_Time_Caesarean_Section → CaesareanTime
+- Decision_to_Deliver_Date → DecisionToDeliverDate
+- Decision_to_Deliver_Time → DecisionToDeliverTime
+- Start_Date_Mother_Labour_Delivery_Hospital_Provider_Spell → StartDateMotherDeliveryHospProvSpell
+- Discharge_Date_Mother_Post_Labour_Delivery_Hospital_Provider_Spell → DischargeDateMotherHosp
+
+MSD001MotherDemog_1:
+- Person_ID_Mother → Person_ID_Mother (correct)
+- Person_Birth_Date_Mother → (not in table - need to derive from age)
+- Ethnic_Category_Mother → EthnicCategoryMother
+- Postcode_Usual_Address_Mother → (not in table - columns show PostcodeDistrictMother, LSOAMother2011 etc)
+- Person_Death_Date_Mother → PersonDeathDateMother
+- Org_ID_Residence_Responsibility → OrgIDResidenceResp
+
+MSD101PregnancyBooking_1:
+- UniqPregID → UniqPregID (correct)
+- Person_ID_Mother → Person_ID_Mother (correct)
+- Appointment_Date_Formal_Antenatal_Booking → AntenatalAppDate
+- Pregnancy_First_Contact_Date → PregFirstConDate
+- Estimated_Date_Delivery_Agreed → EDDAgreed
+- Last_Menstrual_Period_Date → LastMenstrualPeriodDate
+- Pregnancy_Total_Previous_Caesarean_Sections → PreviousCaesareanSections
+- Pregnancy_Total_Previous_Live_Births → PreviousLiveBirths
+- Pregnancy_Total_Previous_Stillbirths → PreviousStillBirths
+- Pregnancy_Total_Previous_Losses_Less_Than_24_Weeks → PreviousLossesLessThan24Weeks
+- Disability_Indicator_At_Antenatal_Booking → DisabilityIndMother
+- Mental_Health_Prediction_Detection_Indicator_At_Antenatal_Booking → MHPredictionDetectionIndMother
+- Complex_Social_Factors_Indicator_At_Antenatal_Booking → ComplexSocialFactorsInd
+- Employment_Status_Mother_At_Antenatal_Booking → EmploymentStatusMother
+- Support_Status_Indicator_At_Antenatal_Booking → SupportStatusIndMother
+- Org_ID_Commissioner → OrgIDComm
+
+MSD402NeonatalAdmission_1:
+- Person_ID_Baby → Person_ID_Baby (correct)
+- Transfer_Start_Date_Neonatal_Unit → NeonatalTransferStartDate
+- Transfer_Start_Time_Neonatal_Unit → NeonatalTransferStartTime
+- Neonatal_Critical_Care_Admission_Indicator → NeoCritCareInd

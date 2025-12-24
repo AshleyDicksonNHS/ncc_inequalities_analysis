@@ -1,0 +1,12 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "NCC Inequalities Analysis"
+
+format:
+  html:
+    theme: flatly
+    toc: true
+    toc-depth: 3

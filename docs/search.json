@@ -1,0 +1,121 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "",
+    "text": "This report documents the construction of the base dataset for analyzing inequalities in Neonatal Critical Care (NCC) access in England. The dataset links maternity services data (MSDS) with critical care data to create a comprehensive birth-level dataset for hierarchical modeling.\nKey findings:\n\nFinal dataset: 512,032 births in financial year 2023/24\nNCC admission rate: 12.52% (64,109 babies)\nCritical data quality issue identified and resolved: MSDS tables contained 2-10x duplication due to multiple submissions\nData source selection: Critical Care (CC) data preferred over MSDS for NCC admissions due to contractual reporting requirements and better data quality"
+  },
+  {
+    "objectID": "index.html#data-sources",
+    "href": "index.html#data-sources",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "2.1 Data Sources",
+    "text": "2.1 Data Sources\n\n2.1.1 Primary Data Sources\n\nMSDS (Maternity Services Dataset) - NHS Digital national maternity data:\n\nMSD401BabyDemographics_1: Birth details and baby demographics\nMSD301LabourDelivery_1: Labour and delivery information\nMSD101PregnancyBooking_1: Pregnancy booking and social factors\nMSD001MotherDemog_1: Mother demographics\nMSD402NeonatalAdmission_1: MSDS-reported neonatal admissions\n\nCritical Care (Pbr_CC_Monthly) - Daily-level critical care records:\n\nFiltered by CC_Type = 'NCC' for neonatal critical care\nContains care levels, length of stay, and clinical details\nUsed for Payment by Results (contractual requirement)\n\nAPCS (Admitted Patient Care Spells) - APCS_Core_Daily:\n\nProvides NHS Numbers for linkage between MSDS and CC data\nEssential linkage table\n\n\n\n\n2.1.2 Data Linkage Strategy\n\nStart with MSDS births (MSD401BabyDemographics_1) as base\nLink MSDS tables via Labour_Delivery_ID, UniqPregID, Person_ID_Mother\nLink to CC data via NHS_Number (pseudonymized) through APCS\nApply 90-day date proximity filter when linking births to CC admissions\nCompare NCC admission status from both MSDS and CC sources\n\n\n\n2.1.3 Time Period\n\nFinancial Year: 2023/24 (April 1, 2023 - March 31, 2024)\nDatabase: UDAL_Warehouse on Azure Synapse Analytics"
+  },
+  {
+    "objectID": "index.html#critical-data-quality-issue-duplication",
+    "href": "index.html#critical-data-quality-issue-duplication",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "2.2 Critical Data Quality Issue: Duplication",
+    "text": "2.2 Critical Data Quality Issue: Duplication\n\n2.2.1 Problem Identified\nInitial analysis revealed massive duplication in all MSDS tables due to multiple submissions:\n\n\n\nTable 1: Duplication Statistics in MSDS Tables\n\n\nTable\nRaw Records\nUnique IDs\nDuplication Factor\nNatural Key\n\n\n\n\nMSD401 (Baby Demographics)\n1,838,436\n541,276\n3.4x\nPerson_ID_Baby\n\n\nMSD301 (Labour/Delivery)\n1,817,611\n501,767\n3.6x\nLabourDeliveryID\n\n\nMSD101 (Pregnancy/Booking)\n8,080,487\n798,854\n10.1x\nUniqPregID\n\n\nMSD402 (Neonatal Admissions)\n107,089\n51,126\n2.1x\nPerson_ID_Baby + Transfer Date/Time\n\n\nMSD001 (Mother Demographics)\n41,462,657 (all time)\n4,155,888\n~10x\nPerson_ID_Mother\n\n\n\n\n\nWithout deduplication, the final dataset would have contained ~1.8 million records instead of the expected ~540,000 births.\n\n\n2.2.2 Root Cause Analysis\nInvestigation of duplicate records revealed:\n\n495,826 babies (91.6%) had duplicate records in MSD401\n50.3% had exactly 2 records, 17.9% had exactly 4 records\nSome babies had up to 32 duplicate records\n\nDetailed field-by-field comparison showed:\n\n45 out of 50 fields were identical across duplicates\nOnly 5 submission metadata fields differed: UniqSubmissionID, AuditId, MSD401_ID, RecordNumber, CareProfLIDDel\n99%+ of duplicates had identical clinical data\n\nConclusion: Duplicates represent multiple submissions of identical data, not different clinical events.\n\n\n2.2.3 Deduplication Strategy\nApplied consistent deduplication across all MSDS tables:\nROW_NUMBER() OVER (\n  PARTITION BY [natural_key]\n  ORDER BY UniqSubmissionID DESC  -- Most recent submission\n) AS rn\n\n-- Then filter: WHERE rn = 1\nThis approach: - Keeps the most recent submission for each unique entity - Preserves data integrity (clinical values are consistent) - Reduces dataset from 1.8M to 512k records (correct granularity)"
+  },
+  {
+    "objectID": "index.html#ncc-data-source-comparison",
+    "href": "index.html#ncc-data-source-comparison",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "2.3 NCC Data Source Comparison",
+    "text": "2.3 NCC Data Source Comparison\n\n2.3.1 Dual Source Validation\nNCC admission status was captured from two sources for comparison:\n\nMSDS: MSD402NeonatalAdmission_1 table\nCC: Pbr_CC_Monthly filtered by CC_Type = 'NCC'\n\n\n\n\nTable 2: NCC Admission by Data Source\n\n\nSource\nNumber of Babies\nPercentage\n\n\n\n\nBoth MSDS & CC\n11,164\n2.18\n\n\nCC only\n48,294\n9.43\n\n\nMSDS only\n4,651\n0.91\n\n\nNot admitted to NCC\n447,923\n87.48\n\n\n\n\n\n\n\n2.3.2 Source Discrepancy Analysis\n\n\n\nTable 3: NCC Admission Rates by Data Source\n\n\nData Source\nNCC Admissions\nPercentage of Births\nData Quality\n\n\n\n\nMSDS (MSD402)\n15,815\n3.09%\nLow - 3.09%\n\n\nCC (Pbr_CC_Monthly)\n59,458\n11.61%\nPreferred - 11.61%\n\n\nCombined (Either Source)\n64,109\n12.52%\nFinal - 12.52%\n\n\n\n\n\nKey findings:\n\nOnly 17.4% overlap between MSDS and CC sources (11,164 of 64,109 admissions)\nCC captures 3.76x more NCC admissions than MSDS (59,458 vs 15,815)\n75.3% of NCC admissions are found in CC data only\n\n\n\n2.3.3 Reasons for Discrepancy\n\nContractual reporting: CC data (Pbr_CC_Monthly) is required for Payment by Results, ensuring better compliance\nDefinition differences: MSDS MSD402 captures “transfers” to neonatal units, while CC captures all babies receiving critical care (including in-situ care)\nLinking failures: NHS number linkage between MSDS and APCS may miss some babies\nMSDS underreporting: Inconsistent completion of MSD402 records across trusts\n\n\n\n2.3.4 Decision: Use CC as Primary Source\nBased on this analysis, Critical Care data (CC) is used as the primary source for NCC admissions in the final dataset:\n\nHigher capture rate (11.61% vs 3.09%)\nContractual requirement ensures data quality\nMore comprehensive definition of NCC care\nBetter aligns with clinical reality\n\nThe combined flag NCC_Admitted = 1 if baby appears in either MSDS or CC, but CC drives the majority of identifications."
+  },
+  {
+    "objectID": "index.html#overall-dataset-summary",
+    "href": "index.html#overall-dataset-summary",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "3.1 Overall Dataset Summary",
+    "text": "3.1 Overall Dataset Summary\n\n\n\nTable 4: Overall Dataset Summary\n\n\nMetric\nValue\n\n\n\n\nTotal births in 2023/24\n512,032\n\n\nNCC admissions (any source)\n64,109\n\n\nNCC admission rate\n12.52%\n\n\nBirths without NCC admission\n447,923\n\n\nNumber of fields/variables\n59"
+  },
+  {
+    "objectID": "index.html#baby-demographics",
+    "href": "index.html#baby-demographics",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "3.2 Baby Demographics",
+    "text": "3.2 Baby Demographics\n\n3.2.1 Sex Distribution\n\n\n\nTable 5: Sex Distribution\n\n\nSex\nNumber of Babies\nPercentage\n\n\n\n\n1\n256,342\n50.06\n\n\n2\n243,271\n47.51\n\n\nX\n12,289\n2.40\n\n\n9\n130\n0.03\n\n\n\n\n\n\n\n3.2.2 Ethnicity Distribution (Baby)\n\n\n\nTable 6: Ethnicity Distribution (Top 10 Categories)\n\n\nEthnicity Code\nNumber of Babies\nPercentage\n\n\n\n\nA\n278,290\n54.35\n\n\nC\n52,301\n10.21\n\n\nJ\n26,160\n5.11\n\n\nH\n25,287\n4.94\n\n\nN\n24,819\n4.85\n\n\nG\n15,692\n3.06\n\n\nL\n14,851\n2.90\n\n\nS\n12,699\n2.48\n\n\nNA\n12,430\n2.43\n\n\nK\n8,796\n1.72"
+  },
+  {
+    "objectID": "index.html#clinical-characteristics",
+    "href": "index.html#clinical-characteristics",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "3.3 Clinical Characteristics",
+    "text": "3.3 Clinical Characteristics\n\n3.3.1 Gestation Length\n\n\n\nTable 7: Gestation Length at Birth (weeks)\n\n\nStatistic\nValue\n\n\n\n\nMean\n0\n\n\nMedian\n0\n\n\nSD\n0\n\n\nMin\n0\n\n\nMax\n0\n\n\nMissing\n0\n\n\n% Missing\n0\n\n\n\n\n\n\n\n3.3.2 Delivery Method\n\n\n\nTable 8: Delivery Method Distribution (Top 10)\n\n\nDelivery Method Code\nNumber of Births\nPercentage\n\n\n\n\n0\n233,029\n45.51\n\n\n8\n120,835\n23.60\n\n\n7\n89,585\n17.50\n\n\n4\n21,372\n4.17\n\n\n2\n19,607\n3.83\n\n\n3\n11,013\n2.15\n\n\n1\n7,164\n1.40\n\n\nNA\n3,809\n0.74\n\n\n9\n3,615\n0.71\n\n\n5\n1,675\n0.33\n\n\n\n\n\n\n\n3.3.3 Birth Order (Multiple Births)\n\n\n\nTable 9: Birth Order Distribution\n\n\nBirth Order\nNumber of Babies\nPercentage\n\n\n\n\n-1\n5\n0.00\n\n\n1\n484,650\n94.65\n\n\n10\n1\n0.00\n\n\n11\n4\n0.00\n\n\n12\n10\n0.00\n\n\n13\n24\n0.00\n\n\n14\n4\n0.00\n\n\n2\n6,903\n1.35\n\n\n3\n132\n0.03\n\n\n4\n9\n0.00\n\n\n5\n2\n0.00\n\n\n6\n3\n0.00\n\n\n7\n2\n0.00\n\n\n8\n3\n0.00\n\n\n9\n118\n0.02\n\n\n98\n12\n0.00\n\n\nUU\n175\n0.03\n\n\nNA\n19,975\n3.90"
+  },
+  {
+    "objectID": "index.html#ncc-admission-characteristics",
+    "href": "index.html#ncc-admission-characteristics",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "3.4 NCC Admission Characteristics",
+    "text": "3.4 NCC Admission Characteristics\n\n3.4.1 NCC Admission by Baby Sex\n\n\n\nTable 10: NCC Admission Rates by Baby Sex\n\n\nBaby_Sex\nTotal\nNCC_Admitted\nNCC Rate (%)\n\n\n\n\n1\n256,342\n35,065\n13.68\n\n\n2\n243,271\n28,019\n11.52\n\n\n9\n130\n23\n17.69\n\n\nX\n12,289\n1,002\n8.15\n\n\n\n\n\n\n\n3.4.2 Time to NCC Admission\n\n\n\nTable 11: Hours from Birth to NCC Admission (CC Source)\n\n\nStatistic\nValue\n\n\n\n\nMean\nNaN\n\n\nMedian\nNA\n\n\nSD\nNA\n\n\nMin\nInf\n\n\nMax\n-Inf\n\n\nMissing\n59458\n\n\n% Missing\n100\n\n\n\n\n\n\n\n3.4.3 NCC Length of Stay\n\n\n\nTable 12: NCC Length of Stay (days)\n\n\nStatistic\nValue\n\n\n\n\nMean\n8.3\n\n\nMedian\n4.0\n\n\nSD\n13.2\n\n\nMin\n1.0\n\n\nMax\n282.0\n\n\nMissing\n0.0\n\n\n% Missing\n0.0\n\n\n\n\n\n\n\n3.4.4 NCC Providers\n\n\n\nTable 13: Top 15 NCC Providers by Volume\n\n\nProvider Code\nNCC Admissions\n% of Total NCC\n\n\n\n\nRAJ\n2,750\n4.63\n\n\nRTE\n2,199\n3.70\n\n\nRX1\n2,071\n3.48\n\n\nRWE\n1,490\n2.51\n\n\nRVJ\n1,472\n2.48\n\n\nRQ3\n1,361\n2.29\n\n\nR0A\n1,290\n2.17\n\n\nRR8\n1,169\n1.97\n\n\nRYR\n1,128\n1.90\n\n\nRHQ\n1,120\n1.88\n\n\nRPA\n1,113\n1.87\n\n\nRA7\n1,055\n1.77\n\n\nREP\n1,015\n1.71\n\n\nRKB\n1,014\n1.71\n\n\nRVR\n1,013\n1.70\n\n\n\n\n\nTotal number of NCC providers: 105"
+  },
+  {
+    "objectID": "index.html#maternal-demographics",
+    "href": "index.html#maternal-demographics",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "3.5 Maternal Demographics",
+    "text": "3.5 Maternal Demographics\n\n3.5.1 Mother’s Ethnicity\n\n\n\nTable 14: Mother's Ethnicity Distribution (Top 10)\n\n\nEthnicity Code\nNumber of Mothers\nPercentage\n\n\n\n\nA\n292,991\n57.22\n\n\nC\n53,573\n10.46\n\n\nJ\n26,535\n5.18\n\n\nH\n25,616\n5.00\n\n\nN\n24,171\n4.72\n\n\nS\n17,455\n3.41\n\n\nL\n16,245\n3.17\n\n\nZ\n11,993\n2.34\n\n\nK\n9,739\n1.90\n\n\nG\n4,968\n0.97"
+  },
+  {
+    "objectID": "index.html#social-factors-inequality-measures",
+    "href": "index.html#social-factors-inequality-measures",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "3.6 Social Factors (Inequality Measures)",
+    "text": "3.6 Social Factors (Inequality Measures)\n\n3.6.1 Complex Social Factors at Booking\n\n\n\nTable 15: Complex Social Factors at Antenatal Booking\n\n\nComplex Social Factors\nNumber of Pregnancies\nPercentage\n\n\n\n\nN\n432,589\n84.48\n\n\nY\n62,055\n12.12\n\n\nNA\n17,388\n3.40\n\n\n\n\n\n\n\n3.6.2 Disability Indicator at Booking\n\n\n\nTable 16: Disability Indicator at Antenatal Booking\n\n\nDisability Indicator\nNumber of Pregnancies\nPercentage\n\n\n\n\nN\n385,623\n75.31\n\n\nNA\n105,233\n20.55\n\n\nY\n21,176\n4.14\n\n\n\n\n\n\n\n3.6.3 Employment Status at Booking\n\n\n\nTable 17: Employment Status at Antenatal Booking (Top 10)\n\n\nEmployment Status Code\nNumber of Pregnancies\nPercentage\n\n\n\n\n01\n292,247\n57.08\n\n\nNA\n107,315\n20.96\n\n\n05\n53,309\n10.41\n\n\n02\n27,251\n5.32\n\n\n06\n12,663\n2.47\n\n\n03\n10,253\n2.00\n\n\nZZ\n6,798\n1.33\n\n\n04\n1,955\n0.38\n\n\n07\n227\n0.04\n\n\n08\n13\n0.00"
+  },
+  {
+    "objectID": "index.html#completeness-by-key-variable",
+    "href": "index.html#completeness-by-key-variable",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "4.1 Completeness by Key Variable",
+    "text": "4.1 Completeness by Key Variable\n\n\n\nTable 18: Data Completeness for Key Variables\n\n\nVariable\nComplete Records\nMissing Records\n% Complete\n\n\n\n\nNHS_Number_Baby\n512,032\n0\n100.00\n\n\nBaby_Birth_Date\n512,032\n0\n100.00\n\n\nBaby_Sex\n512,032\n0\n100.00\n\n\nEthnic_Category_Baby\n499,602\n12,430\n97.57\n\n\nGestation_Length_At_Birth\n512,032\n0\n100.00\n\n\nDelivery_Method_Code\n508,223\n3,809\n99.26\n\n\nEthnic_Category_Mother\n510,548\n1,484\n99.71\n\n\nNCC_Admitted\n512,032\n0\n100.00\n\n\nNCC_Hospital_Provider_Code\n59,458\n452,574\n11.61\n\n\nMother_CCG_Residence\n240,014\n272,018\n46.87"
+  },
+  {
+    "objectID": "index.html#known-data-limitations",
+    "href": "index.html#known-data-limitations",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "4.2 Known Data Limitations",
+    "text": "4.2 Known Data Limitations\n\nBirth weight and Apgar scores: Not available in MSD401BabyDemographics_1 table. Available in MSD405CareActivityBaby_1 but not yet linked.\nMother’s age: Mother’s date of birth not available in MSD001MotherDemog_1, preventing calculation of maternal age at delivery.\nDeprivation (IMD): Mother’s full postcode not available. Requires separate linkage using LSOA codes.\nNCC admission discrepancies: Only 17.4% overlap between MSDS and CC sources suggests ongoing data quality issues in MSDS reporting.\nNHS number linkage: Some babies may not link between MSDS and CC due to pseudonymization or missing NHS numbers."
+  },
+  {
+    "objectID": "index.html#database-connection",
+    "href": "index.html#database-connection",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "5.1 Database Connection",
+    "text": "5.1 Database Connection\n\nServer: udalsyndataprod.sql.azuresynapse.net\nDatabase: UDAL_Warehouse\nAuthentication: ActiveDirectoryInteractive\nDriver: ODBC Driver 17 for SQL Server"
+  },
+  {
+    "objectID": "index.html#sql-query-structure",
+    "href": "index.html#sql-query-structure",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "5.2 SQL Query Structure",
+    "text": "5.2 SQL Query Structure\nThe final query consists of several CTEs (Common Table Expressions):\n\nncc_from_cc: Aggregates daily CC records to baby-level\napcs_link: Provides NHS numbers for linkage\nncc_cc_with_nhs: Links CC data to NHS numbers\nmsds_babies_raw + msds_babies: Deduplicates baby demographics\nmsds_labour_raw + msds_labour: Deduplicates labour/delivery records\nmsds_mothers_raw + msds_mothers: Deduplicates mother demographics\nmsds_pregnancy_raw + msds_pregnancy: Deduplicates pregnancy/booking records\nmsds_neonatal_adm_raw + msds_neonatal_adm: Deduplicates neonatal admissions\nbase_dataset: Joins all deduplicated tables together"
+  },
+  {
+    "objectID": "index.html#output",
+    "href": "index.html#output",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "5.3 Output",
+    "text": "5.3 Output\n\nFormat: RDS (R Data Serialization)\nFilename: data/ncc_base_dataset.rds\nRecords: 512,032\nFields: 59\nGranularity: One record per baby born in hospital in 2023/24"
+  },
+  {
+    "objectID": "index.html#for-hierarchical-modeling",
+    "href": "index.html#for-hierarchical-modeling",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "6.1 For Hierarchical Modeling",
+    "text": "6.1 For Hierarchical Modeling\nThe dataset is now ready for hierarchical (mixed-effects) modeling to examine:\n\nFixed effects (patient characteristics):\n\nBaby: Sex, ethnicity, gestation, birth order\nMother: Ethnicity, social factors, employment, disability\nDelivery: Method, location\n\nRandom effects (hospital/provider variation):\n\nNCC_Hospital_Provider_Code: Where NCC care was provided\nDelivery_Site_Code: Where baby was born\nOrg_ID_Commissioner: Commissioning organization\n\nOutcome variables:\n\nBinary: NCC_Admitted (1/0)\nTime-to-event: Hours_Birth_To_NCC_CC (for survival/frailty models)"
+  },
+  {
+    "objectID": "index.html#additional-data-enrichment-needed",
+    "href": "index.html#additional-data-enrichment-needed",
+    "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
+    "section": "6.2 Additional Data Enrichment Needed",
+    "text": "6.2 Additional Data Enrichment Needed\n\nDeprivation indices: Link LSOA codes to IMD scores\nBirth weight and Apgar scores: Join MSD405CareActivityBaby_1 table\nGeography: Link to CCG/ICB boundaries and rural/urban classifications\nClinical severity measures: Additional neonatal clinical indicators if available"
+  }
+]
