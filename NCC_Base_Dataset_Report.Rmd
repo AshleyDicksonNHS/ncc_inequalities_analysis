@@ -606,10 +606,9 @@ kable(completeness,
 
 ## Database Connection
 
-- **Server**: udalsyndataprod.sql.azuresynapse.net
-- **Database**: UDAL_Warehouse
-- **Authentication**: ActiveDirectoryInteractive
-- **Driver**: ODBC Driver 17 for SQL Server
+- **Platform**: NHS UDAL (Unified Data Access Layer) on Azure Synapse Analytics
+- **Authentication**: Azure Active Directory Interactive
+- **Access**: Requires UDAL data access permissions
 
 ## SQL Query Structure
 

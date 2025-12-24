@@ -88,7 +88,7 @@
     "href": "index.html#database-connection",
     "title": "Neonatal Critical Care Base Dataset: Construction and Descriptive Statistics",
     "section": "5.1 Database Connection",
-    "text": "5.1 Database Connection\n\nServer: udalsyndataprod.sql.azuresynapse.net\nDatabase: UDAL_Warehouse\nAuthentication: ActiveDirectoryInteractive\nDriver: ODBC Driver 17 for SQL Server"
+    "text": "5.1 Database Connection\n\nPlatform: NHS UDAL (Unified Data Access Layer) on Azure Synapse Analytics\nAuthentication: Azure Active Directory Interactive\nAccess: Requires UDAL data access permissions"
   },
   {
     "objectID": "index.html#sql-query-structure",

@@ -18,11 +18,11 @@ library(tidyverse)
 library(DBI)
 library(odbc)
 
-# Database connection
+# Database connection - update UID with your UDAL email
 driver <- "ODBC Driver 17 for SQL Server"
 server <- "udalsyndataprod.sql.azuresynapse.net"
 database <- "UDAL_Warehouse"
-uid <- "ashley.dickson@udal.nhs.uk"
+uid <- Sys.getenv("UDAL_USER", unset = "your.name@udal.nhs.uk")
 
 con <- DBI::dbConnect(odbc(),
                       Driver = driver,

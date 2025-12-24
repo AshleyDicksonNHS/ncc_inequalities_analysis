@@ -16,7 +16,7 @@ con <- DBI::dbConnect(odbc(),
                       Driver = "ODBC Driver 17 for SQL Server",
                       Server = "udalsyndataprod.sql.azuresynapse.net",
                       Database = "UDAL_Warehouse",
-                      UID = "ashley.dickson@udal.nhs.uk",
+                      UID = Sys.getenv("UDAL_USER", unset = "your.name@udal.nhs.uk"),
                       Authentication = "ActiveDirectoryInteractive",
                       Port = 1433)
 
