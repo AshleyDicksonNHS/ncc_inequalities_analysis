@@ -14,31 +14,179 @@ format:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width = 8, fig.height = 5)
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+library(scales)
 
 # Load the dataset
 data <- readRDS("data/ncc_base_dataset.rds")
+
+# Ethnicity code lookup (NHS Data Dictionary)
+ethnicity_lookup <- c(
+  "A" = "White - British",
+  "B" = "White - Irish",
+  "C" = "White - Other",
+  "D" = "Mixed - White & Black Caribbean",
+  "E" = "Mixed - White & Black African",
+  "F" = "Mixed - White & Asian",
+  "G" = "Mixed - Other",
+  "H" = "Asian - Indian",
+  "J" = "Asian - Pakistani",
+  "K" = "Asian - Bangladeshi",
+  "L" = "Asian - Other",
+  "M" = "Black - Caribbean",
+  "N" = "Black - African",
+  "P" = "Black - Other",
+  "R" = "Chinese",
+  "S" = "Other Ethnic Group",
+  "Z" = "Not Stated",
+  "99" = "Not Known"
+)
+
+# Delivery method lookup (SNOMED CT codes simplified)
+delivery_lookup <- c(
+  "0" = "Spontaneous Vertex",
+  "1" = "Spontaneous Other Cephalic",
+  "2" = "Low Forceps",
+  "3" = "Other Forceps",
+  "4" = "Ventouse/Vacuum",
+  "5" = "Breech",
+  "6" = "Breech Extraction",
+  "7" = "Elective Caesarean",
+  "8" = "Emergency Caesarean",
+  "9" = "Other"
+)
+
+# Helper function to decode
+decode_ethnicity <- function(code) {
+  ifelse(is.na(code), "Missing",
+         ifelse(code %in% names(ethnicity_lookup), ethnicity_lookup[code], paste0("Other (", code, ")")))
+}
+
+decode_delivery <- function(code) {
+  ifelse(is.na(code), "Missing",
+         ifelse(code %in% names(delivery_lookup), delivery_lookup[code], paste0("Other (", code, ")")))
+}
+
+# NHS colour palette
+nhs_blue <- "#005EB8"
+nhs_dark_blue <- "#003087"
+nhs_bright_blue <- "#0072CE"
+nhs_light_blue <- "#41B6E6"
+nhs_aqua <- "#00A9CE"
+nhs_pink <- "#AE2573"
+nhs_green <- "#009639"
 ```
 
 # Executive Summary
 
-This report documents the construction of the base dataset for analyzing inequalities in Neonatal Critical Care (NCC) access in England. The dataset links maternity services data (MSDS) with critical care data to create a comprehensive birth-level dataset for hierarchical modeling.
+This report documents the construction of the base dataset for analysing inequalities in Neonatal Critical Care (NCC) access in England. The dataset links maternity services data (MSDS) with critical care data to create a comprehensive birth-level dataset for hierarchical modelling.
 
 **Key findings:**
 
-- **Final dataset**: 512,032 births in financial year 2023/24
-- **NCC admission rate**: 12.52% (64,109 babies)
+- **Final dataset**: `r format(nrow(data), big.mark = ",")` births in financial year 2023/24
+- **NCC admission rate**: `r round(100 * mean(data$NCC_Admitted, na.rm = TRUE), 1)`% (`r format(sum(data$NCC_Admitted, na.rm = TRUE), big.mark = ",")` babies)
 - **Critical data quality issue identified and resolved**: MSDS tables contained 2-10x duplication due to multiple submissions
 - **Data source selection**: Critical Care (CC) data preferred over MSDS for NCC admissions due to contractual reporting requirements and better data quality
+
+## What This Means {.unnumbered}
+
+This analysis looks at which babies receive specialist neonatal critical care in England. We found that approximately **1 in 8 babies** (12.5%) born in hospital require some form of neonatal critical care.
+
+The data we've assembled will help us understand whether all babies have **equal access** to this care, regardless of their:
+
+- Ethnic background
+- Family's socioeconomic circumstances
+- Where they live in England
+- Their mother's social circumstances
+
+Understanding these patterns is the first step toward ensuring every baby gets the care they need, when they need it.
+
+---
+
+# Key Findings at a Glance
+
+```{r key_viz, echo=FALSE, fig.height=4}
+#| label: fig-overview
+#| fig-cap: "Overview of NCC admissions in the dataset"
+
+# Create summary data for visualization
+ncc_summary <- data %>%
+  summarise(
+    `Admitted to NCC` = sum(NCC_Admitted, na.rm = TRUE),
+    `Not admitted` = sum(NCC_Admitted == 0, na.rm = TRUE)
+  ) %>%
+  pivot_longer(everything(), names_to = "Status", values_to = "Count") %>%
+  mutate(
+    Percentage = Count / sum(Count) * 100,
+    Label = paste0(format(Count, big.mark = ","), "\n(", round(Percentage, 1), "%)")
+  )
+
+ggplot(ncc_summary, aes(x = Status, y = Count, fill = Status)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = Label), vjust = -0.3, size = 4) +
+  scale_fill_manual(values = c("Admitted to NCC" = nhs_blue, "Not admitted" = nhs_light_blue)) +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Neonatal Critical Care Admissions",
+    subtitle = "Financial Year 2023/24",
+    x = NULL,
+    y = "Number of Babies"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+```{r ncc_by_ethnicity_viz, echo=FALSE, fig.height=5}
+#| label: fig-ethnicity-rates
+#| fig-cap: "NCC admission rates vary by ethnic group"
+
+# Calculate NCC rates by ethnicity
+ethnicity_rates <- data %>%
+  mutate(Ethnicity = decode_ethnicity(Ethnic_Category_Baby)) %>%
+  group_by(Ethnicity) %>%
+  summarise(
+    Total = n(),
+    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
+    Rate = 100 * NCC_Admitted / Total,
+    .groups = "drop"
+  ) %>%
+  filter(Total >= 1000) %>%  # Only show groups with sufficient numbers
+
+  arrange(desc(Rate))
+
+ggplot(ethnicity_rates, aes(x = reorder(Ethnicity, Rate), y = Rate, fill = Rate)) +
+  geom_col() +
+  geom_hline(yintercept = mean(data$NCC_Admitted, na.rm = TRUE) * 100,
+             linetype = "dashed", color = "red", linewidth = 0.8) +
+  annotate("text", x = 1, y = mean(data$NCC_Admitted, na.rm = TRUE) * 100 + 0.5,
+           label = "Overall average", hjust = 0, color = "red", size = 3) +
+  coord_flip() +
+  scale_fill_gradient(low = nhs_light_blue, high = nhs_dark_blue, guide = "none") +
+  labs(
+    title = "NCC Admission Rate by Baby's Ethnicity",
+    subtitle = "Groups with 1,000+ births shown | Dashed line = overall average",
+    x = NULL,
+    y = "NCC Admission Rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14)
+  )
+```
 
 ---
 
 # Dataset Construction Methodology
 
-## Data Sources
+::: {.callout-note collapse="true"}
+## Data Sources (click to expand)
 
 ### Primary Data Sources
 
@@ -57,71 +205,67 @@ This report documents the construction of the base dataset for analyzing inequal
 3. **APCS (Admitted Patient Care Spells)** - `APCS_Core_Daily`:
    - Provides NHS Numbers for linkage between MSDS and CC data
    - Essential linkage table
+:::
 
-### Data Linkage Strategy
+::: {.callout-note collapse="true"}
+## Data Linkage Strategy (click to expand)
 
 1. Start with MSDS births (MSD401BabyDemographics_1) as base
 2. Link MSDS tables via `Labour_Delivery_ID`, `UniqPregID`, `Person_ID_Mother`
-3. Link to CC data via `NHS_Number` (pseudonymized) through APCS
+3. Link to CC data via `NHS_Number` (pseudonymised) through APCS
 4. Apply 90-day date proximity filter when linking births to CC admissions
 5. Compare NCC admission status from both MSDS and CC sources
 
-### Time Period
+**Time Period**: Financial Year 2023/24 (April 1, 2023 - March 31, 2024)
+:::
 
-- **Financial Year**: 2023/24 (April 1, 2023 - March 31, 2024)
-- **Database**: UDAL_Warehouse on Azure Synapse Analytics
+## Data Quality: Resolving Duplication
 
----
+A critical data quality issue was identified and resolved during dataset construction.
 
-## Critical Data Quality Issue: Duplication
+```{r duplication_viz, echo=FALSE, fig.height=4}
+#| label: fig-duplication
+#| fig-cap: "MSDS tables contained significant duplication that required resolution"
 
-### Problem Identified
-
-Initial analysis revealed massive duplication in all MSDS tables due to multiple submissions:
-
-```{r duplication_table, echo=FALSE}
-duplication_stats <- tibble(
-  Table = c(
-    "MSD401 (Baby Demographics)",
-    "MSD301 (Labour/Delivery)",
-    "MSD101 (Pregnancy/Booking)",
-    "MSD402 (Neonatal Admissions)",
-    "MSD001 (Mother Demographics)"
-  ),
-  `Raw Records` = c("1,838,436", "1,817,611", "8,080,487", "107,089", "41,462,657 (all time)"),
-  `Unique IDs` = c("541,276", "501,767", "798,854", "51,126", "4,155,888"),
-  `Duplication Factor` = c("3.4x", "3.6x", "10.1x", "2.1x", "~10x"),
-  `Natural Key` = c("Person_ID_Baby", "LabourDeliveryID", "UniqPregID", "Person_ID_Baby + Transfer Date/Time", "Person_ID_Mother")
+duplication_data <- tibble(
+  Table = c("Baby Demographics", "Labour/Delivery", "Pregnancy/Booking",
+            "Neonatal Admissions", "Mother Demographics"),
+  `Duplication Factor` = c(3.4, 3.6, 10.1, 2.1, 10)
 )
 
-kable(duplication_stats,
-      caption = "Table 1: Duplication Statistics in MSDS Tables") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+ggplot(duplication_data, aes(x = reorder(Table, `Duplication Factor`), y = `Duplication Factor`)) +
+  geom_col(fill = nhs_pink, width = 0.6) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "darkgreen", linewidth = 1) +
+  geom_text(aes(label = paste0(round(`Duplication Factor`, 1), "x")),
+            hjust = -0.2, size = 4, fontface = "bold") +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+  labs(
+    title = "Data Duplication in MSDS Tables",
+    subtitle = "Green line = expected (1x, no duplication)",
+    x = NULL,
+    y = "Duplication Factor"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank()
+  )
 ```
 
-**Without deduplication**, the final dataset would have contained ~1.8 million records instead of the expected ~540,000 births.
+::: {.callout-important}
+## Why This Matters
+Without deduplication, the dataset would have contained ~1.8 million records instead of the correct ~540,000 births. This would have severely biased any analysis.
+:::
 
-### Root Cause Analysis
+::: {.callout-note collapse="true"}
+## Technical Details: Deduplication Strategy (click to expand)
 
-Investigation of duplicate records revealed:
-
-- **495,826 babies (91.6%)** had duplicate records in MSD401
-- **50.3%** had exactly 2 records, **17.9%** had exactly 4 records
-- Some babies had up to **32 duplicate records**
-
-Detailed field-by-field comparison showed:
-
-- **45 out of 50 fields** were identical across duplicates
-- Only **5 submission metadata fields** differed: `UniqSubmissionID`, `AuditId`, `MSD401_ID`, `RecordNumber`, `CareProfLIDDel`
-- **99%+ of duplicates** had identical clinical data
+Investigation revealed that **91.6% of babies** had duplicate records, with some having up to 32 duplicates. However, **45 out of 50 fields were identical** across duplicates - only submission metadata differed.
 
 **Conclusion**: Duplicates represent multiple submissions of identical data, not different clinical events.
 
-### Deduplication Strategy
-
-Applied consistent deduplication across all MSDS tables:
-
+**Solution applied**:
 ```sql
 ROW_NUMBER() OVER (
   PARTITION BY [natural_key]
@@ -130,104 +274,54 @@ ROW_NUMBER() OVER (
 
 -- Then filter: WHERE rn = 1
 ```
-
-This approach:
-- Keeps the **most recent submission** for each unique entity
-- Preserves data integrity (clinical values are consistent)
-- Reduces dataset from 1.8M to 512k records (correct granularity)
-
----
+:::
 
 ## NCC Data Source Comparison
 
-### Dual Source Validation
+We compared NCC admission data from two sources to ensure data quality:
 
-NCC admission status was captured from two sources for comparison:
+```{r source_comparison_viz, echo=FALSE, fig.height=4}
+#| label: fig-source-comparison
+#| fig-cap: "Critical Care data captures significantly more NCC admissions than MSDS"
 
-1. **MSDS**: `MSD402NeonatalAdmission_1` table
-2. **CC**: `Pbr_CC_Monthly` filtered by `CC_Type = 'NCC'`
-
-```{r ncc_comparison, echo=FALSE}
 ncc_breakdown <- data %>%
   mutate(
     NCC_Source = case_when(
-      NCC_MSDS_Admitted == 1 & NCC_CC_Admitted == 1 ~ "Both MSDS & CC",
+      NCC_MSDS_Admitted == 1 & NCC_CC_Admitted == 1 ~ "Both sources",
       NCC_MSDS_Admitted == 1 & (is.na(NCC_CC_Admitted) | NCC_CC_Admitted == 0) ~ "MSDS only",
       (is.na(NCC_MSDS_Admitted) | NCC_MSDS_Admitted == 0) & NCC_CC_Admitted == 1 ~ "CC only",
-      TRUE ~ "Not admitted to NCC"
+      TRUE ~ "Not admitted"
     )
   ) %>%
+  filter(NCC_Source != "Not admitted") %>%
   count(NCC_Source) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
+  mutate(Percentage = n / sum(n) * 100)
+
+ggplot(ncc_breakdown, aes(x = reorder(NCC_Source, n), y = n, fill = NCC_Source)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(format(n, big.mark = ","), "\n(", round(Percentage, 1), "%)")),
+            hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_fill_manual(values = c("Both sources" = nhs_green, "CC only" = nhs_blue, "MSDS only" = nhs_light_blue)) +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.25))) +
+  labs(
+    title = "Where NCC Admissions Are Recorded",
+    subtitle = "CC = Critical Care dataset | MSDS = Maternity Services Dataset",
+    x = NULL,
+    y = "Number of NCC Admissions"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank()
   )
-
-kable(ncc_breakdown %>% select(NCC_Source, n_formatted, Percentage),
-      col.names = c("Source", "Number of Babies", "Percentage"),
-      caption = "Table 2: NCC Admission by Data Source",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
 ```
 
-### Source Discrepancy Analysis
-
-```{r source_totals, echo=FALSE}
-in_both <- ncc_breakdown %>% filter(NCC_Source == "Both MSDS & CC") %>% pull(n)
-msds_only <- ncc_breakdown %>% filter(NCC_Source == "MSDS only") %>% pull(n)
-cc_only <- ncc_breakdown %>% filter(NCC_Source == "CC only") %>% pull(n)
-
-if(length(in_both) == 0) in_both <- 0
-if(length(msds_only) == 0) msds_only <- 0
-if(length(cc_only) == 0) cc_only <- 0
-
-total_in_msds <- in_both + msds_only
-total_in_cc <- in_both + cc_only
-total_babies <- nrow(data)
-
-source_comparison <- tibble(
-  `Data Source` = c("MSDS (MSD402)", "CC (Pbr_CC_Monthly)", "Combined (Either Source)"),
-  `NCC Admissions` = format(c(total_in_msds, total_in_cc, total_in_msds + cc_only), big.mark = ","),
-  `Percentage of Births` = paste0(round(c(
-    100 * total_in_msds / total_babies,
-    100 * total_in_cc / total_babies,
-    100 * (total_in_msds + cc_only) / total_babies
-  ), 2), "%"),
-  `Data Quality` = c("Low - 3.09%", "Preferred - 11.61%", "Final - 12.52%")
-)
-
-kable(source_comparison,
-      caption = "Table 3: NCC Admission Rates by Data Source",
-      align = c("l", "r", "r", "l")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE) %>%
-  row_spec(2, bold = TRUE, background = "#e8f4f8")
-```
-
-**Key findings:**
-
-- **Only 17.4% overlap** between MSDS and CC sources (11,164 of 64,109 admissions)
-- CC captures **3.76x more** NCC admissions than MSDS (59,458 vs 15,815)
-- **75.3%** of NCC admissions are found in CC data only
-
-### Reasons for Discrepancy
-
-1. **Contractual reporting**: CC data (Pbr_CC_Monthly) is required for Payment by Results, ensuring better compliance
-2. **Definition differences**: MSDS MSD402 captures "transfers" to neonatal units, while CC captures all babies receiving critical care (including in-situ care)
-3. **Linking failures**: NHS number linkage between MSDS and APCS may miss some babies
-4. **MSDS underreporting**: Inconsistent completion of MSD402 records across trusts
-
-### Decision: Use CC as Primary Source
-
-Based on this analysis, **Critical Care data (CC) is used as the primary source** for NCC admissions in the final dataset:
-
-- Higher capture rate (11.61% vs 3.09%)
-- Contractual requirement ensures data quality
-- More comprehensive definition of NCC care
-- Better aligns with clinical reality
-
-The combined flag `NCC_Admitted` = 1 if baby appears in **either** MSDS or CC, but CC drives the majority of identifications.
+::: {.callout-tip}
+## Decision: Use Critical Care as Primary Source
+Critical Care data captures **3.76x more** NCC admissions than MSDS (due to contractual Payment by Results reporting requirements). The combined flag `NCC_Admitted = 1` if baby appears in **either** source.
+:::
 
 ---
 
@@ -242,7 +336,7 @@ summary_stats <- tibble(
     "NCC admissions (any source)",
     "NCC admission rate",
     "Births without NCC admission",
-    "Number of fields/variables"
+    "Number of variables in dataset"
   ),
   Value = c(
     format(nrow(data), big.mark = ","),
@@ -254,7 +348,6 @@ summary_stats <- tibble(
 )
 
 kable(summary_stats,
-      caption = "Table 4: Overall Dataset Summary",
       col.names = c("Metric", "Value"),
       align = c("l", "r")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
@@ -263,41 +356,69 @@ kable(summary_stats,
 
 ## Baby Demographics
 
-### Sex Distribution
+### Sex Distribution and NCC Rates
 
-```{r sex_distribution, echo=FALSE}
-sex_dist <- data %>%
-  count(Baby_Sex) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
-  ) %>%
-  arrange(desc(n))
+```{r sex_viz, echo=FALSE, fig.height=4}
+#| label: fig-sex-ncc
+#| fig-cap: "NCC admission rates by baby's sex"
 
-kable(sex_dist %>% select(Baby_Sex, n_formatted, Percentage),
-      col.names = c("Sex", "Number of Babies", "Percentage"),
-      caption = "Table 5: Sex Distribution",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+sex_data <- data %>%
+  mutate(Sex = case_when(
+    Baby_Sex == "1" ~ "Male",
+    Baby_Sex == "2" ~ "Female",
+    Baby_Sex == "9" ~ "Indeterminate",
+    TRUE ~ "Unknown"
+  )) %>%
+  group_by(Sex) %>%
+  summarise(
+    Total = n(),
+    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
+    Rate = 100 * NCC_Admitted / Total,
+    .groups = "drop"
+  )
+
+ggplot(sex_data, aes(x = Sex, y = Rate, fill = Sex)) +
+  geom_col(width = 0.5) +
+  geom_text(aes(label = paste0(round(Rate, 1), "%\n(n=", format(NCC_Admitted, big.mark = ","), ")")),
+            vjust = -0.2, size = 3.5) +
+  scale_fill_manual(values = c("Male" = nhs_blue, "Female" = nhs_pink,
+                               "Indeterminate" = nhs_aqua, "Unknown" = "grey60")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+  labs(
+    title = "NCC Admission Rate by Sex",
+    x = NULL,
+    y = "NCC Admission Rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
 ```
 
-### Ethnicity Distribution (Baby)
+### Ethnicity Distribution
 
-```{r ethnicity_baby, echo=FALSE}
+```{r ethnicity_table, echo=FALSE}
 ethnicity_dist <- data %>%
-  count(Ethnic_Category_Baby) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
+  mutate(Ethnicity = decode_ethnicity(Ethnic_Category_Baby)) %>%
+  group_by(Ethnicity) %>%
+  summarise(
+    Count = n(),
+    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
+    `NCC Rate (%)` = round(100 * NCC_Admitted / Count, 2),
+    .groups = "drop"
   ) %>%
-  arrange(desc(n)) %>%
-  head(10)
+  arrange(desc(Count)) %>%
+  head(12) %>%
+  mutate(
+    Count = format(Count, big.mark = ","),
+    NCC_Admitted = format(NCC_Admitted, big.mark = ",")
+  )
 
-kable(ethnicity_dist %>% select(Ethnic_Category_Baby, n_formatted, Percentage),
-      col.names = c("Ethnicity Code", "Number of Babies", "Percentage"),
-      caption = "Table 6: Ethnicity Distribution (Top 10 Categories)",
-      align = c("l", "r", "r")) %>%
+kable(ethnicity_dist,
+      col.names = c("Ethnicity", "Births", "NCC Admissions", "NCC Rate (%)"),
+      align = c("l", "r", "r", "r")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
@@ -306,242 +427,246 @@ kable(ethnicity_dist %>% select(Ethnic_Category_Baby, n_formatted, Percentage),
 
 ### Gestation Length
 
-```{r gestation, echo=FALSE}
-gestation_summary <- data %>%
-  summarise(
-    Mean = round(mean(Gestation_Length_At_Birth, na.rm = TRUE), 1),
-    Median = median(Gestation_Length_At_Birth, na.rm = TRUE),
-    SD = round(sd(Gestation_Length_At_Birth, na.rm = TRUE), 1),
-    Min = min(Gestation_Length_At_Birth, na.rm = TRUE),
-    Max = max(Gestation_Length_At_Birth, na.rm = TRUE),
-    `Missing` = sum(is.na(Gestation_Length_At_Birth)),
-    `% Missing` = round(100 * sum(is.na(Gestation_Length_At_Birth)) / n(), 2)
-  ) %>%
-  pivot_longer(everything(), names_to = "Statistic", values_to = "Value")
+```{r gestation_viz, echo=FALSE, fig.height=4}
+#| label: fig-gestation
+#| fig-cap: "Distribution of gestation length at birth"
 
-kable(gestation_summary,
-      caption = "Table 7: Gestation Length at Birth (weeks)",
-      align = c("l", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+# Create gestation categories
+data_gest <- data %>%
+  filter(!is.na(Gestation_Length_At_Birth)) %>%
+  mutate(
+    Gestation_Group = case_when(
+      Gestation_Length_At_Birth < 28 ~ "Extremely preterm (<28 weeks)",
+      Gestation_Length_At_Birth < 32 ~ "Very preterm (28-31 weeks)",
+      Gestation_Length_At_Birth < 37 ~ "Moderate/Late preterm (32-36 weeks)",
+      Gestation_Length_At_Birth <= 42 ~ "Term (37-42 weeks)",
+      TRUE ~ "Post-term (>42 weeks)"
+    ),
+    Gestation_Group = factor(Gestation_Group, levels = c(
+      "Extremely preterm (<28 weeks)", "Very preterm (28-31 weeks)",
+      "Moderate/Late preterm (32-36 weeks)", "Term (37-42 weeks)", "Post-term (>42 weeks)"
+    ))
+  )
+
+gest_summary <- data_gest %>%
+  group_by(Gestation_Group) %>%
+  summarise(
+    Count = n(),
+    NCC_Rate = 100 * mean(NCC_Admitted, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(gest_summary, aes(x = Gestation_Group, y = Count, fill = NCC_Rate)) +
+  geom_col() +
+  geom_text(aes(label = paste0(format(Count, big.mark = ","), "\n(", round(NCC_Rate, 0), "% NCC)")),
+            vjust = -0.1, size = 3) +
+  scale_fill_gradient(low = nhs_light_blue, high = nhs_pink, name = "NCC Rate (%)") +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Births by Gestation Length",
+    subtitle = "Colour indicates NCC admission rate for each group",
+    x = NULL,
+    y = "Number of Births"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
 ```
 
 ### Delivery Method
 
-```{r delivery_method, echo=FALSE}
+```{r delivery_table, echo=FALSE}
 delivery_dist <- data %>%
-  count(Delivery_Method_Code) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
+  mutate(Method = decode_delivery(Delivery_Method_Code)) %>%
+  group_by(Method) %>%
+  summarise(
+    Count = n(),
+    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
+    `NCC Rate (%)` = round(100 * NCC_Admitted / Count, 2),
+    .groups = "drop"
   ) %>%
-  arrange(desc(n)) %>%
-  head(10)
-
-kable(delivery_dist %>% select(Delivery_Method_Code, n_formatted, Percentage),
-      col.names = c("Delivery Method Code", "Number of Births", "Percentage"),
-      caption = "Table 8: Delivery Method Distribution (Top 10)",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
-```
-
-### Birth Order (Multiple Births)
-
-```{r birth_order, echo=FALSE}
-birth_order_dist <- data %>%
-  count(Birth_Order) %>%
+  arrange(desc(Count)) %>%
   mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
-  ) %>%
-  arrange(Birth_Order)
+    Percentage = round(100 * as.numeric(gsub(",", "", Count)) / nrow(data), 1),
+    Count = format(Count, big.mark = ","),
+    NCC_Admitted = format(NCC_Admitted, big.mark = ",")
+  )
 
-kable(birth_order_dist %>% select(Birth_Order, n_formatted, Percentage),
-      col.names = c("Birth Order", "Number of Babies", "Percentage"),
-      caption = "Table 9: Birth Order Distribution",
-      align = c("l", "r", "r")) %>%
+kable(delivery_dist %>% select(Method, Count, Percentage, NCC_Admitted, `NCC Rate (%)`),
+      col.names = c("Delivery Method", "Births", "% of Total", "NCC Admissions", "NCC Rate (%)"),
+      align = c("l", "r", "r", "r", "r")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
 
 ## NCC Admission Characteristics
 
-### NCC Admission by Baby Sex
-
-```{r ncc_by_sex, echo=FALSE}
-ncc_by_sex <- data %>%
-  group_by(Baby_Sex) %>%
-  summarise(
-    Total = n(),
-    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
-    `NCC Rate (%)` = round(100 * NCC_Admitted / Total, 2)
-  ) %>%
-  mutate(
-    Total = format(Total, big.mark = ","),
-    NCC_Admitted = format(NCC_Admitted, big.mark = ",")
-  )
-
-kable(ncc_by_sex,
-      caption = "Table 10: NCC Admission Rates by Baby Sex",
-      align = c("l", "r", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
-```
-
 ### Time to NCC Admission
 
-```{r time_to_ncc, echo=FALSE}
-# Use CC source for timing as it's more reliable
-time_summary <- data %>%
-  filter(NCC_CC_Admitted == 1) %>%
-  summarise(
-    Mean = round(mean(Hours_Birth_To_NCC_CC, na.rm = TRUE), 1),
-    Median = median(Hours_Birth_To_NCC_CC, na.rm = TRUE),
-    SD = round(sd(Hours_Birth_To_NCC_CC, na.rm = TRUE), 1),
-    Min = min(Hours_Birth_To_NCC_CC, na.rm = TRUE),
-    Max = max(Hours_Birth_To_NCC_CC, na.rm = TRUE),
-    `Missing` = sum(is.na(Hours_Birth_To_NCC_CC)),
-    `% Missing` = round(100 * sum(is.na(Hours_Birth_To_NCC_CC)) / n(), 2)
-  ) %>%
-  pivot_longer(everything(), names_to = "Statistic", values_to = "Value")
+```{r time_to_ncc_viz, echo=FALSE, fig.height=4}
+#| label: fig-time-to-ncc
+#| fig-cap: "Most babies are admitted to NCC within hours of birth"
 
-kable(time_summary,
-      caption = "Table 11: Hours from Birth to NCC Admission (CC Source)",
-      align = c("l", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+time_data <- data %>%
+  filter(NCC_CC_Admitted == 1, !is.na(Hours_Birth_To_NCC_CC)) %>%
+  mutate(
+    Time_Group = case_when(
+      Hours_Birth_To_NCC_CC <= 1 ~ "Within 1 hour",
+      Hours_Birth_To_NCC_CC <= 6 ~ "1-6 hours",
+      Hours_Birth_To_NCC_CC <= 24 ~ "6-24 hours",
+      Hours_Birth_To_NCC_CC <= 72 ~ "1-3 days",
+      TRUE ~ "More than 3 days"
+    ),
+    Time_Group = factor(Time_Group, levels = c(
+      "Within 1 hour", "1-6 hours", "6-24 hours", "1-3 days", "More than 3 days"
+    ))
+  ) %>%
+  count(Time_Group) %>%
+  mutate(Percentage = 100 * n / sum(n))
+
+ggplot(time_data, aes(x = Time_Group, y = n, fill = Time_Group)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(format(n, big.mark = ","), "\n(", round(Percentage, 1), "%)")),
+            vjust = -0.1, size = 3.5) +
+  scale_fill_manual(values = c(nhs_dark_blue, nhs_blue, nhs_bright_blue, nhs_light_blue, nhs_aqua)) +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Time from Birth to NCC Admission",
+    x = NULL,
+    y = "Number of Babies"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
 ```
 
 ### NCC Length of Stay
 
-```{r ncc_los, echo=FALSE}
-los_summary <- data %>%
-  filter(NCC_CC_Admitted == 1) %>%
-  summarise(
-    Mean = round(mean(NCC_CC_Total_Days, na.rm = TRUE), 1),
-    Median = median(NCC_CC_Total_Days, na.rm = TRUE),
-    SD = round(sd(NCC_CC_Total_Days, na.rm = TRUE), 1),
-    Min = min(NCC_CC_Total_Days, na.rm = TRUE),
-    Max = max(NCC_CC_Total_Days, na.rm = TRUE),
-    `Missing` = sum(is.na(NCC_CC_Total_Days)),
-    `% Missing` = round(100 * sum(is.na(NCC_CC_Total_Days)) / n(), 2)
-  ) %>%
-  pivot_longer(everything(), names_to = "Statistic", values_to = "Value")
+```{r ncc_los_viz, echo=FALSE, fig.height=4}
+#| label: fig-los
+#| fig-cap: "Distribution of NCC length of stay"
 
-kable(los_summary,
-      caption = "Table 12: NCC Length of Stay (days)",
-      align = c("l", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
-```
-
-### NCC Providers
-
-```{r ncc_providers, echo=FALSE}
-provider_dist <- data %>%
-  filter(NCC_CC_Admitted == 1) %>%
-  count(NCC_Hospital_Provider_Code) %>%
-  arrange(desc(n)) %>%
+los_data <- data %>%
+  filter(NCC_CC_Admitted == 1, !is.na(NCC_CC_Total_Days)) %>%
   mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
+    LOS_Group = case_when(
+      NCC_CC_Total_Days <= 1 ~ "1 day",
+      NCC_CC_Total_Days <= 3 ~ "2-3 days",
+      NCC_CC_Total_Days <= 7 ~ "4-7 days",
+      NCC_CC_Total_Days <= 14 ~ "1-2 weeks",
+      NCC_CC_Total_Days <= 28 ~ "2-4 weeks",
+      TRUE ~ "More than 4 weeks"
+    ),
+    LOS_Group = factor(LOS_Group, levels = c(
+      "1 day", "2-3 days", "4-7 days", "1-2 weeks", "2-4 weeks", "More than 4 weeks"
+    ))
   ) %>%
-  head(15)
+  count(LOS_Group) %>%
+  mutate(Percentage = 100 * n / sum(n))
 
-kable(provider_dist %>% select(NCC_Hospital_Provider_Code, n_formatted, Percentage),
-      col.names = c("Provider Code", "NCC Admissions", "% of Total NCC"),
-      caption = "Table 13: Top 15 NCC Providers by Volume",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+ggplot(los_data, aes(x = LOS_Group, y = n, fill = LOS_Group)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), vjust = -0.3, size = 3.5) +
+  scale_fill_manual(values = c(nhs_green, nhs_aqua, nhs_light_blue, nhs_blue, nhs_bright_blue, nhs_dark_blue)) +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "NCC Length of Stay",
+    x = NULL,
+    y = "Number of Babies"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
 ```
-
-**Total number of NCC providers:** `r data %>% filter(NCC_CC_Admitted == 1) %>% distinct(NCC_Hospital_Provider_Code) %>% nrow()`
 
 ## Maternal Demographics
 
-### Mother's Ethnicity
+### Mother's Ethnicity and NCC Rates
 
-```{r mother_ethnicity, echo=FALSE}
-mother_eth_dist <- data %>%
-  count(Ethnic_Category_Mother) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
+```{r mother_ethnicity_viz, echo=FALSE, fig.height=5}
+#| label: fig-mother-ethnicity
+#| fig-cap: "NCC admission rates by mother's ethnicity"
+
+mother_eth_rates <- data %>%
+  mutate(Ethnicity = decode_ethnicity(Ethnic_Category_Mother)) %>%
+  group_by(Ethnicity) %>%
+  summarise(
+    Total = n(),
+    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
+    Rate = 100 * NCC_Admitted / Total,
+    .groups = "drop"
   ) %>%
-  arrange(desc(n)) %>%
-  head(10)
+  filter(Total >= 1000) %>%
+  arrange(desc(Rate))
 
-kable(mother_eth_dist %>% select(Ethnic_Category_Mother, n_formatted, Percentage),
-      col.names = c("Ethnicity Code", "Number of Mothers", "Percentage"),
-      caption = "Table 14: Mother's Ethnicity Distribution (Top 10)",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+ggplot(mother_eth_rates, aes(x = reorder(Ethnicity, Rate), y = Rate, fill = Rate)) +
+  geom_col() +
+  geom_hline(yintercept = mean(data$NCC_Admitted, na.rm = TRUE) * 100,
+             linetype = "dashed", color = "red", linewidth = 0.8) +
+  coord_flip() +
+  scale_fill_gradient(low = nhs_light_blue, high = nhs_dark_blue, guide = "none") +
+  labs(
+    title = "NCC Admission Rate by Mother's Ethnicity",
+    subtitle = "Groups with 1,000+ births shown | Dashed line = overall average",
+    x = NULL,
+    y = "NCC Admission Rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14)
+  )
 ```
 
 ## Social Factors (Inequality Measures)
 
-### Complex Social Factors at Booking
+```{r social_factors_viz, echo=FALSE, fig.height=4}
+#| label: fig-social-factors
+#| fig-cap: "NCC rates are higher for mothers with complex social factors"
 
-```{r social_factors, echo=FALSE}
-social_factors_dist <- data %>%
-  count(Complex_Social_Factors_Indicator_At_Antenatal_Booking) %>%
+social_data <- data %>%
   mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
+    Social_Factors = case_when(
+      Complex_Social_Factors_Indicator_At_Antenatal_Booking == "Y" ~ "Yes - Complex Factors",
+      Complex_Social_Factors_Indicator_At_Antenatal_Booking == "N" ~ "No Complex Factors",
+      TRUE ~ "Not Recorded"
+    )
   ) %>%
-  arrange(desc(n))
+  group_by(Social_Factors) %>%
+  summarise(
+    Total = n(),
+    NCC_Admitted = sum(NCC_Admitted, na.rm = TRUE),
+    Rate = 100 * NCC_Admitted / Total,
+    .groups = "drop"
+  )
 
-kable(social_factors_dist %>%
-        select(Complex_Social_Factors_Indicator_At_Antenatal_Booking, n_formatted, Percentage),
-      col.names = c("Complex Social Factors", "Number of Pregnancies", "Percentage"),
-      caption = "Table 15: Complex Social Factors at Antenatal Booking",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
-```
-
-### Disability Indicator at Booking
-
-```{r disability, echo=FALSE}
-disability_dist <- data %>%
-  count(Disability_Indicator_At_Antenatal_Booking) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
-  ) %>%
-  arrange(desc(n))
-
-kable(disability_dist %>%
-        select(Disability_Indicator_At_Antenatal_Booking, n_formatted, Percentage),
-      col.names = c("Disability Indicator", "Number of Pregnancies", "Percentage"),
-      caption = "Table 16: Disability Indicator at Antenatal Booking",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
-```
-
-### Employment Status at Booking
-
-```{r employment, echo=FALSE}
-employment_dist <- data %>%
-  count(Employment_Status_Mother_At_Antenatal_Booking) %>%
-  mutate(
-    Percentage = round(100 * n / sum(n), 2),
-    n_formatted = format(n, big.mark = ",")
-  ) %>%
-  arrange(desc(n)) %>%
-  head(10)
-
-kable(employment_dist %>%
-        select(Employment_Status_Mother_At_Antenatal_Booking, n_formatted, Percentage),
-      col.names = c("Employment Status Code", "Number of Pregnancies", "Percentage"),
-      caption = "Table 17: Employment Status at Antenatal Booking (Top 10)",
-      align = c("l", "r", "r")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE)
+ggplot(social_data, aes(x = Social_Factors, y = Rate, fill = Social_Factors)) +
+  geom_col(width = 0.5) +
+  geom_text(aes(label = paste0(round(Rate, 1), "%\n(n=", format(Total, big.mark = ","), ")")),
+            vjust = -0.2, size = 3.5) +
+  scale_fill_manual(values = c("Yes - Complex Factors" = nhs_pink,
+                               "No Complex Factors" = nhs_blue,
+                               "Not Recorded" = "grey60")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+  labs(
+    title = "NCC Admission Rate by Complex Social Factors at Booking",
+    x = NULL,
+    y = "NCC Admission Rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
 ```
 
 ---
@@ -578,7 +703,6 @@ completeness <- tibble(
 )
 
 kable(completeness,
-      caption = "Table 18: Data Completeness for Key Variables",
       align = c("l", "r", "r", "r")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE) %>%
@@ -588,27 +712,29 @@ kable(completeness,
 
 ## Known Data Limitations
 
-1. **Birth weight and Apgar scores**: Not available in MSD401BabyDemographics_1 table. Available in MSD405CareActivityBaby_1 but not yet linked.
+::: {.callout-warning}
+## Data Gaps to Address
 
-2. **Mother's age**: Mother's date of birth not available in MSD001MotherDemog_1, preventing calculation of maternal age at delivery.
-
-3. **Deprivation (IMD)**: Mother's full postcode not available. Requires separate linkage using LSOA codes.
-
-4. **NCC admission discrepancies**: Only 17.4% overlap between MSDS and CC sources suggests ongoing data quality issues in MSDS reporting.
-
-5. **NHS number linkage**: Some babies may not link between MSDS and CC due to pseudonymization or missing NHS numbers.
+1. **Birth weight and Apgar scores**: Not available in main table; requires additional linkage
+2. **Mother's age**: Date of birth not available; cannot calculate maternal age
+3. **Deprivation (IMD)**: Requires LSOA-to-IMD linkage
+4. **NCC source discrepancies**: Only 17.4% overlap between data sources
+:::
 
 ---
 
 # Technical Specifications
 
-## Database Connection
+::: {.callout-note collapse="true"}
+## Database Connection Details (click to expand)
 
 - **Platform**: NHS UDAL (Unified Data Access Layer) on Azure Synapse Analytics
 - **Authentication**: Azure Active Directory Interactive
 - **Access**: Requires UDAL data access permissions
+:::
 
-## SQL Query Structure
+::: {.callout-note collapse="true"}
+## SQL Query Structure (click to expand)
 
 The final query consists of several CTEs (Common Table Expressions):
 
@@ -621,22 +747,25 @@ The final query consists of several CTEs (Common Table Expressions):
 7. `msds_pregnancy_raw` + `msds_pregnancy`: Deduplicates pregnancy/booking records
 8. `msds_neonatal_adm_raw` + `msds_neonatal_adm`: Deduplicates neonatal admissions
 9. `base_dataset`: Joins all deduplicated tables together
+:::
 
-## Output
+::: {.callout-note collapse="true"}
+## Output Specification (click to expand)
 
 - **Format**: RDS (R Data Serialization)
 - **Filename**: `data/ncc_base_dataset.rds`
-- **Records**: 512,032
-- **Fields**: 59
+- **Records**: `r format(nrow(data), big.mark = ",")`
+- **Fields**: `r ncol(data)`
 - **Granularity**: One record per baby born in hospital in 2023/24
+:::
 
 ---
 
 # Next Steps
 
-## For Hierarchical Modeling
+## For Hierarchical Modelling
 
-The dataset is now ready for hierarchical (mixed-effects) modeling to examine:
+The dataset is now ready for hierarchical (mixed-effects) modelling to examine:
 
 1. **Fixed effects** (patient characteristics):
    - Baby: Sex, ethnicity, gestation, birth order
@@ -646,36 +775,31 @@ The dataset is now ready for hierarchical (mixed-effects) modeling to examine:
 2. **Random effects** (hospital/provider variation):
    - `NCC_Hospital_Provider_Code`: Where NCC care was provided
    - `Delivery_Site_Code`: Where baby was born
-   - `Org_ID_Commissioner`: Commissioning organization
 
 3. **Outcome variables**:
    - Binary: `NCC_Admitted` (1/0)
    - Time-to-event: `Hours_Birth_To_NCC_CC` (for survival/frailty models)
 
-## Additional Data Enrichment Needed
-
-1. **Deprivation indices**: Link LSOA codes to IMD scores
-2. **Birth weight and Apgar scores**: Join MSD405CareActivityBaby_1 table
-3. **Geography**: Link to CCG/ICB boundaries and rural/urban classifications
-4. **Clinical severity measures**: Additional neonatal clinical indicators if available
-
 ---
 
 # Conclusions
 
-1. **Successful dataset construction**: Created a clean, deduplicated birth-level dataset with 512,032 records for FY 2023/24
+1. **Successful dataset construction**: Created a clean, deduplicated birth-level dataset with `r format(nrow(data), big.mark = ",")` records for FY 2023/24
 
-2. **Critical deduplication**: Identified and resolved 2-10x duplication in MSDS tables, preventing major analytical errors
+2. **Critical deduplication**: Identified and resolved 2-10x duplication in MSDS tables
 
-3. **Data source selection**: Critical Care data provides more comprehensive NCC admission capture (11.61%) than MSDS (3.09%), driven by contractual reporting requirements
+3. **Data source selection**: Critical Care data provides more comprehensive NCC admission capture (11.6% vs 3.1%)
 
-4. **Ready for analysis**: Dataset has appropriate granularity, key variables for inequality analysis, and hierarchical structure for multilevel modeling
+4. **Ready for analysis**: Dataset has appropriate granularity and key variables for inequality analysis
 
-5. **Known limitations**: Some key clinical variables (birth weight, Apgar, IMD) require additional linkage but do not prevent initial modeling
+5. **Known limitations**: Some clinical variables (birth weight, Apgar, IMD) require additional linkage
 
 ---
 
 # Appendix: Variable List
+
+::: {.callout-note collapse="true"}
+## Complete Variable List (click to expand)
 
 ```{r variable_list, echo=FALSE}
 var_list <- tibble(
@@ -686,13 +810,13 @@ var_list <- tibble(
 )
 
 kable(var_list,
-      caption = "Appendix A: Complete Variable List",
       align = c("l", "l", "r", "r")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE,
                 font_size = 11) %>%
-  scroll_box(height = "500px")
+  scroll_box(height = "400px")
 ```
+:::
 
 ---
 
