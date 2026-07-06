@@ -1,0 +1,618 @@
+---
+title: "Inequalities in NCC Access: Survival Analysis Results"
+author: "Ashley Dickson"
+date: today
+format:
+  html:
+    toc-location: left
+    number-sections: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 10, fig.height = 7)
+
+library(bit64)
+library(tidyverse)
+library(survival)
+library(coxme)
+library(knitr)
+library(kableExtra)
+library(scales)
+
+# NHS colour palette
+nhs_blue <- "#005EB8"
+nhs_dark_blue <- "#003087"
+nhs_light_blue <- "#41B6E6"
+nhs_pink <- "#AE2573"
+nhs_green <- "#009639"
+nhs_grey <- "#768692"
+nhs_orange <- "#ED8B00"
+
+# Load models
+model6 <- readRDS("data/model6_cox_conditional.rds")
+model7 <- readRDS("data/model7_cox_conditional_sensitivity.rds")
+
+# Load survival dataset
+surv_data <- readRDS("data/surv_data.rds")
+```
+
+# Executive Summary
+
+This report presents results from Phase 2 of the NCC access inequalities analysis: survival modelling of the time from birth to NCC admission. Where the [Phase 1 logistic models](modelling_results.html) asked *whether* a baby is admitted to NCC, this analysis asks *how quickly* — and specifically, whether some groups experience delayed access.
+
+The key innovation is restricting the analysis to babies who were admitted to NCC (i.e., babies we know needed critical care). This isolates the pure timing/delay question from the access question already answered by Phase 1.
+
+```{r exec_setup, echo=FALSE}
+fe6 <- fixef(model6)
+se6 <- sqrt(diag(as.matrix(vcov(model6))))
+fe7 <- fixef(model7)
+se7 <- sqrt(diag(as.matrix(vcov(model7))))
+
+# NCC-admitted babies at NNAP trusts
+admitted_nnap <- surv_data %>%
+  filter(event == 1, At_NNAP_Trust == TRUE,
+         !is.na(Ethnicity_Baby_Grouped), !is.na(Gestation_Weeks),
+         !is.na(IMD_Quintile), !is.na(Delivery_Unit_Type),
+         !is.na(Time_To_NCC_Hours), Time_To_NCC_Hours > 0)
+```
+
+Key findings:
+
+- No systematic ethnic delay: Among babies admitted to NCC, all ethnic groups are admitted at similar speed after clinical adjustment. No group shows a statistically significant delay relative to White British babies.
+- No deprivation gradient: Deprivation has no effect on admission timing — all IMD quintiles show HR ≈ 1.0.
+- Unit type matters: Babies born at LNU sites are admitted ~3% faster than those at NICUs (HR 1.03, p=0.008), likely reflecting the simpler local admission pathway.
+- Hospital variation is negligible: The frailty variance dropped to near-zero (0.00003), compared with an ICC of ~32% in the logistic model. Hospitals differ in *who* they admit, not *how fast*.
+
+::: {.callout-important}
+## Key Messages
+
+1. Once the decision to admit is made, NCC access is equitable. Ethnicity and deprivation do not delay admission. Clinicians' assertion that care is guided by signs and symptoms — not demographics — is supported by the data.
+
+2. The inequality sits upstream. Phase 1 showed that hospital variation and modest ethnicity effects influence *whether* a baby enters NCC. Phase 2 shows that *once admitted*, the process is fair. The intervention point is the admission threshold, not the admission process.
+
+3. Unit designation shapes the pathway. LNU sites admit slightly faster than NICUs — consistent with local, same-hospital admissions versus the more complex transfers and stabilisation involved at tertiary centres.
+:::
+
+---
+
+# Methods
+
+## Study Population
+
+```{r study_pop, echo=FALSE}
+n_m6 <- nrow(admitted_nnap %>%
+  filter(!is.na(Delivery_Site_Code), Time_To_NCC_Hours <= 672))
+n_m7 <- nrow(admitted_nnap %>%
+  filter(!is.na(Delivery_Site_Code), !is.na(Birth_Weight_kg),
+         !is.na(Apgar_5_Clean), Time_To_NCC_Hours <= 672))
+```
+
+The analysis includes babies born in England during FY 2023/24 who were admitted to NCC at a hospital within a recognised NNAP neonatal unit. The NNAP filter restricts to `r comma(n_distinct(admitted_nnap$Delivery_Site_Code))` delivery sites across 105 NHS trusts with designated neonatal units (NICU, LNU, or SCBU), as identified from the [NNAP 2024 unit data](https://www.rcpch.ac.uk/resources/NNAP-summary-report-2024-data).
+
+- Primary analysis (Model 6): `r comma(n_m6)` NCC admissions with complete data on gestation, ethnicity, IMD, and delivery unit type
+- Sensitivity analysis (Model 7): `r comma(n_m7)` admissions with additional birth weight and Apgar data
+
+## Outcome
+
+Time from birth to NCC admission (hours). All babies in this analysis have the event — the outcome is *when*, not *whether*. Times are capped at 28 days (672 hours); admissions beyond this are treated as data linkage artefacts. Times ≤0 hours are set to 0.1 (6 minutes) to represent same-hour admission.
+
+## Statistical Approach
+
+We fitted Cox proportional hazards models with a shared frailty term (random intercept) for delivery site — the survival analysis analogue of the mixed-effects logistic model from Phase 1.
+
+Model 6 (Primary):
+$$h(t) = h_0(t) \cdot \exp(\beta_1 \text{Gestation} + \beta_2 \text{Ethnicity} + \beta_3 \text{IMD} + \beta_4 \text{UnitType} + w_j)$$
+
+Model 7 (Sensitivity):
+$$h(t) = h_0(t) \cdot \exp(\beta_1 \text{Gestation} + \beta_2 \text{BirthWeight} + \beta_3 \text{Apgar} + \beta_4 \text{Ethnicity} + \beta_5 \text{IMD} + \beta_6 \text{UnitType} + w_j)$$
+
+where $w_j \sim N(0, \sigma^2_w)$ is the shared frailty for delivery site $j$, and $h_0(t)$ is the baseline hazard.
+
+::: {.callout-note}
+## Interpreting Hazard Ratios
+
+HR > 1 means faster admission (event occurs sooner). HR < 1 means slower admission (potential delay). This is the opposite intuition to odds ratios — a higher hazard ratio is the "better" outcome here.
+:::
+
+## Unit Type Classification
+
+Each delivery site is classified by its highest neonatal unit designation:
+
+- NICU (Level 3): Neonatal Intensive Care Unit — provides the full range of medical and surgical neonatal care
+- LNU (Level 2): Local Neonatal Unit — provides high dependency and some short-term intensive care
+- SCBU (Level 1): Special Care Baby Unit — provides special care for the least unwell babies
+
+Unit type is included as a fixed effect (reference: NICU). The hospital-level frailty captures residual variation *after* accounting for unit type.
+
+---
+
+# Descriptive Results
+
+## Time to NCC Admission
+
+```{r time_descriptive, echo=FALSE}
+ncc_times <- surv_data %>%
+  filter(event == 1, At_NNAP_Trust == TRUE, !is.na(Time_To_NCC_Hours),
+         Time_To_NCC_Hours > 0, Time_To_NCC_Hours <= 672)
+
+time_summary <- tibble(
+  Statistic = c("N", "Median (hours)", "Mean (hours)", "IQR",
+                "Within 1 hour", "Within 6 hours", "Within 24 hours", "Within 72 hours"),
+  Value = c(
+    comma(nrow(ncc_times)),
+    round(median(ncc_times$Time_To_NCC_Hours), 1),
+    round(mean(ncc_times$Time_To_NCC_Hours), 1),
+    paste0(round(quantile(ncc_times$Time_To_NCC_Hours, 0.25), 1), " – ",
+           round(quantile(ncc_times$Time_To_NCC_Hours, 0.75), 1)),
+    paste0(round(100 * mean(ncc_times$Time_To_NCC_Hours <= 1), 1), "%"),
+    paste0(round(100 * mean(ncc_times$Time_To_NCC_Hours <= 6), 1), "%"),
+    paste0(round(100 * mean(ncc_times$Time_To_NCC_Hours <= 24), 1), "%"),
+    paste0(round(100 * mean(ncc_times$Time_To_NCC_Hours <= 72), 1), "%")
+  )
+)
+
+time_summary %>%
+  kable(caption = "Time from birth to NCC admission (admitted babies at NNAP units)") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+## Time to NCC by Ethnicity
+
+```{r time_by_ethnicity, echo=FALSE}
+eth_times <- ncc_times %>%
+  filter(!is.na(Ethnicity_Baby_Grouped)) %>%
+  group_by(Ethnicity_Baby_Grouped) %>%
+  summarise(
+    N = n(),
+    `Median (h)` = round(median(Time_To_NCC_Hours), 2),
+    `Q25 (h)` = round(quantile(Time_To_NCC_Hours, 0.25), 2),
+    `Q75 (h)` = round(quantile(Time_To_NCC_Hours, 0.75), 2),
+    `≤1h (%)` = round(100 * mean(Time_To_NCC_Hours <= 1), 1),
+    .groups = "drop"
+  )
+
+eth_times %>%
+  kable(caption = "Time to NCC admission by ethnicity (admitted babies at NNAP units)",
+        format.args = list(big.mark = ",")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+## Time to NCC by Unit Type
+
+```{r time_by_unit, echo=FALSE}
+unit_times <- ncc_times %>%
+  filter(!is.na(Delivery_Unit_Type)) %>%
+  group_by(Delivery_Unit_Type) %>%
+  summarise(
+    N = n(),
+    `Median (h)` = round(median(Time_To_NCC_Hours), 2),
+    `Q25 (h)` = round(quantile(Time_To_NCC_Hours, 0.25), 2),
+    `Q75 (h)` = round(quantile(Time_To_NCC_Hours, 0.75), 2),
+    `≤1h (%)` = round(100 * mean(Time_To_NCC_Hours <= 1), 1),
+    `≤6h (%)` = round(100 * mean(Time_To_NCC_Hours <= 6), 1),
+    .groups = "drop"
+  )
+
+unit_times %>%
+  kable(caption = "Time to NCC admission by delivery site unit type") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+---
+
+# Kaplan-Meier Curves
+
+## Broad Ethnicity Groups
+
+Among admitted babies, the Kaplan-Meier curves show the proportion still awaiting NCC admission at each time point. A lower curve means faster access.
+
+```{r km_broad, echo=FALSE, fig.height=7, fig.width=10}
+km_clean <- surv_data %>%
+  filter(event == 1, At_NNAP_Trust == TRUE,
+         !is.na(Ethnicity_Baby_Grouped), !is.na(Time_To_NCC_Hours),
+         Time_To_NCC_Hours > 0, Time_To_NCC_Hours <= 72) %>%
+  mutate(
+    Ethnicity_Broad = case_when(
+      Ethnicity_Baby_Grouped %in% c("White British", "White Other") ~ "White",
+      Ethnicity_Baby_Grouped %in% c("Indian", "Pakistani", "Bangladeshi",
+                                     "Other Asian", "Chinese") ~ "Asian",
+      Ethnicity_Baby_Grouped == "Black" ~ "Black",
+      Ethnicity_Baby_Grouped %in% c("Mixed", "Other") ~ "Mixed & Other"
+    ),
+    Ethnicity_Broad = factor(Ethnicity_Broad,
+                              levels = c("White", "Asian", "Black", "Mixed & Other")),
+    Time_Binned = ceiling(Time_To_NCC_Hours)
+  )
+
+km_fit_broad <- survfit(
+  Surv(Time_Binned, rep(1L, nrow(km_clean))) ~ Ethnicity_Broad,
+  data = km_clean
+)
+
+broad_colours <- c("White" = nhs_blue, "Asian" = nhs_green,
+                    "Black" = nhs_pink, "Mixed & Other" = nhs_grey)
+
+# Manual KM plot using ggplot for better control
+km_df <- broom::tidy(km_fit_broad) %>%
+  mutate(strata = gsub("Ethnicity_Broad=", "", strata))
+
+ggplot(km_df, aes(x = time, y = estimate, colour = strata)) +
+  geom_step(linewidth = 1) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = strata),
+              alpha = 0.1, colour = NA) +
+  scale_colour_manual(values = broad_colours, name = "Ethnicity") +
+  scale_fill_manual(values = broad_colours, name = "Ethnicity") +
+  scale_x_continuous(breaks = c(0, 1, 6, 12, 24, 48, 72)) +
+  labs(
+    title = "Time to NCC Admission by Broad Ethnicity Group",
+    subtitle = paste0("FY 2023/24 | N = ", comma(nrow(km_clean)),
+                      " admitted babies at NNAP units | Lower curve = faster access"),
+    x = "Hours from birth",
+    y = "Proportion still awaiting NCC admission"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10, colour = "grey40"),
+    legend.position = "right"
+  )
+```
+
+The curves are nearly indistinguishable across broad ethnic groups — consistent with equitable timing of NCC admission.
+
+## Asian Subgroup Disaggregation
+
+```{r km_asian, echo=FALSE, fig.height=7, fig.width=10}
+km_asian <- surv_data %>%
+  filter(event == 1, At_NNAP_Trust == TRUE,
+         !is.na(Ethnicity_Baby_Grouped), !is.na(Time_To_NCC_Hours),
+         Time_To_NCC_Hours > 0, Time_To_NCC_Hours <= 72,
+         Ethnicity_Baby_Grouped %in% c("White British", "Indian", "Pakistani",
+                                        "Bangladeshi", "Other Asian", "Chinese")) %>%
+  mutate(
+    Ethnicity_Asian = factor(
+      as.character(Ethnicity_Baby_Grouped),
+      levels = c("White British", "Indian", "Pakistani",
+                 "Bangladeshi", "Other Asian", "Chinese")
+    ),
+    Time_Binned = ceiling(Time_To_NCC_Hours)
+  )
+
+km_fit_asian <- survfit(
+  Surv(Time_Binned, rep(1L, nrow(km_asian))) ~ Ethnicity_Asian,
+  data = km_asian
+)
+
+asian_colours <- c("White British" = nhs_blue, "Indian" = nhs_green,
+                    "Pakistani" = "#006747", "Bangladeshi" = "#00A499",
+                    "Other Asian" = "#78BE20", "Chinese" = nhs_orange)
+
+km_asian_df <- broom::tidy(km_fit_asian) %>%
+  mutate(strata = gsub("Ethnicity_Asian=", "", strata))
+
+ggplot(km_asian_df, aes(x = time, y = estimate, colour = strata)) +
+  geom_step(linewidth = 1) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = strata),
+              alpha = 0.1, colour = NA) +
+  scale_colour_manual(values = asian_colours, name = "Ethnicity") +
+  scale_fill_manual(values = asian_colours, name = "Ethnicity") +
+  scale_x_continuous(breaks = c(0, 1, 6, 12, 24, 48, 72)) +
+  labs(
+    title = "Time to NCC Admission: Asian Subgroups vs White British",
+    subtitle = paste0("FY 2023/24 | N = ", comma(nrow(km_asian)),
+                      " admitted babies | Lower curve = faster access"),
+    x = "Hours from birth",
+    y = "Proportion still awaiting NCC admission"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10, colour = "grey40"),
+    legend.position = "right"
+  )
+```
+
+Disaggregating the Asian group shows no meaningful separation between subgroups. Chinese babies show slightly wider confidence intervals due to smaller numbers.
+
+---
+
+# Cox Frailty Model Results
+
+## Model 6: Primary (Gestation + Unit Type)
+
+```{r model6_table, echo=FALSE}
+hr6 <- data.frame(
+  Term = names(fe6),
+  HR = exp(fe6),
+  CI_lower = exp(fe6 - 1.96 * se6),
+  CI_upper = exp(fe6 + 1.96 * se6),
+  p = 2 * pnorm(-abs(fe6 / se6))
+) %>%
+  mutate(
+    Term = gsub("Ethnicity_Baby_Grouped", "", Term),
+    Term = gsub("IMD_Quintile", "IMD: ", Term),
+    Term = gsub("Delivery_Unit_Type", "Unit: ", Term),
+    `HR (95% CI)` = sprintf("%.3f (%.3f–%.3f)", HR, CI_lower, CI_upper),
+    `p-value` = case_when(
+      p < 0.001 ~ "<0.001",
+      p < 0.01 ~ sprintf("%.3f", p),
+      TRUE ~ sprintf("%.2f", p)
+    ),
+    Significance = case_when(p < 0.001 ~ "***", p < 0.01 ~ "**", p < 0.05 ~ "*", TRUE ~ "")
+  ) %>%
+  select(Term, `HR (95% CI)`, `p-value`, Significance)
+
+hr6 %>%
+  kable(caption = paste0("Model 6: Cox frailty model — admitted babies at NNAP units (N = ",
+                          comma(n_m6), "). Reference: White British / Least Deprived / NICU."),
+        escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE) %>%
+  pack_rows("Clinical", 1, 1) %>%
+  pack_rows("Ethnicity", 2, 10) %>%
+  pack_rows("Deprivation", 11, 14) %>%
+  pack_rows("Unit Type", 15, 16)
+```
+
+::: {.callout-note}
+## Reading the Table
+HR > 1 = faster admission (better). HR < 1 = slower admission (potential delay). The reference categories are White British, IMD Quintile 5 (Least Deprived), and NICU.
+:::
+
+## Model 7: Sensitivity (+ Birth Weight + Apgar)
+
+```{r model7_table, echo=FALSE}
+hr7 <- data.frame(
+  Term = names(fe7),
+  HR = exp(fe7),
+  CI_lower = exp(fe7 - 1.96 * se7),
+  CI_upper = exp(fe7 + 1.96 * se7),
+  p = 2 * pnorm(-abs(fe7 / se7))
+) %>%
+  mutate(
+    Term = gsub("Ethnicity_Baby_Grouped", "", Term),
+    Term = gsub("IMD_Quintile", "IMD: ", Term),
+    Term = gsub("Delivery_Unit_Type", "Unit: ", Term),
+    `HR (95% CI)` = sprintf("%.3f (%.3f–%.3f)", HR, CI_lower, CI_upper),
+    `p-value` = case_when(
+      p < 0.001 ~ "<0.001",
+      p < 0.01 ~ sprintf("%.3f", p),
+      TRUE ~ sprintf("%.2f", p)
+    ),
+    Significance = case_when(p < 0.001 ~ "***", p < 0.01 ~ "**", p < 0.05 ~ "*", TRUE ~ "")
+  ) %>%
+  select(Term, `HR (95% CI)`, `p-value`, Significance)
+
+hr7 %>%
+  kable(caption = paste0("Model 7: Sensitivity model (N = ", comma(n_m7),
+                          "). Reference: White British / Least Deprived / NICU."),
+        escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE) %>%
+  pack_rows("Clinical", 1, 3) %>%
+  pack_rows("Ethnicity", 4, 12) %>%
+  pack_rows("Deprivation", 13, 16) %>%
+  pack_rows("Unit Type", 17, 18)
+```
+
+## Forest Plot
+
+```{r forest_plot, echo=FALSE, fig.height=8, fig.width=10}
+forest_data <- data.frame(
+  term = names(fe6),
+  HR = exp(fe6),
+  CI_lower = exp(fe6 - 1.96 * se6),
+  CI_upper = exp(fe6 + 1.96 * se6)
+) %>%
+  filter(!grepl("Gestation_Weeks", term)) %>%
+  mutate(
+    term = gsub("Ethnicity_Baby_Grouped", "Ethnicity: ", term),
+    term = gsub("IMD_Quintile", "IMD: ", term),
+    term = gsub("Delivery_Unit_Type", "Unit: ", term),
+    category = case_when(
+      grepl("Ethnicity", term) ~ "Ethnicity",
+      grepl("IMD", term) ~ "Deprivation",
+      grepl("Unit", term) ~ "Unit Type"
+    ),
+    category = factor(category, levels = c("Ethnicity", "Deprivation", "Unit Type")),
+    term = factor(term, levels = rev(term))
+  )
+
+ggplot(forest_data, aes(x = HR, y = term, colour = category)) +
+  geom_vline(xintercept = 1, linetype = "dashed", colour = "grey50") +
+  geom_errorbarh(aes(xmin = CI_lower, xmax = CI_upper), height = 0.2, linewidth = 0.8) +
+  geom_point(size = 3) +
+  scale_colour_manual(values = c(
+    "Ethnicity" = nhs_blue, "Deprivation" = nhs_pink, "Unit Type" = nhs_green
+  )) +
+  facet_grid(category ~ ., scales = "free_y", space = "free_y") +
+  labs(
+    title = "Hazard Ratios for Time to NCC Admission (Cox Frailty Model)",
+    subtitle = paste0("Admitted babies at NNAP units, FY 2023/24 (N = ", comma(n_m6),
+                      "). HR > 1 = faster admission. Ref: White British / Least Deprived / NICU."),
+    x = "Hazard Ratio (95% CI)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10, colour = "grey40"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## Comparison: Primary vs Sensitivity
+
+```{r comparison_table, echo=FALSE}
+# Ethnicity comparison
+eth_terms <- grep("Ethnicity", names(fe6), value = TRUE)
+imd_terms <- grep("IMD", names(fe6), value = TRUE)
+ut_terms <- grep("Delivery_Unit_Type", names(fe6), value = TRUE)
+
+comparison <- tibble(
+  Term = c(eth_terms, imd_terms, ut_terms),
+  `M6 HR` = exp(fe6[c(eth_terms, imd_terms, ut_terms)]),
+  `M7 HR` = exp(fe7[c(eth_terms, imd_terms, ut_terms)]),
+) %>%
+  mutate(
+    Change = `M7 HR` - `M6 HR`,
+    Term = gsub("Ethnicity_Baby_Grouped", "", Term),
+    Term = gsub("IMD_Quintile", "IMD: ", Term),
+    Term = gsub("Delivery_Unit_Type", "Unit: ", Term),
+    `M6 HR` = sprintf("%.3f", `M6 HR`),
+    `M7 HR` = sprintf("%.3f", `M7 HR`),
+    Change = sprintf("%+.3f", Change)
+  )
+
+comparison %>%
+  kable(caption = "Hazard ratios: Model 6 (primary) vs Model 7 (sensitivity)") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+Notable shifts with clinical adjustment:
+
+- Pakistani: HR moves from 0.966 to 1.013 — the apparent 3.4% delay is entirely explained by clinical factors (gestation, birth weight, Apgar)
+- Indian: HR moves from 1.008 to 1.046 — slightly *faster* admission after accounting for clinical severity
+- LNU effect strengthens: HR 1.028 → 1.037, suggesting the LNU speed advantage is partly independent of casemix
+
+---
+
+# Hospital-Level Variation
+
+```{r frailty, echo=FALSE}
+frailty_var_m6 <- unlist(VarCorr(model6))
+frailty_var_m7 <- unlist(VarCorr(model7))
+```
+
+The shared frailty variance captures between-hospital variation in admission speed, after accounting for patient characteristics and unit type.
+
+| Model | Frailty Variance | Interpretation |
+|---|---|---|
+| Model 6 (primary) | `r formatC(frailty_var_m6, format = "e", digits = 2)` | Near-zero hospital variation |
+| Model 7 (sensitivity) | `r formatC(frailty_var_m7, format = "e", digits = 2)` | Near-zero hospital variation |
+| *Phase 1 logistic model* | *ICC ~32%* | *Large hospital variation* |
+
+The contrast with Phase 1 is striking. The logistic model showed that ~32% of variation in *whether* a baby enters NCC is explained by hospital-level factors. Here, the frailty variance is essentially zero — hospitals do not meaningfully differ in *how fast* they admit once the decision is made.
+
+Adding unit type (NICU/LNU/SCBU) absorbed much of the already-small frailty variance from earlier models (which had frailty variance ~0.0005 without unit type). This suggests that what little between-hospital variation existed in admission speed was largely explained by the unit's designation level.
+
+---
+
+# Sensitivity and Diagnostics
+
+## Proportional Hazards Assumption
+
+```{r ph_test, echo=FALSE}
+# Fit equivalent coxph for PH diagnostics
+ph_data <- surv_data %>%
+  filter(event == 1, At_NNAP_Trust == TRUE,
+         !is.na(Ethnicity_Baby_Grouped), !is.na(Gestation_Weeks),
+         !is.na(IMD_Quintile), !is.na(Delivery_Unit_Type),
+         !is.na(Delivery_Site_Code), !is.na(Time_To_NCC_Hours),
+         Time_To_NCC_Hours > 0, Time_To_NCC_Hours <= 672) %>%
+  mutate(event_admitted = 1L)
+
+model6_coxph <- coxph(
+  Surv(Time_To_NCC_Hours, event_admitted) ~
+    Gestation_Weeks + Ethnicity_Baby_Grouped + IMD_Quintile + Delivery_Unit_Type,
+  data = ph_data,
+  ties = "efron"
+)
+
+ph_test <- cox.zph(model6_coxph)
+```
+
+The Schoenfeld residual test assesses whether hazard ratios are constant over time. With large N, even trivial departures produce small p-values; the correlation coefficient (rho) is more informative — values |rho| > 0.1 suggest practically meaningful departures.
+
+```{r ph_table, echo=FALSE}
+ph_df <- data.frame(
+  Term = rownames(ph_test$table),
+  rho = round(ph_test$table[, 1], 4),
+  chisq = round(ph_test$table[, 2], 2),
+  p = ph_test$table[, 3]
+) %>%
+  mutate(
+    Term = gsub("Ethnicity_Baby_Grouped", "", Term),
+    Term = gsub("IMD_Quintile", "IMD: ", Term),
+    Term = gsub("Delivery_Unit_Type", "Unit: ", Term),
+    `p-value` = case_when(
+      p < 0.001 ~ "<0.001",
+      p < 0.01 ~ sprintf("%.3f", p),
+      TRUE ~ sprintf("%.2f", p)
+    ),
+    `|rho|` = abs(rho),
+    Concern = ifelse(`|rho|` > 0.1, "Review", "OK")
+  ) %>%
+  select(Term, rho, chisq, `p-value`, `|rho|`, Concern)
+
+ph_df %>%
+  kable(caption = "Proportional hazards test (Schoenfeld residuals)") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+## NNAP Unit Coverage
+
+The analysis is restricted to births at NHS trusts with a recognised NNAP neonatal unit. This covers `r comma(n_m6)` of `r comma(sum(surv_data$event == 1))` NCC admissions (`r round(100 * n_m6 / sum(surv_data$event == 1), 1)`%). The remaining admissions occurred at delivery sites that could not be linked to an NNAP trust, primarily due to missing delivery site codes in the source data.
+
+```{r nnap_unit_breakdown, echo=FALSE}
+unit_breakdown <- admitted_nnap %>%
+  filter(!is.na(Delivery_Unit_Type)) %>%
+  count(Delivery_Unit_Type, name = "NCC Admissions") %>%
+  mutate(`%` = round(100 * `NCC Admissions` / sum(`NCC Admissions`), 1))
+
+unit_breakdown %>%
+  kable(caption = "NCC admissions by delivery site unit type (NNAP units only)") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+---
+
+# Summary: Findings Across Both Phases
+
+```{r summary_table, echo=FALSE}
+summary_df <- tibble(
+  Question = c(
+    "Who gets admitted to NCC?",
+    "How quickly are they admitted?",
+    "Does ethnicity affect access?",
+    "Does deprivation affect access?",
+    "How much do hospitals vary?"
+  ),
+  `Phase 1 (Logistic)` = c(
+    "~13% of births; gestation is the strongest predictor",
+    "Not addressed",
+    "Modest effects: Pakistani/Chinese lower odds; Black equitable",
+    "~8% gradient (most vs least deprived)",
+    "ICC ~32% — hospital of birth dominates"
+  ),
+  `Phase 2 (Survival)` = c(
+    "Not addressed (restricted to admitted babies)",
+    "Median admission within first few hours; ~70% within 1 hour",
+    "No significant delays for any ethnic group after clinical adjustment",
+    "No effect — completely flat across IMD quintiles",
+    "Near-zero frailty variance — negligible hospital variation in timing"
+  )
+)
+
+summary_df %>%
+  kable(caption = "Comparison of findings across analysis phases") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed")) %>%
+  column_spec(1, bold = TRUE, width = "15em")
+```
+
+## Implications
+
+The inequality in NCC access sits at the admission threshold, not the admission process. The intervention point is:
+
+1. Standardising admission criteria across hospitals — the ICC of ~32% in Phase 1 suggests that clinical decision-making about NCC admission varies substantially by hospital. This is where most inequality enters the system.
+
+2. Investigating specific ethnic effects at the hospital level — the modest national-level effects for Pakistani and Chinese babies in Phase 1 may concentrate in specific hospitals or networks.
+
+3. Recognising equitable care delivery — once the admission decision is made, the NHS neonatal system delivers equitable speed-of-access regardless of ethnicity, deprivation, or hospital. This is a positive finding that validates current clinical practice.
+
+::: {.callout-tip}
+## Caveat on Timing Resolution
+The majority of NCC admissions occur within the first hour of birth. With such a compressed time distribution, the power to detect small ethnic differences in timing is limited. The absence of a statistically significant delay is reassuring but does not rule out very small differences (e.g., minutes) that this analysis cannot resolve.
+:::

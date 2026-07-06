@@ -1,0 +1,21 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - index.qmd
+    - modelling_results.qmd
+
+website:
+  title: "NCC Inequalities Analysis"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "Overview"
+      - href: modelling_results.qmd
+        text: "Phase 1: Logistic Models"
+
+format:
+  html:
+    theme: flatly
+    toc: true
+    toc-depth: 3

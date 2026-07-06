@@ -1,0 +1,43 @@
+> ncc_data <- readRDS("data/ncc_base_dataset.rds")                                                                                                                                                                                           
+> cat("=== BIRTH WEIGHT (grams) ===\n")                                                                                                                                                                                                        
+=== BIRTH WEIGHT (grams) ===
+> summary(ncc_data$Birth_Weight_Grams)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+   -3970     2970     3325     3435     3660 38853615   283699 
+> cat("Missing:", sum(is.na(ncc_data$Birth_Weight_Grams)),
++     "(", round(100*mean(is.na(ncc_data$Birth_Weight_Grams)), 1), "%)\n\n")
+Missing: 283699 ( 55.1 %)
+
+> 
+> cat("=== APGAR 1 MINUTE ===\n")
+=== APGAR 1 MINUTE ===
+> table(ncc_data$Apgar_Score_1_Minute, useNA = "ifany")
+
+     0      1      2      3      4      5      6      7      8      9     10   <NA> 
+   484   1426   2121   2657   3298   5625   9090  12849  32508 230642  18496 195326 
+> 
+> cat("\n=== APGAR 5 MINUTES ===\n")
+
+=== APGAR 5 MINUTES ===
+> table(ncc_data$Apgar_Score_5_Minutes, useNA = "ifany")
+
+     0      1      2      3      4      5      6      7      8      9     10     19    100   3230  91010   <NA> 
+   512    265    337    500    806   1638   3876   6114  11673 141267 237752      1      1      1      1 109778 
+> 
+> cat("\n=== CLINICAL SENSE CHECK ===\n")
+
+=== CLINICAL SENSE CHECK ===
+> cat("Mean birth weight by NCC status:\n")
+Mean birth weight by NCC status:
+> tapply(ncc_data$Birth_Weight_Grams, ncc_data$NCC_Admitted,
++        function(x) round(mean(x, na.rm=TRUE)))
+   0    1 
+3518 2866 
+> 
+> cat("\nMean Apgar 5-min by NCC status:\n")
+
+Mean Apgar 5-min by NCC status:
+> tapply(ncc_data$Apgar_Score_5_Minutes, ncc_data$NCC_Admitted,
++        function(x) round(mean(x, na.rm=TRUE), 1))
+  0   1 
+9.8 8.9 

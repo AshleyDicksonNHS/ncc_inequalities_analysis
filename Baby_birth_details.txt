@@ -1,0 +1,38 @@
+WITH Deduplicated_MSD401 AS (
+    SELECT 
+        UniqPregID,
+        Person_ID_Mother,
+        Person_ID_Baby, -- Vital: Prevents grouping twins into a single row!
+        PersonBirthDateBaby,
+        PersonBirthTimeBaby,
+        ROW_NUMBER() OVER (
+            PARTITION BY UniqPregID, Person_ID_Mother, Person_ID_Baby 
+            ORDER BY RPStartDate DESC -- Grabs the most recent reporting month
+        ) as RowRank
+    FROM MSD401BabyDemographics
+),
+
+Deduplicated_MSD301 AS (
+    SELECT 
+        UniqPregID,
+        Person_ID_Mother,
+        OnsetOfEstablishedLabourDate,
+        ROW_NUMBER() OVER (
+            PARTITION BY UniqPregID, Person_ID_Mother 
+            ORDER BY RPStartDate DESC
+        ) as RowRank
+    FROM MSD301LabourDelivery
+)
+
+SELECT 
+    b.UniqPregID,
+    b.Person_ID_Mother,
+    b.PersonBirthDateBaby,
+    b.PersonBirthTimeBaby,
+    d.OnsetOfEstablishedLabourDate
+FROM Deduplicated_MSD401 b
+INNER JOIN Deduplicated_MSD301 d 
+    ON b.UniqPregID = d.UniqPregID 
+    AND b.Person_ID_Mother = d.Person_ID_Mother
+WHERE b.RowRank = 1 
+  AND d.RowRank = 1;

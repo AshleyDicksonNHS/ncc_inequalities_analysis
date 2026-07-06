@@ -1,0 +1,166 @@
+---
+title: "Inequalities in Access to Neonatal Critical Care"
+author: "Ashley Dickson"
+date: today
+format:
+  html:
+    toc-location: left
+    number-sections: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 10, fig.height = 7)
+
+library(bit64)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(scales)
+
+# NHS colour palette
+nhs_blue <- "#005EB8"
+nhs_dark_blue <- "#003087"
+nhs_light_blue <- "#41B6E6"
+nhs_pink <- "#AE2573"
+nhs_green <- "#009639"
+nhs_grey <- "#768692"
+
+# Load data for summary stats
+data <- readRDS("data/ncc_base_dataset.rds")
+data <- data %>%
+  mutate(Gestation_Weeks = as.numeric(Gestation_Length_At_Birth) / 7)
+```
+
+::: {.callout-tip}
+## What changed in this revision (June 2026)
+Responding to feedback from Anna Everton and Katharine Robbins:
+
+- **[A6]** Reconciled the births figures — the primary-model sample (~476,000) is now distinguished from the full cohort (506,656), see [Methods](#phase-1-hierarchical-logistic-regression).
+- **[K2]** Added a [Data and Code Availability](#data-and-code-availability) section.
+
+The analytical changes (funnel plot, Black under-access test, funnel-outlier completeness diagnostic, deprivation-morbidity check, and others) are in the [Phase 1 report](modelling_results.html). A July 2026 editorial pass tightened both reports and aligned the key messages with the revised findings.
+
+*(Temporary review scaffolding; removed before final publication.)*
+:::
+
+# Overview
+
+Reducing health inequalities is a core priority for the NHS, as set out in the NHS Long Term Plan and the Core20PLUS5 approach. Ensuring equitable access to neonatal critical care (NCC) is essential for giving every baby the best start in life.
+
+This analysis examines whether ethnicity, socioeconomic deprivation, and hospital-level factors are associated with inequalities in NCC access in England, using linked NHS administrative data from the Maternity Services Dataset (MSDS) and Critical Care Minimum Dataset (CCMDS).
+
+The analysis was scoped in two phases, one per question:
+
+1. **Who gets admitted?** Are some groups less likely to receive NCC after adjusting for clinical need? *(Phase 1 — complete, reported here and in the [Phase 1 report](modelling_results.html).)*
+2. **How quickly are they admitted?** Among babies with clinical need, do some groups wait longer? *(Phase 2 — on hold pending better data; see below.)*
+
+::: {.callout-warning}
+## Phase 2 status (May 2026)
+
+The planned survival analysis of time from birth to NCC admission is paused. Investigation found that the MSDS table available in this environment (`MSD401BabyDemographics_1`) records year and month of birth but no day of birth — the field previously assumed to encode day-of-month is in fact an AM/PM meridian flag. As a result, any "hours from birth" figures that were derived in earlier drafts of this work are inaccurate and have been withdrawn.
+
+A real day-of-birth field is available in a separate data environment, which is being applied for. Phase 2 will resume once that access is in place. Phase 1 (admitted yes/no) is unaffected — it does not depend on birth datetime.
+:::
+
+# Study Population
+
+```{r study_pop, echo=FALSE}
+n_births <- nrow(data)
+n_ncc <- sum(data$NCC_Admitted, na.rm = TRUE)
+ncc_rate <- round(100 * mean(data$NCC_Admitted, na.rm = TRUE), 1)
+```
+
+The analysis covers `r comma(n_births)` hospital births in England during financial year 2023/24, of which `r comma(n_ncc)` (`r ncc_rate`%) were admitted to neonatal critical care.
+
+NCC admission status is derived from two sources — the MSDS (MSD402) and the Critical Care Minimum Dataset (via PbR_CC_Monthly) — and a baby is classified as admitted if they appear in either source. The CC data captures approximately 3.8 times more NCC admissions than MSDS alone, reflecting statutory Payment by Results reporting requirements.
+
+# Methods
+
+## Phase 1: Hierarchical Logistic Regression
+
+We fitted mixed-effects logistic regression models with random intercepts for delivery trust, asking whether the probability of NCC admission varies by ethnicity and deprivation after adjusting for clinical need. (See the Phase 1 Methods section for why we cluster at trust rather than site level.)
+
+- Primary model: Adjusts for gestation, ethnicity (9 disaggregated groups), and IMD quintile, with trust random intercepts (~476,000 births — the full cohort of `r comma(n_births)` less records missing gestation, ethnicity or IMD)
+- Sensitivity model: Additionally adjusts for birth weight and Apgar 5-minute score (~219,000 births with complete clinical data)
+
+This two-model design lets the primary model run on nearly the whole cohort, while the sensitivity model checks the findings hold with fuller clinical adjustment. Ethnicity is coded using disaggregated NHS categories (Indian, Pakistani and Bangladeshi separately, rather than a single "Asian" group) — a choice vindicated by the results, since these groups turn out to differ materially.
+
+Both are mixed-effects (multilevel) models: each trust gets its own baseline admission rate, and the ethnicity and deprivation effects are estimated *within* trusts. This matters because baseline NCC admission rates vary widely between hospitals — through clinical thresholds, capacity and reporting practice. Without the hospital baseline in the model, a group of babies concentrated in high-admitting hospitals would look over-admitted when the effect is really the hospital's, not the group's. The estimates therefore answer a like-for-like question: *for two clinically similar babies born in the same trust, does the chance of admission differ by ethnicity or deprivation?*
+
+Full results: [Phase 1: Logistic Models](modelling_results.html)
+
+## Phase 2: Cox Proportional Hazards with Shared Frailty *(on hold)*
+
+The planned Phase 2 analysis would fit Cox models with a shared frailty term for delivery trust — the survival analysis analogue of the mixed-effects logistic model — to isolate the timing/delay question from the access question addressed in Phase 1.
+
+This phase is currently paused: the MSDS extract available in this environment does not contain a true day-of-birth field, so hours-from-birth cannot be computed reliably. Once the alternative data environment is in place, the planned specification is:
+
+- Primary model: Adjust for gestation, ethnicity, IMD, and delivery unit type (NICU/LNU/SCBU), with hospital frailty
+- Sensitivity model: Additionally adjust for birth weight and Apgar score
+- Analysis restricted to births at hospitals with a recognised NNAP neonatal unit
+
+# Key Findings
+
+```{r findings_table, echo=FALSE}
+findings <- tibble(
+  Question = c(
+    "Who gets admitted to NCC?",
+    "Does ethnicity affect access?",
+    "Does deprivation affect access?",
+    "How much do hospitals vary?"
+  ),
+  `Phase 1 (Logistic)` = c(
+    "~13% of births; gestation is by far the strongest predictor",
+    "Mostly near parity. No evidence of under-admission for Black babies; Pakistani near parity after clinical adjustment; Chinese ~24% lower, unexplained",
+    "~9% higher odds, most vs least deprived — tracks a genuine morbidity gradient, consistent with need rather than over-admission",
+    "Large (ICC ~32%), but the extreme outliers reflect what providers record as critical care, not how they admit"
+  )
+)
+
+findings %>%
+  kable(caption = "Summary of Phase 1 findings") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed")) %>%
+  column_spec(1, bold = TRUE, width = "15em")
+```
+
+
+## Key Messages (Phase 1)
+
+1. **Clinical need drives admission.** Gestation is by far the strongest predictor — each additional week of gestation roughly 38% lower odds — and ethnicity and deprivation effects are small by comparison. On its central question, the system looks need-led.
+
+2. **No evidence of under-access for Black babies nationally.** Admission rates are almost identical to White British (~13.4%), and stay at parity after clinical adjustment — despite Black babies carrying higher average clinical need. This is a positive finding in the context of recent maternity reviews (MBRRACE, Ockenden). A per-trust screen found one trust (of 92 testable) with a significantly lower Black admission rate, now flagged for follow-up.
+
+3. **Two groups warrant follow-up.** Pakistani babies' modestly lower odds are largely explained by clinical factors — they move to near-parity once birth weight and Apgar are adjusted for. Chinese babies show ~24% lower odds even after adjustment; this could reflect lower genuine need, upstream maternal-risk differences, statistical fragility in a small group, or under-recording — the data cannot yet separate these, so it is a question, not a conclusion.
+
+4. **The deprivation gradient looks like need, not inequity.** Babies from the most deprived areas have ~9% higher adjusted odds of admission — but a direct check shows morbidity itself rises with deprivation (low birth weight *among term babies* nearly doubles from least to most deprived). Higher admission is consistent with the system responding to genuinely sicker babies.
+
+5. **Hospital variation is the largest residual signal — but the extremes are a recording story.** Where a baby is born matters (ICC ~32%). However, diagnostics on the most extreme trusts show they record NCC for 21–40% of *term* babies (~7% nationally): a difference in what is counted as critical care in returns, not in admission practice. Standardising what counts as an NCC day in PbR-CC returns is the highest-value quick win; admission-practice comparisons only become reliable after it.
+
+6. **The timing question is still open.** Whether some groups wait longer for NCC is a separate question that Phase 1 cannot address; it needs the day-of-birth field unavailable in this environment (Phase 2, on hold).
+
+
+# Data Sources
+
+The analysis links three national NHS datasets, accessed via the NHS England Unified Data Access Layer (UDAL):
+
+| Source | Content | Role |
+|---|---|---|
+| MSDS (Maternity Services Dataset) | Birth details, baby and maternal demographics, pregnancy booking, neonatal admissions | Base cohort of births |
+| CCMDS (Critical Care Minimum Dataset, via PbR_CC_Monthly) | Daily-level NCC activity, organ support, care levels | NCC admission status and timing |
+| APCS (Admitted Patient Care Spells) | Hospital spell data with NHS Numbers | Linkage between MSDS and CC data |
+
+Records are linked via pseudonymised NHS Number, with a 90-day date proximity filter when linking births to CC admissions. The dataset covers FY 2023/24. NNAP unit data from the [RCPCH 2024 report](https://www.rcpch.ac.uk/resources/NNAP-summary-report-2024-data) is used to classify delivery sites by unit type.
+
+# Data and Code Availability
+
+All analysis code is version-controlled and published on GitHub at [AshleyDicksonNHS/ncc_inequalities_analysis](https://github.com/AshleyDicksonNHS/ncc_inequalities_analysis); the rendered reports are served from that repository via GitHub Pages.
+
+No patient-level data is held in the repository — the `.gitignore` excludes all data files. The extracted analytical dataset (pseudonymised, record-level) is stored separately in a restricted NHS England SharePoint location for long-term NHSE/DHSC access, consistent with information-governance requirements. The published HTML reports contain only aggregate results.
+
+---
+
+Report generated: `r Sys.time()`
+
+R version: `r R.version.string`

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ashley Dickson">
+<meta name="dcterms.date" content="2026-07-03">
+
+<title>Inequalities in Access to Neonatal Critical Care – NCC Inequalities Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6b423f165eeea3787de40cb4f8e821c3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">NCC Inequalities Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Overview</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./modelling_results.html"> 
+<span class="menu-text">Phase 1: Logistic Models</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
+  <li><a href="#study-population" id="toc-study-population" class="nav-link" data-scroll-target="#study-population"><span class="header-section-number">2</span> Study Population</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">3</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#phase-1-hierarchical-logistic-regression" id="toc-phase-1-hierarchical-logistic-regression" class="nav-link" data-scroll-target="#phase-1-hierarchical-logistic-regression"><span class="header-section-number">3.1</span> Phase 1: Hierarchical Logistic Regression</a></li>
+  <li><a href="#phase-2-cox-proportional-hazards-with-shared-frailty-on-hold" id="toc-phase-2-cox-proportional-hazards-with-shared-frailty-on-hold" class="nav-link" data-scroll-target="#phase-2-cox-proportional-hazards-with-shared-frailty-on-hold"><span class="header-section-number">3.2</span> Phase 2: Cox Proportional Hazards with Shared Frailty <em>(on hold)</em></a></li>
+  </ul></li>
+  <li><a href="#key-findings" id="toc-key-findings" class="nav-link" data-scroll-target="#key-findings"><span class="header-section-number">4</span> Key Findings</a>
+  <ul class="collapse">
+  <li><a href="#key-messages-phase-1" id="toc-key-messages-phase-1" class="nav-link" data-scroll-target="#key-messages-phase-1"><span class="header-section-number">4.1</span> Key Messages (Phase 1)</a></li>
+  </ul></li>
+  <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources"><span class="header-section-number">5</span> Data Sources</a></li>
+  <li><a href="#data-and-code-availability" id="toc-data-and-code-availability" class="nav-link" data-scroll-target="#data-and-code-availability"><span class="header-section-number">6</span> Data and Code Availability</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Inequalities in Access to Neonatal Critical Care</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ashley Dickson </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 3, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>What changed in this revision (June 2026)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Responding to feedback from Anna Everton and Katharine Robbins:</p>
+<ul>
+<li><strong>[A6]</strong> Reconciled the births figures — the primary-model sample (~476,000) is now distinguished from the full cohort (506,656), see <a href="#phase-1-hierarchical-logistic-regression">Methods</a>.</li>
+<li><strong>[K2]</strong> Added a <a href="#data-and-code-availability">Data and Code Availability</a> section.</li>
+</ul>
+<p>The analytical changes (funnel plot, Black under-access test, funnel-outlier completeness diagnostic, deprivation-morbidity check, and others) are in the <a href="modelling_results.html">Phase 1 report</a>. A July 2026 editorial pass tightened both reports and aligned the key messages with the revised findings.</p>
+<p><em>(Temporary review scaffolding; removed before final publication.)</em></p>
+</div>
+</div>
+<section id="overview" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
+<p>Reducing health inequalities is a core priority for the NHS, as set out in the NHS Long Term Plan and the Core20PLUS5 approach. Ensuring equitable access to neonatal critical care (NCC) is essential for giving every baby the best start in life.</p>
+<p>This analysis examines whether ethnicity, socioeconomic deprivation, and hospital-level factors are associated with inequalities in NCC access in England, using linked NHS administrative data from the Maternity Services Dataset (MSDS) and Critical Care Minimum Dataset (CCMDS).</p>
+<p>The analysis was scoped in two phases, one per question:</p>
+<ol type="1">
+<li><strong>Who gets admitted?</strong> Are some groups less likely to receive NCC after adjusting for clinical need? <em>(Phase 1 — complete, reported here and in the <a href="modelling_results.html">Phase 1 report</a>.)</em></li>
+<li><strong>How quickly are they admitted?</strong> Among babies with clinical need, do some groups wait longer? <em>(Phase 2 — on hold pending better data; see below.)</em></li>
+</ol>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Phase 2 status (May 2026)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The planned survival analysis of time from birth to NCC admission is paused. Investigation found that the MSDS table available in this environment (<code>MSD401BabyDemographics_1</code>) records year and month of birth but no day of birth — the field previously assumed to encode day-of-month is in fact an AM/PM meridian flag. As a result, any “hours from birth” figures that were derived in earlier drafts of this work are inaccurate and have been withdrawn.</p>
+<p>A real day-of-birth field is available in a separate data environment, which is being applied for. Phase 2 will resume once that access is in place. Phase 1 (admitted yes/no) is unaffected — it does not depend on birth datetime.</p>
+</div>
+</div>
+</section>
+<section id="study-population" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Study Population</h1>
+<p>The analysis covers 506,656 hospital births in England during financial year 2023/24, of which 60,438 (11.9%) were admitted to neonatal critical care.</p>
+<p>NCC admission status is derived from two sources — the MSDS (MSD402) and the Critical Care Minimum Dataset (via PbR_CC_Monthly) — and a baby is classified as admitted if they appear in either source. The CC data captures approximately 3.8 times more NCC admissions than MSDS alone, reflecting statutory Payment by Results reporting requirements.</p>
+</section>
+<section id="methods" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
+<section id="phase-1-hierarchical-logistic-regression" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="phase-1-hierarchical-logistic-regression"><span class="header-section-number">3.1</span> Phase 1: Hierarchical Logistic Regression</h2>
+<p>We fitted mixed-effects logistic regression models with random intercepts for delivery trust, asking whether the probability of NCC admission varies by ethnicity and deprivation after adjusting for clinical need. (See the Phase 1 Methods section for why we cluster at trust rather than site level.)</p>
+<ul>
+<li>Primary model: Adjusts for gestation, ethnicity (9 disaggregated groups), and IMD quintile, with trust random intercepts (~476,000 births — the full cohort of 506,656 less records missing gestation, ethnicity or IMD)</li>
+<li>Sensitivity model: Additionally adjusts for birth weight and Apgar 5-minute score (~219,000 births with complete clinical data)</li>
+</ul>
+<p>This two-model design lets the primary model run on nearly the whole cohort, while the sensitivity model checks the findings hold with fuller clinical adjustment. Ethnicity is coded using disaggregated NHS categories (Indian, Pakistani and Bangladeshi separately, rather than a single “Asian” group) — a choice vindicated by the results, since these groups turn out to differ materially.</p>
+<p>Both are mixed-effects (multilevel) models: each trust gets its own baseline admission rate, and the ethnicity and deprivation effects are estimated <em>within</em> trusts. This matters because baseline NCC admission rates vary widely between hospitals — through clinical thresholds, capacity and reporting practice. Without the hospital baseline in the model, a group of babies concentrated in high-admitting hospitals would look over-admitted when the effect is really the hospital’s, not the group’s. The estimates therefore answer a like-for-like question: <em>for two clinically similar babies born in the same trust, does the chance of admission differ by ethnicity or deprivation?</em></p>
+<p>Full results: <a href="modelling_results.html">Phase 1: Logistic Models</a></p>
+</section>
+<section id="phase-2-cox-proportional-hazards-with-shared-frailty-on-hold" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="phase-2-cox-proportional-hazards-with-shared-frailty-on-hold"><span class="header-section-number">3.2</span> Phase 2: Cox Proportional Hazards with Shared Frailty <em>(on hold)</em></h2>
+<p>The planned Phase 2 analysis would fit Cox models with a shared frailty term for delivery trust — the survival analysis analogue of the mixed-effects logistic model — to isolate the timing/delay question from the access question addressed in Phase 1.</p>
+<p>This phase is currently paused: the MSDS extract available in this environment does not contain a true day-of-birth field, so hours-from-birth cannot be computed reliably. Once the alternative data environment is in place, the planned specification is:</p>
+<ul>
+<li>Primary model: Adjust for gestation, ethnicity, IMD, and delivery unit type (NICU/LNU/SCBU), with hospital frailty</li>
+<li>Sensitivity model: Additionally adjust for birth weight and Apgar score</li>
+<li>Analysis restricted to births at hospitals with a recognised NNAP neonatal unit</li>
+</ul>
+</section>
+</section>
+<section id="key-findings" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Key Findings</h1>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-condensed caption-top table-sm small">
+<caption>Summary of Phase 1 findings</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Question</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Phase 1 (Logistic)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; width: 15em; font-weight: bold;">Who gets admitted to NCC?</td>
+<td style="text-align: left;">~13% of births; gestation is by far the strongest predictor</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; width: 15em; font-weight: bold;">Does ethnicity affect access?</td>
+<td style="text-align: left;">Mostly near parity. No evidence of under-admission for Black babies; Pakistani near parity after clinical adjustment; Chinese ~24% lower, unexplained</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; width: 15em; font-weight: bold;">Does deprivation affect access?</td>
+<td style="text-align: left;">~9% higher odds, most vs least deprived — tracks a genuine morbidity gradient, consistent with need rather than over-admission</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; width: 15em; font-weight: bold;">How much do hospitals vary?</td>
+<td style="text-align: left;">Large (ICC ~32%), but the extreme outliers reflect what providers record as critical care, not how they admit</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="key-messages-phase-1" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="key-messages-phase-1"><span class="header-section-number">4.1</span> Key Messages (Phase 1)</h2>
+<ol type="1">
+<li><p><strong>Clinical need drives admission.</strong> Gestation is by far the strongest predictor — each additional week of gestation roughly 38% lower odds — and ethnicity and deprivation effects are small by comparison. On its central question, the system looks need-led.</p></li>
+<li><p><strong>No evidence of under-access for Black babies nationally.</strong> Admission rates are almost identical to White British (~13.4%), and stay at parity after clinical adjustment — despite Black babies carrying higher average clinical need. This is a positive finding in the context of recent maternity reviews (MBRRACE, Ockenden). A per-trust screen found one trust (of 92 testable) with a significantly lower Black admission rate, now flagged for follow-up.</p></li>
+<li><p><strong>Two groups warrant follow-up.</strong> Pakistani babies’ modestly lower odds are largely explained by clinical factors — they move to near-parity once birth weight and Apgar are adjusted for. Chinese babies show ~24% lower odds even after adjustment; this could reflect lower genuine need, upstream maternal-risk differences, statistical fragility in a small group, or under-recording — the data cannot yet separate these, so it is a question, not a conclusion.</p></li>
+<li><p><strong>The deprivation gradient looks like need, not inequity.</strong> Babies from the most deprived areas have ~9% higher adjusted odds of admission — but a direct check shows morbidity itself rises with deprivation (low birth weight <em>among term babies</em> nearly doubles from least to most deprived). Higher admission is consistent with the system responding to genuinely sicker babies.</p></li>
+<li><p><strong>Hospital variation is the largest residual signal — but the extremes are a recording story.</strong> Where a baby is born matters (ICC ~32%). However, diagnostics on the most extreme trusts show they record NCC for 21–40% of <em>term</em> babies (~7% nationally): a difference in what is counted as critical care in returns, not in admission practice. Standardising what counts as an NCC day in PbR-CC returns is the highest-value quick win; admission-practice comparisons only become reliable after it.</p></li>
+<li><p><strong>The timing question is still open.</strong> Whether some groups wait longer for NCC is a separate question that Phase 1 cannot address; it needs the day-of-birth field unavailable in this environment (Phase 2, on hold).</p></li>
+</ol>
+</section>
+</section>
+<section id="data-sources" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Data Sources</h1>
+<p>The analysis links three national NHS datasets, accessed via the NHS England Unified Data Access Layer (UDAL):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Content</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MSDS (Maternity Services Dataset)</td>
+<td>Birth details, baby and maternal demographics, pregnancy booking, neonatal admissions</td>
+<td>Base cohort of births</td>
+</tr>
+<tr class="even">
+<td>CCMDS (Critical Care Minimum Dataset, via PbR_CC_Monthly)</td>
+<td>Daily-level NCC activity, organ support, care levels</td>
+<td>NCC admission status and timing</td>
+</tr>
+<tr class="odd">
+<td>APCS (Admitted Patient Care Spells)</td>
+<td>Hospital spell data with NHS Numbers</td>
+<td>Linkage between MSDS and CC data</td>
+</tr>
+</tbody>
+</table>
+<p>Records are linked via pseudonymised NHS Number, with a 90-day date proximity filter when linking births to CC admissions. The dataset covers FY 2023/24. NNAP unit data from the <a href="https://www.rcpch.ac.uk/resources/NNAP-summary-report-2024-data">RCPCH 2024 report</a> is used to classify delivery sites by unit type.</p>
+</section>
+<section id="data-and-code-availability" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Data and Code Availability</h1>
+<p>All analysis code is version-controlled and published on GitHub at <a href="https://github.com/AshleyDicksonNHS/ncc_inequalities_analysis">AshleyDicksonNHS/ncc_inequalities_analysis</a>; the rendered reports are served from that repository via GitHub Pages.</p>
+<p>No patient-level data is held in the repository — the <code>.gitignore</code> excludes all data files. The extracted analytical dataset (pseudonymised, record-level) is stored separately in a restricted NHS England SharePoint location for long-term NHSE/DHSC access, consistent with information-governance requirements. The published HTML reports contain only aggregate results.</p>
+<hr>
+<p>Report generated: 2026-07-03 18:28:31.874629</p>
+<p>R version: R version 4.6.0 (2026-04-24 ucrt)</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

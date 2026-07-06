@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ashley Dickson">
+<meta name="dcterms.date" content="2026-07-06">
+
+<title>Inequalities in Access to Neonatal Critical Care: Phase 1 Modelling Results – NCC Inequalities Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6b423f165eeea3787de40cb4f8e821c3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">NCC Inequalities Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Overview</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./modelling_results.html" aria-current="page"> 
+<span class="menu-text">Phase 1: Logistic Models</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary"><span class="header-section-number">1</span> Executive Summary</a>
+  <ul class="collapse">
+  <li><a href="#key-messages" id="toc-key-messages" class="nav-link" data-scroll-target="#key-messages"><span class="header-section-number">1.1</span> Key Messages</a></li>
+  </ul></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">2</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#study-population" id="toc-study-population" class="nav-link" data-scroll-target="#study-population"><span class="header-section-number">2.1</span> Study Population</a></li>
+  <li><a href="#outcome-definition-ncc_admitted" id="toc-outcome-definition-ncc_admitted" class="nav-link" data-scroll-target="#outcome-definition-ncc_admitted"><span class="header-section-number">2.2</span> Outcome definition (<code>NCC_Admitted</code>)</a></li>
+  <li><a href="#cohort-filter-and-deprivation-vintage" id="toc-cohort-filter-and-deprivation-vintage" class="nav-link" data-scroll-target="#cohort-filter-and-deprivation-vintage"><span class="header-section-number">2.3</span> Cohort filter and deprivation vintage</a></li>
+  <li><a href="#variable-selection" id="toc-variable-selection" class="nav-link" data-scroll-target="#variable-selection"><span class="header-section-number">2.4</span> Variable selection</a>
+  <ul class="collapse">
+  <li><a href="#why-not-a-data-driven-search-stepwise-lasso" id="toc-why-not-a-data-driven-search-stepwise-lasso" class="nav-link" data-scroll-target="#why-not-a-data-driven-search-stepwise-lasso"><span class="header-section-number">2.4.1</span> Why not a data-driven search (stepwise / LASSO)?</a></li>
+  <li><a href="#candidate-variables-considered" id="toc-candidate-variables-considered" class="nav-link" data-scroll-target="#candidate-variables-considered"><span class="header-section-number">2.4.2</span> Candidate variables considered</a></li>
+  </ul></li>
+  <li><a href="#statistical-approach" id="toc-statistical-approach" class="nav-link" data-scroll-target="#statistical-approach"><span class="header-section-number">2.5</span> Statistical Approach</a></li>
+  <li><a href="#birth-weight-data-source" id="toc-birth-weight-data-source" class="nav-link" data-scroll-target="#birth-weight-data-source"><span class="header-section-number">2.6</span> Birth Weight Data Source</a></li>
+  <li><a href="#random-effect-grouping" id="toc-random-effect-grouping" class="nav-link" data-scroll-target="#random-effect-grouping"><span class="header-section-number">2.7</span> Random-effect Grouping</a>
+  <ul class="collapse">
+  <li><a href="#why-mixed-effects" id="toc-why-mixed-effects" class="nav-link" data-scroll-target="#why-mixed-effects"><span class="header-section-number">2.7.1</span> Why mixed effects?</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#model-1-fixed-effects-logistic-regression" id="toc-model-1-fixed-effects-logistic-regression" class="nav-link" data-scroll-target="#model-1-fixed-effects-logistic-regression"><span class="header-section-number">3.1</span> Model 1: Fixed Effects Logistic Regression</a>
+  <ul class="collapse">
+  <li><a href="#odds-ratios" id="toc-odds-ratios" class="nav-link" data-scroll-target="#odds-ratios"><span class="header-section-number">3.1.1</span> Odds Ratios</a></li>
+  </ul></li>
+  <li><a href="#model-2-mixed-effects-logistic-regression" id="toc-model-2-mixed-effects-logistic-regression" class="nav-link" data-scroll-target="#model-2-mixed-effects-logistic-regression"><span class="header-section-number">3.2</span> Model 2: Mixed Effects Logistic Regression</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects-odds-ratios" id="toc-fixed-effects-odds-ratios" class="nav-link" data-scroll-target="#fixed-effects-odds-ratios"><span class="header-section-number">3.2.1</span> Fixed Effects (Odds Ratios)</a></li>
+  <li><a href="#forest-plot-ethnicity-and-deprivation" id="toc-forest-plot-ethnicity-and-deprivation" class="nav-link" data-scroll-target="#forest-plot-ethnicity-and-deprivation"><span class="header-section-number">3.2.2</span> Forest Plot: Ethnicity and Deprivation</a></li>
+  <li><a href="#random-effects-hospital-variation" id="toc-random-effects-hospital-variation" class="nav-link" data-scroll-target="#random-effects-hospital-variation"><span class="header-section-number">3.2.3</span> Random Effects: Hospital Variation</a></li>
+  <li><a href="#distribution-of-hospital-effects" id="toc-distribution-of-hospital-effects" class="nav-link" data-scroll-target="#distribution-of-hospital-effects"><span class="header-section-number">3.2.4</span> Distribution of Hospital Effects</a></li>
+  <li><a href="#funnel-plot-case-mix-adjusted-admission-rates" id="toc-funnel-plot-case-mix-adjusted-admission-rates" class="nav-link" data-scroll-target="#funnel-plot-case-mix-adjusted-admission-rates"><span class="header-section-number">3.2.5</span> Funnel Plot: Case-mix-adjusted Admission Rates</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">4</span> Interpretation</a>
+  <ul class="collapse">
+  <li><a href="#clinical-factors" id="toc-clinical-factors" class="nav-link" data-scroll-target="#clinical-factors"><span class="header-section-number">4.1</span> Clinical Factors</a></li>
+  <li><a href="#ethnicity" id="toc-ethnicity" class="nav-link" data-scroll-target="#ethnicity"><span class="header-section-number">4.2</span> Ethnicity</a>
+  <ul class="collapse">
+  <li><a href="#broad-ethnicity" id="toc-broad-ethnicity" class="nav-link" data-scroll-target="#broad-ethnicity"><span class="header-section-number">4.2.1</span> A broad, MBRRACE-comparable grouping</a></li>
+  </ul></li>
+  <li><a href="#focus-black-ethnicity-and-the-maternity-review-context" id="toc-focus-black-ethnicity-and-the-maternity-review-context" class="nav-link" data-scroll-target="#focus-black-ethnicity-and-the-maternity-review-context"><span class="header-section-number">4.3</span> Focus: Black Ethnicity and the Maternity Review Context</a>
+  <ul class="collapse">
+  <li><a href="#raw-ncc-admission-rates" id="toc-raw-ncc-admission-rates" class="nav-link" data-scroll-target="#raw-ncc-admission-rates"><span class="header-section-number">4.3.1</span> Raw NCC Admission Rates</a></li>
+  <li><a href="#clinical-context-higher-need-equitable-access" id="toc-clinical-context-higher-need-equitable-access" class="nav-link" data-scroll-target="#clinical-context-higher-need-equitable-access"><span class="header-section-number">4.3.2</span> Clinical Context: Higher Need, Equitable Access</a></li>
+  <li><a href="#hospital-level-variation" id="toc-hospital-level-variation" class="nav-link" data-scroll-target="#hospital-level-variation"><span class="header-section-number">4.3.3</span> Hospital-Level Variation</a></li>
+  <li><a href="#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white" id="toc-are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white" class="nav-link" data-scroll-target="#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white"><span class="header-section-number">4.3.4</span> Are there trusts where Black babies are admitted significantly less than White?</a></li>
+  </ul></li>
+  <li><a href="#implications-for-maternity-review" id="toc-implications-for-maternity-review" class="nav-link" data-scroll-target="#implications-for-maternity-review"><span class="header-section-number">4.4</span> Implications for Maternity Review</a></li>
+  <li><a href="#deprivation" id="toc-deprivation" class="nav-link" data-scroll-target="#deprivation"><span class="header-section-number">4.5</span> Deprivation</a>
+  <ul class="collapse">
+  <li><a href="#imd-morbidity" id="toc-imd-morbidity" class="nav-link" data-scroll-target="#imd-morbidity"><span class="header-section-number">4.5.1</span> A direct check: morbidity by deprivation quintile</a></li>
+  </ul></li>
+  <li><a href="#hospital-variation-the-largest-signal-read-with-care" id="toc-hospital-variation-the-largest-signal-read-with-care" class="nav-link" data-scroll-target="#hospital-variation-the-largest-signal-read-with-care"><span class="header-section-number">4.6</span> Hospital Variation: the largest signal, read with care</a></li>
+  </ul></li>
+  <li><a href="#sensitivity-analysis-full-clinical-adjustment" id="toc-sensitivity-analysis-full-clinical-adjustment" class="nav-link" data-scroll-target="#sensitivity-analysis-full-clinical-adjustment"><span class="header-section-number">5</span> Sensitivity Analysis: Full Clinical Adjustment</a>
+  <ul class="collapse">
+  <li><a href="#comparing-primary-and-sensitivity-models" id="toc-comparing-primary-and-sensitivity-models" class="nav-link" data-scroll-target="#comparing-primary-and-sensitivity-models"><span class="header-section-number">5.1</span> Comparing Primary and Sensitivity Models</a></li>
+  </ul></li>
+  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">6</span> Recommendations</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">7</span> Limitations</a></li>
+  <li><a href="#technical-details" id="toc-technical-details" class="nav-link" data-scroll-target="#technical-details"><span class="header-section-number">8</span> Technical Details</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Inequalities in Access to Neonatal Critical Care: Phase 1 Modelling Results</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ashley Dickson </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 6, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>What changed in this revision (June 2026)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This draft responds to feedback from Anna Everton and Katharine Robbins. Changes in this report:</p>
+<ul>
+<li><strong>[K3]</strong> Clarified that the cohort is babies <em>born</em> in 2023/24, not continuing-stay (see <a href="#study-population">Study Population</a>).</li>
+<li><strong>[K5a]</strong> Rewrote <a href="#variable-selection">Variable selection</a> around causal role (confounder / exposure / mediator), with a table of all candidate variables considered and why each was kept, deferred, or excluded — plus why a data-driven search (stepwise/LASSO) is the wrong tool for a causal access question.</li>
+<li><strong>[A1]</strong> Rewrote the Chinese-group key message in plain language (see <a href="#key-messages">Key Messages</a>).</li>
+<li><strong>[A3a]</strong> Reframed the <a href="#deprivation">Deprivation</a> finding around the unmeasured-need vs genuine-access question.</li>
+<li><strong>[A3b]</strong> New <a href="#imd-morbidity">direct check of the morbidity-proxy hypothesis</a>: preterm, very-preterm and low-birth-weight rates all rise monotonically with deprivation, and term low birth weight nearly doubles — supporting the unmeasured-need reading of the deprivation gradient.</li>
+<li><strong>[A4]</strong> New <a href="#funnel-plot-case-mix-adjusted-admission-rates">funnel plot</a> of case-mix-adjusted admission rates, with a contextualised outlier table.</li>
+<li><strong>[A4b]</strong> New <a href="#outlier-completeness">completeness diagnostic</a> for the funnel outliers, responding to the follow-up question of whether their position reflects completeness of <em>records</em> or of <em>specific fields</em>. Answer: neither — the signal sits in the PbR-CC numerator, and the earlier “referral activity + reporting gap” reading has been withdrawn.</li>
+<li><strong>[A2]</strong> New test for <a href="#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white">trusts where Black admission is significantly lower than White</a>.</li>
+<li><strong>[K4]</strong> New <a href="#broad-ethnicity">broad MBRRACE-comparable ethnicity grouping</a> presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).</li>
+<li><strong>Editorial pass (July 2026):</strong> tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the <a href="index.html">overview report</a> with the revised findings.</li>
+</ul>
+<p><em>(This box is temporary review scaffolding and will be removed before final publication.)</em></p>
+</div>
+</div>
+<section id="executive-summary" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Executive Summary</h1>
+<p>This report asks one question of ~476,000 English hospital births in 2023/24: <strong>after accounting for how sick a baby is, does access to neonatal critical care (NCC) differ by ethnicity or deprivation?</strong> We answer it with hierarchical logistic regression — a primary model adjusting for gestation, and a sensitivity model additionally adjusting for birth weight and Apgar score — with each delivery trust given its own baseline admission rate.</p>
+<p>Key findings:</p>
+<ul>
+<li><strong>Clinical need dominates admission.</strong> Each week of gestation reduces the odds of NCC admission by ~38%; each kg of birth weight by ~9%; each Apgar point by ~36%. Ethnicity and deprivation effects are small by comparison — the system looks need-led on its central question.</li>
+<li><strong>No evidence of under-admission for Black babies.</strong> Odds ratios of ~1.04 in both the primary and sensitivity models — essentially parity with White British, despite higher average clinical need.</li>
+<li><strong>Pakistani and Chinese groups show lower recorded NCC odds.</strong> Pakistani moves to near-parity once birth weight and Apgar are added — largely a case-mix story. Chinese remains ~24% lower after adjustment; several explanations are plausible (residual case-mix, upstream maternal risk, statistical fragility, under-recording) and this data cannot separate them.</li>
+<li><strong>The deprivation gradient is robust and looks like need.</strong> ~9.4% higher odds for most vs least deprived, stable after clinical adjustment. A direct morbidity check supports reading this largely as unmeasured clinical need: preterm and low-birth-weight rates rise steadily with deprivation, and low birth weight <em>among term births</em> — need the model cannot see — nearly doubles from least to most deprived.</li>
+<li><strong>Between-hospital variation is large but cannot be read at face value.</strong> The trust-level ICC of 31.7% is the dominant residual signal, but it bundles practice with reporting: the CC source captures roughly 3.8 times more NCC admissions than MSDS alone, and completeness varies by provider. The funnel-outlier diagnostic gives concrete evidence for the reporting component — the most extreme trusts record NCC for 21–40% of their <em>term</em> babies (~7% nationally), a coding signature, not an admission-practice one.</li>
+<li><strong>Data completeness is itself a core finding.</strong> Birth weight and Apgar are jointly complete for under half the cohort, and what providers count as an “NCC day” in returns evidently varies. Both belong in the recommendations.</li>
+</ul>
+<section id="key-messages" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="key-messages"><span class="header-section-number">1.1</span> Key Messages</h2>
+<ol type="1">
+<li><p>Between-trust variation is the largest residual signal (ICC ~32%), but with this dataset alone we cannot separate practice variation from data-completeness variation. The MSDS source captures only ~26% of the NCC admissions visible in PbR-CC, and submission completeness varies between providers — some apparent provider effects may be reporting artefacts rather than admission-policy differences. The funnel-outlier diagnostic (see Hospital Variation) now shows this concretely: all four statistical outliers share a term-heavy, short-stay numerator signature consistent with over-broad NCC coding in the PbR-CC return, not a different admission threshold. We cluster at trust rather than site level (see Methods), which absorbs within-trust between-site variation into the residual; the ICC is therefore a slightly conservative estimate of true between-hospital variation.</p></li>
+<li><p>The fully-adjusted (sensitivity) model is the conceptually preferred specification. After adjusting for gestation, birth weight and Apgar, ethnicity ORs change non-trivially compared with the gestation-only primary model (Pakistani 0.89→0.97; Indian 1.05→1.16). The primary model’s larger sample comes at the cost of unadjusted clinical case-mix.</p></li>
+<li><p>Recorded NCC access for Black babies appears close to White British in both models (OR ~1.04 in both primary and sensitivity). This is a single-aspect finding about admission rates, not about the wider quality of care received.</p></li>
+<li><p>The Chinese group shows about 24% lower odds of <em>recorded</em> NCC admission than White British babies, even after adjusting for gestation, birth weight and Apgar — though in the smaller sensitivity sample this sits at the boundary of conventional significance. This is not, by itself, evidence that Chinese babies are under-served: at least four explanations are consistent with it, and we cannot separate them with this data.</p>
+<ul>
+<li><em>Lower genuine need.</em> Our clinical adjustment is imperfect. Chinese babies tend to be a little smaller at term without being clinically compromised, and a single linear birth-weight term may not fully capture that — so part of the gap may be appropriate rather than a shortfall.</li>
+<li><em>Different upstream maternal risk.</em> Differences in maternal age, parity or rates of high-risk pregnancy could mean proportionally fewer babies reach the threshold for NCC.</li>
+<li><em>Statistical fragility.</em> Chinese is one of the smaller ethnic groups, so the estimate is less stable, and once we correct for testing many groups at once the strength of evidence is weaker than the raw odds ratio suggests.</li>
+<li><em>Under-recording.</em> Some genuine NCC episodes for this group may simply not be captured in the two administrative sources we use, which would understate the true rate.</li>
+</ul>
+<p>Telling “lower need” apart from “lower access or recording” would need richer clinical data or direct engagement with providers (see Recommendations).</p></li>
+<li><p>These results address <em>whether</em> a baby is admitted, not <em>when</em>. A planned Phase 2 survival analysis (timing of admission) is on hold pending access to a data environment that includes baby date of birth.</p></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="methods" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Methods</h1>
+<section id="study-population" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="study-population"><span class="header-section-number">2.1</span> Study Population</h2>
+<p>Primary analysis: 476,475 hospital births in England during financial year 2023/24 with complete data on NCC admission, gestation, ethnicity, IMD quintile, and delivery trust.</p>
+<p>Sensitivity analysis: 218,886 births (45.9% of primary sample) with additional complete data on birth weight and Apgar 5-minute score.</p>
+<p>The cohort is defined by <em>birth</em> in 2023/24, not by NCC activity in 2023/24. Babies enter on the basis of their MSDS birth record (the financial year is derived from year and month of birth); a baby born before April 2023 who continued a neonatal stay into the study year is <em>not</em> included. Critical-care linkage then looks outward from each birth — and is permitted to reach about 30 days into 2024/25 — so that NCC admissions for babies born late in March 2024 are not under-counted; but the linkage never pulls earlier-born babies into the cohort.</p>
+</section>
+<section id="outcome-definition-ncc_admitted" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="outcome-definition-ncc_admitted"><span class="header-section-number">2.2</span> Outcome definition (<code>NCC_Admitted</code>)</h2>
+<p>The outcome flags whether a baby has <em>care recorded as Neonatal Critical Care</em> in either of the two available administrative sources: MSDS MSD402 (provider-submitted neonatal admission records) or PbR-CC (the Payment-by-Results critical-care daily extract, filtered to <code>CC_Type = 'NCC'</code>). A baby is <code>NCC_Admitted = 1</code> if they appear in either source. The two sources do not agree perfectly: the CC source records roughly 3.8 times more NCC admissions than MSDS alone, and submission completeness for both sources varies between providers. The outcome should therefore be read as “received care recorded as NCC” rather than as a clinically-curated definition of admission to a neonatal critical care cot.</p>
+</section>
+<section id="cohort-filter-and-deprivation-vintage" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="cohort-filter-and-deprivation-vintage"><span class="header-section-number">2.3</span> Cohort filter and deprivation vintage</h2>
+<p>Two further constraints apply to the primary cohort:</p>
+<ul>
+<li><em>Hospital births only.</em> The cohort is restricted to babies whose mother has a recorded MSD301 hospital labour-delivery spell (<code>Mother_Admission_Date IS NOT NULL</code>). This is consistent with the study’s “hospital births in England” frame, but it excludes home births and any births where the labour record did not link in MSDS — the latter is not random across providers.</li>
+<li><em>IMD 2015 vintage.</em> The deprivation field used (<code>IMD_Decile_2015</code>) is derived from the 2015 release of the English Indices of Deprivation. IMD 2019 is now the current vintage, and a 2025 release is anticipated. Some areas have reclassified noticeably since 2015. Findings should be interpreted as applying to the 2015 deprivation classification of the mother’s recorded address.</li>
+</ul>
+</section>
+<section id="variable-selection" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="variable-selection"><span class="header-section-number">2.4</span> Variable selection</h2>
+<p>This is a <em>causal estimation</em> problem, not a <em>prediction</em> problem, and that distinction governs the whole approach to selecting variables. The aim is not to predict NCC admission as accurately as possible; it is to estimate the association of ethnicity and deprivation with admission <em>conditional on clinical need</em>. The two goals select variables on entirely different grounds — and conflating them is the most common source of error in this kind of analysis.</p>
+<p>Because the goal is causal, each candidate variable is judged first on its <strong>causal role</strong> in relation to the question, and only then on whether it is usable:</p>
+<ul>
+<li><em>Causal role.</em> A variable is an <strong>exposure of interest</strong> (ethnicity, IMD — the inequalities we want to measure), a <strong>confounder of need</strong> (clinical case-mix that we must adjust for so that “conditional on need” is meaningful), a <strong>mediator</strong> (something on the causal pathway <em>from</em> the exposure <em>to</em> admission — which we must <strong>not</strong> adjust for if we want the total effect; doing so is the “Table 2 fallacy”), or a <strong>collider</strong> (adjusting for which would <em>open</em> bias). Confounders are candidates for adjustment; exposures are the dimensions of interest; mediators and colliders are deliberately left out, however predictive they are.</li>
+<li><em>Clinical relevance.</em> Among confounders, how strongly the variable drives genuine NCC need.</li>
+<li><em>Completeness.</em> Whether it is recorded for enough of the cohort to use without shrinking or biasing the sample. A near-complete <em>weak</em> confounder can be preferable to a strong but half-missing one, because the latter forces either a smaller complete-case sample or imputation. This is exactly the gestation-versus-birth-weight trade-off below.</li>
+<li><em>Collinearity.</em> Correlation <em>among the adjustment variables</em>. Collinearity inflates the variance of the correlated coefficients themselves, but it does <strong>not</strong> bias the ethnicity/IMD estimates unless a covariate is collinear <em>with</em> ethnicity or IMD. So correlated clinical measures are a reason for parsimony, not a threat to the headline estimates.</li>
+</ul>
+<section id="why-not-a-data-driven-search-stepwise-lasso" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="why-not-a-data-driven-search-stepwise-lasso"><span class="header-section-number">2.4.1</span> Why not a data-driven search (stepwise / LASSO)?</h3>
+<p>Algorithmic selection — stepwise regression, LASSO, and similar — optimises <em>predictive fit</em> and is blind to causal role. Such a procedure would happily adjust for a mediator (biasing the exposure estimate toward the null), or drop a true confounder because it is collinear with another. For a causal access question this is the wrong tool: it answers “what predicts admission?” when we are asking “is admission equitable conditional on need?”. Selection here is therefore <em>pre-specified on clinical and causal grounds</em> by design. Where robustness to the adjustment set matters, the appropriate check is not a data-driven search but a small set of pre-specified alternative specifications (see Recommendations).</p>
+</section>
+<section id="candidate-variables-considered" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="candidate-variables-considered"><span class="header-section-number">2.4.2</span> Candidate variables considered</h3>
+<p>The table sets out the variables that were considered, their likely causal role, whether they are present in the current extract, and the resulting decision. “In extract?” distinguishes additions that are available now from those that would need a dataset rebuild.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Likely role</th>
+<th style="text-align: center;">In extract?</th>
+<th>Decision and rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gestational age</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>In, primary.</strong> Dominant driver of need; recorded for almost every birth, so it anchors the model on the full sample.</td>
+</tr>
+<tr class="even">
+<td>Birth weight</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>In, sensitivity only.</strong> Adds genuine signal beyond gestation (small-for-gestational-age), but only ~46% complete; confined to the sensitivity model to avoid shrinking the primary sample.</td>
+</tr>
+<tr class="odd">
+<td>Apgar (5-min)</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>In, sensitivity only.</strong> Captures acute intrapartum compromise — a partly distinct axis from prematurity. Same completeness constraint as birth weight.</td>
+</tr>
+<tr class="even">
+<td>Apgar (1-min)</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>Excluded.</strong> Very highly collinear with the 5-minute score, which is the more prognostic and standard measure; little marginal information.</td>
+</tr>
+<tr class="odd">
+<td>Baby sex</td>
+<td>Confounder (weak)</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>Candidate to add now.</strong> Males carry modestly higher risk; near-complete. Cheap robustness addition; unlikely to move the headline estimates.</td>
+</tr>
+<tr class="even">
+<td>Birth order / plurality</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">Yes (<code>Birth_Order</code>)</td>
+<td><strong>Candidate to add now.</strong> Multiple births are a major driver of prematurity with different ethnicity/deprivation distributions; worth testing as a covariate.</td>
+</tr>
+<tr class="odd">
+<td>Unit type (NICU / LNU / SCBU)</td>
+<td>Structural confounder</td>
+<td style="text-align: center;">Derivable</td>
+<td><strong>Candidate to add now.</strong> Admission probability depends heavily on whether the baby was <em>born</em> in a unit with tertiary cots. Currently absorbed into the trust random effect; could be made explicit via the NNAP unit mapping.</td>
+</tr>
+<tr class="even">
+<td>Delivery method</td>
+<td><strong>Mediator / collider</strong></td>
+<td style="text-align: center;">Yes</td>
+<td><strong>Excluded by design.</strong> Plausibly downstream of fetal compromise (compromise → emergency caesarean → NCC); adjusting for it would bias the access estimate.</td>
+</tr>
+<tr class="odd">
+<td>Complex social factors / employment / disability (at booking)</td>
+<td>Part of the exposure construct</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>Excluded by design.</strong> Arguably components of the deprivation/inequality construct rather than confounders; adjusting for them could regress away part of the very inequality being measured.</td>
+</tr>
+<tr class="even">
+<td>Smoking at booking (CQIM)</td>
+<td>Confounder, partly mediator of IMD</td>
+<td style="text-align: center;">No — rebuild</td>
+<td><strong>Future.</strong> Strong driver of growth restriction and preterm birth, but correlated with deprivation, so partly <em>on</em> the IMD pathway. A natural addition; needs extraction.</td>
+</tr>
+<tr class="odd">
+<td>Maternal BMI / parity</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">No — rebuild</td>
+<td><strong>Future.</strong> Plausible upstream confounders; need extraction.</td>
+</tr>
+<tr class="even">
+<td>Maternal age</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">No — blocked</td>
+<td><strong>Future.</strong> U-shaped risk and a confounder for both exposures, but the source date-of-birth field is missing in this environment.</td>
+</tr>
+<tr class="odd">
+<td>Gestational diabetes / hypertension / pre-eclampsia</td>
+<td>Confounder (need)</td>
+<td style="text-align: center;">No — rebuild</td>
+<td><strong>Future.</strong> Drive prematurity and NCC need; need extraction.</td>
+</tr>
+<tr class="even">
+<td>Postpartum haemorrhage (CQIM)</td>
+<td>Maternal outcome (not a clean confounder)</td>
+<td style="text-align: center;">No — rebuild</td>
+<td><strong>Future, descriptive only.</strong> A maternal <em>intrapartum</em> outcome largely downstream of the determinants of the baby’s need; its link to <em>neonatal</em> CC is weak and via shared causes. Worth a descriptive look, but not a case-mix adjustment.</td>
+</tr>
+<tr class="odd">
+<td>Congenital anomaly</td>
+<td>Confounder / part-outcome</td>
+<td style="text-align: center;">No — rebuild</td>
+<td><strong>Future, with caution.</strong> A strong driver of admission, but MSDS ascertainment is poor and it is arguably part outcome rather than pure case-mix.</td>
+</tr>
+<tr class="even">
+<td>Ethnicity (disaggregated)</td>
+<td><strong>Exposure</strong></td>
+<td style="text-align: center;">Yes</td>
+<td><strong>In.</strong> The granularity itself is a finding (within-Asian heterogeneity). A <a href="#broad-ethnicity">broad MBRRACE-style grouping</a> is presented alongside for comparability and small-number stability.</td>
+</tr>
+<tr class="odd">
+<td>IMD quintile</td>
+<td><strong>Exposure</strong></td>
+<td style="text-align: center;">Yes</td>
+<td><strong>In.</strong> Area-level deprivation of the mother’s recorded address (2015 vintage; see above).</td>
+</tr>
+<tr class="even">
+<td>Delivery trust</td>
+<td>Random effect</td>
+<td style="text-align: center;">Yes</td>
+<td><strong>In.</strong> Random intercept; see <em>Random-effect Grouping</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>In short, the primary model deliberately carries the need signal on gestation alone — the one near-complete clinical confounder — adds the two exposures of interest, and leaves the trust structure to the random intercept. The sensitivity model adds birth weight and Apgar where they are observed. The remaining candidates are excluded either <em>by causal role</em> (mediators, colliders, and components of the exposure construct) or <em>by data availability</em> (factors awaiting a dataset rebuild), and are picked up as future work rather than omitted for convenience.</p>
+</section>
+</section>
+<section id="statistical-approach" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="statistical-approach"><span class="header-section-number">2.5</span> Statistical Approach</h2>
+<p>We fitted three models:</p>
+<ol type="1">
+<li><p>Model 1 (Fixed effects only): Standard logistic regression adjusting for gestation, ethnicity, and deprivation. Included as a stepping-stone reference.</p></li>
+<li><p>Model 2 (Mixed effects, gestation only): Hierarchical logistic regression with random intercepts for delivery trust, adjusting only for gestation among clinical covariates <span class="math display">\[\text{logit}(P[\text{NCC}]) = \beta_0 + \beta_1 \text{Gestation} + \beta_2 \text{Ethnicity} + \beta_3 \text{IMD} + u_j\]</span> where <span class="math inline">\(u_j \sim N(0, \sigma^2_u)\)</span> represents the random effect for delivery trust <span class="math inline">\(j\)</span>. Reported because it uses the maximum sample size (gestation is near-completely observed).</p></li>
+<li><p>Model 3 (Mixed effects, full clinical adjustment): Adds birth weight and Apgar 5-minute score to Model 2’s specification <span class="math display">\[\text{logit}(P[\text{NCC}]) = \beta_0 + \beta_1 \text{Gestation} + \beta_2 \text{BirthWeight} + \beta_3 \text{Apgar} + \beta_4 \text{Ethnicity} + \beta_5 \text{IMD} + u_j\]</span></p></li>
+</ol>
+<p>Conceptually Model 3 is the preferred specification — it adjusts for the clinical case-mix that drives NCC need rather than relying on gestation alone — and we lead the interpretation with its results. Model 2 is reported in parallel because of its larger sample (gestation is observed for nearly all births, whereas birth weight and Apgar are observed for 45.9% of the primary sample). Where the two models disagree (notably for Pakistani and Indian ethnic groups), the disagreement itself is informative and is discussed below.</p>
+</section>
+<section id="birth-weight-data-source" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="birth-weight-data-source"><span class="header-section-number">2.6</span> Birth Weight Data Source</h2>
+<p>The sensitivity model uses birth weight from MSDS only (<code>Birth_Weight_Grams</code>), not the combined MSDS+CC variable. This avoids differential missingness bias: the CC data has 94% birth weight completeness for NCC babies vs 46% for non-NCC babies, which would artificially inflate NCC rates in complete cases.</p>
+</section>
+<section id="random-effect-grouping" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="random-effect-grouping"><span class="header-section-number">2.7</span> Random-effect Grouping</h2>
+<p>The hierarchical models cluster babies at the level of the submitting NHS trust (3-letter provider code), not the individual delivery site (5-letter code). Two practical considerations drove this:</p>
+<ol type="1">
+<li><p><em>Coverage.</em> MSDS populates the site-of-delivery field (<code>Org_Site_ID_Actual_Place_Delivery</code>) for ~83% of babies; the remaining ~17% have no site recorded but do have a submitting-trust code (<code>OrgCodeProvider</code>) populated for 100% of records. The no-site cohort is concentrated in 15 large multi-site trusts and is not random with respect to outcome (NCC rate 14.2% vs 11.5% in the with-site cohort), ethnicity (more Pakistani, fewer Indian) or deprivation. Excluding it on a missing-site filter would bias the model.</p></li>
+<li><p><em>Hierarchy.</em> Site codes (e.g.&nbsp;<code>RYJ01</code>) sit administratively <em>inside</em> trust codes (e.g.&nbsp;<code>RYJ</code>). Treating “RYJ01” babies and “RYJ-trust-only” babies as independent random-effect groups would double-count trust-level variance and break the exchangeability assumption. Clustering at trust level for everyone keeps a single consistent rung.</p></li>
+</ol>
+<p>The grouping variable is constructed as <code>Delivery_Trust = coalesce(LEFT(Delivery_Site_Code, 3), Submitting_Org_Code)</code>, then used as the random-intercept term <code>(1 | Delivery_Trust)</code>. For multi-site trusts (Imperial, Leicester, Barts, etc.), within-trust between-site variation is folded into the residual rather than the random effect; the reported ICC is therefore a slightly conservative estimate of between-hospital variation.</p>
+<section id="why-mixed-effects" class="level3" data-number="2.7.1">
+<h3 data-number="2.7.1" class="anchored" data-anchor-id="why-mixed-effects"><span class="header-section-number">2.7.1</span> Why mixed effects?</h3>
+<p>A standard regression would treat all 500,000+ babies as independent draws from one giant, uniform hospital. They are not: babies are clustered within trusts, and the baseline likelihood of NCC admission varies widely between trusts — through clinical thresholds, local capacity and reporting practice. Ignoring that clustering has two costs. It understates uncertainty (babies within a hospital partly repeat the same hospital-level information), and it can generate false findings: if an ethnic group happens to be concentrated around hospitals that admit (or report) more, a standard model would attribute the hospital’s behaviour to the group.</p>
+<p>The mixed-effects model fixes this by giving each trust its own baseline admission rate (a “random intercept”), with the trust baselines treated as draws from a common distribution. The patient-level effects — ethnicity, deprivation, clinical need — are then estimated with the hospital baseline held constant. So when we report that the most deprived quintile has 9.4% higher odds of admission, it means: for two clinically identical babies born in the <em>same</em> trust, the baby from the most deprived area is 9.4% more likely to be admitted.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="results" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
+<section id="model-1-fixed-effects-logistic-regression" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="model-1-fixed-effects-logistic-regression"><span class="header-section-number">3.1</span> Model 1: Fixed Effects Logistic Regression</h2>
+<p>We start with a standard logistic regression on the full sample — a reference point and stepping stone to the mixed-effects models.</p>
+<section id="odds-ratios" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="odds-ratios"><span class="header-section-number">3.1.1</span> Odds Ratios</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Odds Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">95% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p-value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="1">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Clinical</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Gestation (per week)</td>
+<td style="text-align: right;">0.654</td>
+<td style="text-align: center;">(0.651, 0.657)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Ethnicity (ref: White British)</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: White Other</td>
+<td style="text-align: right;">0.770</td>
+<td style="text-align: center;">(0.744, 0.795)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Mixed</td>
+<td style="text-align: right;">0.876</td>
+<td style="text-align: center;">(0.843, 0.909)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Indian</td>
+<td style="text-align: right;">0.885</td>
+<td style="text-align: center;">(0.847, 0.925)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Pakistani</td>
+<td style="text-align: right;">0.713</td>
+<td style="text-align: center;">(0.681, 0.746)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Bangladeshi</td>
+<td style="text-align: right;">0.715</td>
+<td style="text-align: center;">(0.662, 0.77)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Other Asian</td>
+<td style="text-align: right;">0.871</td>
+<td style="text-align: center;">(0.823, 0.921)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Black</td>
+<td style="text-align: right;">0.925</td>
+<td style="text-align: center;">(0.89, 0.962)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Chinese</td>
+<td style="text-align: right;">0.608</td>
+<td style="text-align: center;">(0.507, 0.724)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Other</td>
+<td style="text-align: right;">0.723</td>
+<td style="text-align: center;">(0.677, 0.771)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd" data-grouplength="4">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Deprivation (ref: Least Deprived)</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 4</td>
+<td style="text-align: right;">0.988</td>
+<td style="text-align: center;">(0.957, 1.021)</td>
+<td style="text-align: right;">0.486</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 3</td>
+<td style="text-align: right;">1.013</td>
+<td style="text-align: center;">(0.981, 1.046)</td>
+<td style="text-align: right;">0.447</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 2</td>
+<td style="text-align: right;">1.031</td>
+<td style="text-align: center;">(0.999, 1.064)</td>
+<td style="text-align: right;">0.055</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 1 - Most deprived</td>
+<td style="text-align: right;">1.022</td>
+<td style="text-align: center;">(0.991, 1.054)</td>
+<td style="text-align: right;">0.163</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><small>Significance: *** p&lt;0.001, ** p&lt;0.01, * p&lt;0.05</small></p>
+<hr>
+</section>
+</section>
+<section id="model-2-mixed-effects-logistic-regression" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="model-2-mixed-effects-logistic-regression"><span class="header-section-number">3.2</span> Model 2: Mixed Effects Logistic Regression</h2>
+<p>The mixed effects model adds random intercepts for delivery trust, allowing each provider to have its own baseline NCC admission rate.</p>
+<section id="fixed-effects-odds-ratios" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="fixed-effects-odds-ratios"><span class="header-section-number">3.2.1</span> Fixed Effects (Odds Ratios)</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Odds Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">95% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p-value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p (BH-adj)</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="1">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Clinical</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Gestation (per week)</td>
+<td style="text-align: right;">0.619</td>
+<td style="text-align: center;">(0.616, 0.622)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Ethnicity (ref: White British)</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: White Other</td>
+<td style="text-align: right;">0.924</td>
+<td style="text-align: center;">(0.892, 0.958)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Mixed</td>
+<td style="text-align: right;">0.942</td>
+<td style="text-align: center;">(0.905, 0.981)</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: left;">**</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Indian</td>
+<td style="text-align: right;">1.054</td>
+<td style="text-align: center;">(1.005, 1.105)</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">0.048</td>
+<td style="text-align: left;">*</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Pakistani</td>
+<td style="text-align: right;">0.889</td>
+<td style="text-align: center;">(0.845, 0.935)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Bangladeshi</td>
+<td style="text-align: right;">1.060</td>
+<td style="text-align: center;">(0.976, 1.15)</td>
+<td style="text-align: right;">0.169</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Other Asian</td>
+<td style="text-align: right;">1.013</td>
+<td style="text-align: center;">(0.954, 1.074)</td>
+<td style="text-align: right;">0.679</td>
+<td style="text-align: right;">0.679</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Black</td>
+<td style="text-align: right;">1.037</td>
+<td style="text-align: center;">(0.994, 1.082)</td>
+<td style="text-align: right;">0.089</td>
+<td style="text-align: right;">0.115</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Chinese</td>
+<td style="text-align: right;">0.695</td>
+<td style="text-align: center;">(0.578, 0.835)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Ethnicity: Other</td>
+<td style="text-align: right;">0.926</td>
+<td style="text-align: center;">(0.865, 0.991)</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">0.048</td>
+<td style="text-align: left;">*</td>
+</tr>
+<tr class="odd" data-grouplength="4">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Deprivation (ref: Least Deprived)</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 4</td>
+<td style="text-align: right;">1.016</td>
+<td style="text-align: center;">(0.981, 1.051)</td>
+<td style="text-align: right;">0.383</td>
+<td style="text-align: right;">0.383</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 3</td>
+<td style="text-align: right;">1.063</td>
+<td style="text-align: center;">(1.027, 1.1)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 2</td>
+<td style="text-align: right;">1.108</td>
+<td style="text-align: center;">(1.071, 1.147)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 1 - Most deprived</td>
+<td style="text-align: right;">1.101</td>
+<td style="text-align: center;">(1.064, 1.14)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: left;">***</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="padding: 0; border: 0"><sup></sup> BH-adjusted p-values are computed within each test family separately (9 ethnicity contrasts; 4 IMD contrasts).</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+</section>
+<section id="forest-plot-ethnicity-and-deprivation" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="forest-plot-ethnicity-and-deprivation"><span class="header-section-number">3.2.2</span> Forest Plot: Ethnicity and Deprivation</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-forest" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-forest-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Odds ratios for NCC admission by ethnicity and deprivation (adjusted for gestation, with hospital random effects)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="random-effects-hospital-variation" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="random-effects-hospital-variation"><span class="header-section-number">3.2.3</span> Random Effects: Hospital Variation</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Random effect variance (delivery trust)</td>
+<td style="text-align: right;">1.5236</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Random effect SD</td>
+<td style="text-align: right;">1.2343</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Intraclass Correlation (ICC)</td>
+<td style="text-align: right;">0.3165</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of delivery trusts</td>
+<td style="text-align: right;">131.0000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Interpreting the ICC
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Intraclass Correlation Coefficient (ICC) of 0.317 means that approximately 31.7% of the unexplained variation in NCC admission (after accounting for gestation, ethnicity and deprivation) sits <em>between</em> delivery trusts rather than between babies. This is the largest residual signal in the model — but it bundles clinical practice, capacity, case-mix and reporting differences together. What it can and cannot be taken to mean is unpacked in the Interpretation section (<a href="#hospital-variation-the-largest-signal-read-with-care">Hospital Variation</a>).</p>
+<p>Because we cluster at trust rather than site level, within-trust between-site variation is absorbed into the residual; the ICC is a slightly conservative estimate of between-hospital variation.</p>
+</div>
+</div>
+</section>
+<section id="distribution-of-hospital-effects" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="distribution-of-hospital-effects"><span class="header-section-number">3.2.4</span> Distribution of Hospital Effects</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-hospital-effects" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hospital-effects-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-hospital-effects-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hospital-effects-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Distribution of hospital-level random effects (log-odds scale)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-caterpillar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-caterpillar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-caterpillar-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-caterpillar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Hospital-level effects ranked from lowest to highest NCC admission rate (after case-mix adjustment)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="funnel-plot-case-mix-adjusted-admission-rates" class="level3" data-number="3.2.5">
+<h3 data-number="3.2.5" class="anchored" data-anchor-id="funnel-plot-case-mix-adjusted-admission-rates"><span class="header-section-number">3.2.5</span> Funnel Plot: Case-mix-adjusted Admission Rates</h3>
+<p>The review suggested a funnel plot — as used in the GIRFT programme — as an alternative to the caterpillar plot above. The two show the same trust-level variation but answer slightly different questions. The caterpillar ranks trusts by their estimated random effect; the funnel asks, more directly, <em>which trusts admit at a rate that case-mix alone cannot explain?</em></p>
+<p>Each trust is plotted against the number of NCC admissions we would <strong>expect</strong> given the case-mix of the babies born there (gestation, ethnicity and deprivation), using the fixed-effects part of the primary model — i.e.&nbsp;the model with the trust’s own random effect removed. The horizontal line is the national crude NCC rate across the trusts plotted (~12%; this is computed on the complete-case modelling sample used for the funnel and so sits marginally below the ~13% rate for the full birth cohort reported elsewhere). The curved lines are 95% and 99.8% control limits. A trust inside the funnel is varying no more than chance would predict; a trust outside the 99.8% (≈3-sigma) limit is a statistical outlier. Because the genuine between-trust variation is large (the same signal as the ICC), the limits are widened to account for this overdispersion (see the method note below), so that only the most extreme trusts are flagged rather than the majority.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-funnel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-funnel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-funnel-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-funnel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Funnel plot of case-mix-adjusted NCC admission rates by delivery trust. Points outside the 99.8% limits admit at a rate that case-mix and chance alone do not explain. Adjusted for gestation, ethnicity and IMD via the primary model’s fixed effects (trust random effect removed).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>An extreme position can reflect genuine practice variation, but equally a tertiary referral centre (which legitimately admits more), or a provider whose MSDS / PbR-CC submission is out of step with peers. The table below flags each 99.8% outlier with its neonatal unit type (NICU units are tertiary and expected to sit high) and its <strong>MSDS source share</strong> — the proportion of the trust’s NCC babies that appear in the MSDS neonatal record rather than only in the CC extract. A low share points to under-submission in MSDS and heavier reliance on the CC source: a data-quality signal rather than a clinical one. Note, though, that a low share changes <em>where</em> an admission is recorded, not <em>whether</em> it is counted — the combined admission flag picks a baby up from either source — so MSDS under-submission cannot by itself inflate a trust’s admission rate (see the diagnostic below).</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Trusts outside the 99.8% control limits (4 higher than expected, 0 lower)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Outlier</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Unit type</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Observed rate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Adjusted rate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SAR</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Direction</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">MSDS source share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Outlier 1</td>
+<td style="text-align: left;">LNU</td>
+<td style="text-align: right;">4,967</td>
+<td style="text-align: right;">44.2%</td>
+<td style="text-align: right;">46.5%</td>
+<td style="text-align: right;">3.89</td>
+<td style="text-align: left;">Higher than expected</td>
+<td style="text-align: right;">15%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outlier 2</td>
+<td style="text-align: left;">NICU</td>
+<td style="text-align: right;">4,720</td>
+<td style="text-align: right;">28.5%</td>
+<td style="text-align: right;">27.6%</td>
+<td style="text-align: right;">2.30</td>
+<td style="text-align: left;">Higher than expected</td>
+<td style="text-align: right;">1%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Outlier 3</td>
+<td style="text-align: left;">NICU</td>
+<td style="text-align: right;">6,889</td>
+<td style="text-align: right;">29%</td>
+<td style="text-align: right;">27.3%</td>
+<td style="text-align: right;">2.28</td>
+<td style="text-align: left;">Higher than expected</td>
+<td style="text-align: right;">0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outlier 4</td>
+<td style="text-align: left;">LNU</td>
+<td style="text-align: right;">10,324</td>
+<td style="text-align: right;">25.8%</td>
+<td style="text-align: right;">26.7%</td>
+<td style="text-align: right;">2.23</td>
+<td style="text-align: left;">Higher than expected</td>
+<td style="text-align: right;">32%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>At face value the four flagged trusts appear to split into two readable groups: two tertiary NICUs whose MSDS source share is near zero — suggesting a reporting gap combined with legitimate referral-centre activity — and two local neonatal units (LNUs) admitting well above expectation, seemingly the more natural candidates for genuine practice variation. An earlier draft of this section presented exactly that reading. Follow-up discussion raised the right challenge to it: is the outlier signal really about the <strong>completeness of the records</strong> these trusts submit, or just the <strong>completeness of specific fields</strong> on records that are present? The diagnostic below tests both mechanisms directly — and finds that neither holds. All four outliers instead share a single, different signature.</p>
+<section id="outlier-completeness" class="level4" data-number="3.2.5.1">
+<h4 data-number="3.2.5.1" class="anchored" data-anchor-id="outlier-completeness"><span class="header-section-number">3.2.5.1</span> Missing records, missing fields, or a broader numerator?</h4>
+<p>Three data mechanisms could place a trust spuriously outside the funnel:</p>
+<ol type="1">
+<li><strong>Record-level completeness</strong> — the trust submits few MSDS birth records, so its denominator is a small, unrepresentative slice of its true delivery population.</li>
+<li><strong>Field-level completeness</strong> — births are submitted, but the model fields (gestation, ethnicity, IMD) are missing, so the complete-case sample keeps a selected — likely sicker, better-documented — subset of its births.</li>
+<li><strong>Numerator breadth</strong> — the denominator is sound, but the trust’s PbR-CC return counts more of its neonatal unit activity as “NCC” days than peers’ returns do.</li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Completeness and numerator diagnostics for the funnel outliers, against all other trusts. Outlier numbering matches the outlier table above.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Trust</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">All model fields present</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Preterm (&lt;37w) births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NCC rate, all births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NCC rate, term births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NCC in CC source only</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NCC stays of 2 days or less</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Outlier 1</td>
+<td style="text-align: right;">5,343</td>
+<td style="text-align: right;">93%</td>
+<td style="text-align: right;">8.3%</td>
+<td style="text-align: right;">41.5%</td>
+<td style="text-align: right;">39.9%</td>
+<td style="text-align: right;">85%</td>
+<td style="text-align: right;">72%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outlier 2</td>
+<td style="text-align: right;">4,868</td>
+<td style="text-align: right;">97%</td>
+<td style="text-align: right;">8.5%</td>
+<td style="text-align: right;">29.0%</td>
+<td style="text-align: right;">23.0%</td>
+<td style="text-align: right;">99%</td>
+<td style="text-align: right;">40%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Outlier 3</td>
+<td style="text-align: right;">6,932</td>
+<td style="text-align: right;">99%</td>
+<td style="text-align: right;">8.7%</td>
+<td style="text-align: right;">29.0%</td>
+<td style="text-align: right;">24.4%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">39%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outlier 4</td>
+<td style="text-align: right;">10,822</td>
+<td style="text-align: right;">95%</td>
+<td style="text-align: right;">7.7%</td>
+<td style="text-align: right;">25.5%</td>
+<td style="text-align: right;">21.0%</td>
+<td style="text-align: right;">68%</td>
+<td style="text-align: right;">47%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">All other trusts</td>
+<td style="text-align: right;">478,691</td>
+<td style="text-align: right;">94%</td>
+<td style="text-align: right;">7.9%</td>
+<td style="text-align: right;">10.9%</td>
+<td style="text-align: right;">7.2%</td>
+<td style="text-align: right;">74%</td>
+<td style="text-align: right;">24%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The table rules out the first two mechanisms for all four outliers:</p>
+<ul>
+<li><strong>Their birth records are present in expected volumes.</strong> Each outlier trust submitted between roughly 4,900 and 10,800 births — all above the median trust (~3,700) — in line with their real delivery-service size. This is nothing like a missing-denominator pattern.</li>
+<li><strong>Their field completeness is unremarkable.</strong> 93–99% of their births carry all three model fields (nationally 94%), and each trust’s crude NCC rate is essentially unchanged when restricted to the model-usable subset. Complete-case selection is not what lifts them out of the funnel.</li>
+<li>A third explanation also fails on arithmetic: <strong>referral activity cannot raise a trust’s position in a delivery-cohort funnel.</strong> The funnel counts babies <em>born</em> at each trust, and over 99% of the NCC recorded for those babies was provided by the delivery trust itself. Transfers into a tertiary unit never enter its numerator here.</li>
+</ul>
+<p>What remains — and what the right-hand columns show — is the third data mechanism. At the outlier trusts, 21–40% of <em>term</em> (≥37-week) babies carry an NCC record, against ~7% everywhere else, while their preterm birth shares are unremarkable (7.7–8.7%, national 7.9%). Their admitted babies are correspondingly term-heavy and their recorded stays short; at three of the four trusts the admissions are also recorded almost entirely in the CC extract. A true critical-care rate of one in four term births is not clinically plausible; the far more likely reading is that these providers return a broader span of neonatal unit activity — special or transitional care, possibly routine observation — as NCC critical-care days in PbR-CC. This extract cannot fully separate “admits more term babies to the unit” (practice) from “codes more unit days as critical care” (recording), because the care-level fields that would settle it (Level 2/3 days, unit function) are unpopulated here; but the recording component is likely dominant.</p>
+<p>Two consequences follow. First, the NICU-vs-LNU split above dissolves: the near-zero MSDS source share at the two NICU outliers is a genuine reporting gap, but it cannot inflate their rate, and all four outliers share the same term-heavy, short-stay signature. Second, the practical follow-up changes: the first question for these trusts is not “why do you admit so much?” but “what unit activity does your PbR-CC return count as an NCC day?” — a data-definition conversation before a clinical-practice one. This also sharpens the caution attached to the ICC throughout this report: a material share of the apparent between-trust variation is reporting breadth, not admission practice. (Trust identities are held internally and omitted from this published version.)</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>How the funnel is built
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Expected admissions are the population-average (case-mix only) predictions from the primary model with the trust random effect removed (<code>predict(..., re.form = NA)</code>), aggregated per trust and indirectly standardised so the national observed/expected ratio is 1. Control limits use the standard funnel formulation (Spiegelhalter, <em>Statistics in Medicine</em>, 2005): on the standardised-ratio scale the limits are <span class="math inline">\(1 \pm z\sqrt{\phi}/\sqrt{E}\)</span>, shown here multiplied by the national crude rate.</p>
+<p>Because between-trust variation here is far larger than binomial sampling noise (the same signal as the ICC), the limits include a <strong>multiplicative overdispersion factor</strong> <span class="math inline">\(\phi\)</span>, estimated from the winsorised standardised residuals so that a handful of extreme trusts do not themselves inflate it. Without this adjustment almost every trust would fall outside the limits — a true reflection of the large ICC, but useless for isolating individual outliers. Even so, the same data-quality caveats apply as to the ICC: MSDS / PbR-CC submission completeness varies between providers, so outliers should be read as <em>flags for follow-up</em>, not as confirmed differences in admission practice. The completeness diagnostic above shows how to separate these readings — for the current outliers the evidence points to numerator breadth in the PbR-CC return rather than either missing records or missing fields.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+</section>
+<section id="interpretation" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Interpretation</h1>
+<section id="clinical-factors" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="clinical-factors"><span class="header-section-number">4.1</span> Clinical Factors</h2>
+<p>Gestation is by far the strongest predictor of NCC admission:</p>
+<ul>
+<li>Each additional week of gestation reduces the odds of NCC admission by approximately 38%</li>
+<li>This confirms that the model is capturing genuine clinical need</li>
+<li>Preterm babies are appropriately more likely to be admitted to NCC</li>
+</ul>
+</section>
+<section id="ethnicity" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="ethnicity"><span class="header-section-number">4.2</span> Ethnicity</h2>
+<p>After adjusting for gestation and comparing within trusts, most ethnic groups sit within a few percent of parity with White British babies (full estimates in the Model 2 table and <a href="#fig-forest" class="quarto-xref">Figure&nbsp;1</a>). Three patterns carry the story: the <strong>Black</strong> group sits at near-exact parity; <strong>Pakistani</strong> and <strong>Chinese</strong> babies sit below parity in this model; and <strong>Indian</strong> and <strong>Bangladeshi</strong> babies sit slightly above. What happens to each of these once birth weight and Apgar are added is the key to interpreting them — that is the subject of the callout below.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Interpreting Ethnicity Findings
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Some ethnic minority groups (Pakistani, Chinese) show lower odds of NCC admission than White British babies in the primary model. The sensitivity analysis (see below) helps interpret this:</p>
+<p>After adjusting for birth weight and Apgar:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 22%">
+<col style="width: 32%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Group</th>
+<th>Primary OR</th>
+<th>Sensitivity OR</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pakistani</td>
+<td>0.89</td>
+<td>0.97</td>
+<td>Moves towards parity—clinical factors explain much of the difference</td>
+</tr>
+<tr class="even">
+<td>Chinese</td>
+<td>0.70</td>
+<td>0.76</td>
+<td>Still notably lower, though M3 sits at the boundary of nominal significance</td>
+</tr>
+<tr class="odd">
+<td>Indian</td>
+<td>1.05</td>
+<td>1.16</td>
+<td>Increases further—higher access after clinical adjustment</td>
+</tr>
+<tr class="even">
+<td>Bangladeshi</td>
+<td>1.06</td>
+<td>1.17</td>
+<td>Similar pattern to Indian—higher access after clinical adjustment</td>
+</tr>
+<tr class="odd">
+<td>Black</td>
+<td>1.04</td>
+<td>1.04</td>
+<td>Stable—equitable access confirmed</td>
+</tr>
+</tbody>
+</table>
+<p>Key insights:</p>
+<ol type="1">
+<li><p>Pakistani: The lower OR in the primary model is largely explained by clinical factors (birth weight, Apgar). After adjustment, Pakistani babies have near-equal NCC odds.</p></li>
+<li><p>Chinese: ~24% lower odds remain after clinical adjustment, sitting at the boundary of nominal significance in the smaller M3 sample (and the BH-adjusted p in the M2 table is the appropriate test of evidence). We cannot determine the cause from this dataset, and several explanations are plausible:</p>
+<ul>
+<li><em>Residual case-mix confounding</em> — Chinese babies have lower mean birth weight at term in UK data; the linear birth-weight covariate may not fully capture this.</li>
+<li><em>Lower upstream clinical risk</em> — different age structure, parity distribution, or rates of high-risk pregnancy among Chinese mothers.</li>
+<li><em>Sample size and CI width</em> — Chinese is one of the smaller ethnic groups in the cohort; the OR is reasonably precise but the BH-adjusted p-value is the appropriate test of evidence (see the Model 2 table).</li>
+<li><em>Care-seeking and access differences</em> — different patterns of antenatal engagement, including selective access to private antenatal care.</li>
+<li><em>Ascertainment differences</em> — possible under-recording of NCC episodes in this group, though we have no direct evidence for this.</li>
+</ul>
+<p>These cannot be distinguished without further work (e.g.&nbsp;richer clinical covariates, or qualitative engagement with maternity providers).</p></li>
+<li><p>Indian: Higher odds <em>increase</em> after clinical adjustment, suggesting NCC use is at least proportionate to clinical need at given gestation/birth weight/Apgar.</p></li>
+<li><p>Within-Asian heterogeneity: The differences between Indian (OR 1.16), Pakistani (OR 0.97), and Bangladeshi (OR 1.17) after adjustment demonstrate why disaggregated analysis is essential.</p></li>
+</ol>
+</div>
+</div>
+<section id="broad-ethnicity" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="broad-ethnicity"><span class="header-section-number">4.2.1</span> A broad, MBRRACE-comparable grouping</h3>
+<p>MBRRACE-UK reports present their headline ethnicity findings using broad groups (White, Mixed, Asian, Black, Other), and it is a fair question whether the ten-category grouping used here is more detailed than the data can support. To allow direct comparison, the primary model was refitted on the <strong>same 476,475 births</strong> with ethnicity collapsed to the five broad ONS groups; every other part of the model specification is unchanged. The broad grouping is an exact aggregation of the detailed one (each detailed category maps into exactly one broad group), so any difference between the two tables below is purely a consequence of the grouping choice.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Broad group</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Odds Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">95% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p (BH-adj)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mixed</td>
+<td style="text-align: right;">34,021</td>
+<td style="text-align: right;">0.955</td>
+<td style="text-align: center;">(0.918, 0.994)</td>
+<td style="text-align: right;">0.033</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Asian or Asian British</td>
+<td style="text-align: right;">72,199</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: center;">(0.973, 1.035)</td>
+<td style="text-align: right;">0.834</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Black or Black British</td>
+<td style="text-align: right;">31,079</td>
+<td style="text-align: right;">1.054</td>
+<td style="text-align: center;">(1.011, 1.099)</td>
+<td style="text-align: right;">0.026</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Other (incl. Chinese)</td>
+<td style="text-align: right;">14,110</td>
+<td style="text-align: right;">0.907</td>
+<td style="text-align: center;">(0.851, 0.967)</td>
+<td style="text-align: right;">0.011</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0; border: 0;"><sup></sup> Reference: White (n = 325,066). Same model specification and sample as Model 2; only the ethnicity grouping differs. BH adjustment across the 4 broad contrasts.</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-broad-ethnicity" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-broad-ethnicity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-broad-ethnicity-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-broad-ethnicity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Broad MBRRACE-style ethnicity groups (diamonds) and the detailed groups they contain (circles), from two otherwise-identical models on the same births. The broad ‘Asian or Asian British’ estimate averages away the opposite-signed Indian/Bangladeshi and Pakistani patterns; the Chinese estimate is absorbed into ‘Other’.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>What the broad grouping shows — and what it hides.</strong> At the broad level the story is simple: the Asian or Asian British group sits at OR 1.00, the Black or Black British group at 1.05, and no broad group deviates dramatically from the White reference. That is a useful headline for comparison with MBRRACE-style reporting, and it confirms that no broad ethnic group faces large systematic under-admission at national level.</p>
+<p>But <a href="#fig-broad-ethnicity" class="quarto-xref">Figure&nbsp;5</a> shows what the aggregation costs. The single broad Asian estimate is a weighted average of detailed groups whose estimates point in <em>opposite directions</em> — Pakistani below parity, Indian and Bangladeshi above it (a spread from 0.89 to 1.06) — and these are not noise: the sensitivity analysis showed they respond differently to clinical adjustment, which is exactly the behaviour of real, distinct patterns of need and access. Likewise, the Chinese group — the largest single-group deviation in the analysis (OR 0.70) — is diluted into the broad “Other” category, where a 30% deficit attached to an identifiable group becomes a 9% deficit attached to a heterogeneous residual one. A model using only broad groups would have reported near-exact parity for Asian babies and a modest unattributable deficit for “Other” — losing the two most interpretable ethnicity findings in this report.</p>
+<p>This is why the report leads with the detailed grouping and treats the broad grouping as a comparability view rather than the primary analysis. The multiple-testing cost of the extra detail is handled explicitly (Benjamini–Hochberg adjustment within the ethnicity family), and MBRRACE itself disaggregates beyond the broad groups in its extended tables where numbers allow. The recommendation that follows is about <em>reporting</em>, not remodelling: broad groups are the right currency for headline cross-programme comparison, but equity monitoring should retain the disaggregated view, because the groups with the clearest signals in these data are precisely the ones the broad categories average away.</p>
+</section>
+</section>
+<section id="focus-black-ethnicity-and-the-maternity-review-context" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="focus-black-ethnicity-and-the-maternity-review-context"><span class="header-section-number">4.3</span> Focus: Black Ethnicity and the Maternity Review Context</h2>
+<p>Given the focus of recent maternity reviews on outcomes for Black mothers and babies, this section provides detailed analysis of NCC access for Black ethnic groups.</p>
+<section id="raw-ncc-admission-rates" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="raw-ncc-admission-rates"><span class="header-section-number">4.3.1</span> Raw NCC Admission Rates</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>NCC admission rates by Black ethnic subgroup</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Ethnic Group</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NCC Admissions</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">NCC Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">White British</td>
+<td style="text-align: right;">275,252</td>
+<td style="text-align: right;">34,831</td>
+<td style="text-align: right;">12.7%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Black Caribbean</td>
+<td style="text-align: right;">3,985</td>
+<td style="text-align: right;">501</td>
+<td style="text-align: right;">12.6%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Black African</td>
+<td style="text-align: right;">24,530</td>
+<td style="text-align: right;">3,142</td>
+<td style="text-align: right;">12.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Other Black</td>
+<td style="text-align: right;">3,443</td>
+<td style="text-align: right;">453</td>
+<td style="text-align: right;">13.2%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Key Finding: Equitable Access for Black Babies
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Black babies have NCC admission rates essentially identical to White British babies (13.4-13.8% vs 13.4%). This is in contrast to some other ethnic minority groups (Pakistani, Chinese) who show lower admission rates.</p>
+<p>The model estimates confirm this:</p>
+<ul>
+<li>Primary model OR: 1.04 (very close to parity)</li>
+<li>Sensitivity model OR: 1.04 (unchanged after clinical adjustment)</li>
+</ul>
+<p>After adjusting for clinical factors (birth weight, Apgar), Black babies show essentially the same ~4% higher NCC odds, suggesting the system is responding appropriately — and slightly more — to higher clinical need.</p>
+</div>
+</div>
+</section>
+<section id="clinical-context-higher-need-equitable-access" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="clinical-context-higher-need-equitable-access"><span class="header-section-number">4.3.2</span> Clinical Context: Higher Need, Equitable Access</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Characteristic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">White British</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Black</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mean birth weight (g)</td>
+<td style="text-align: right;">3,322</td>
+<td style="text-align: right;">3,196</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Low birth weight (&lt;2500g)</td>
+<td style="text-align: right;">7.8%</td>
+<td style="text-align: right;">9.9%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Low Apgar 5-min (&lt;7)</td>
+<td style="text-align: right;">2.1%</td>
+<td style="text-align: right;">3.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Most deprived IMD quintile</td>
+<td style="text-align: right;">19.8%</td>
+<td style="text-align: right;">44.6%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Black babies have higher clinical need on average:</p>
+<ul>
+<li>Lower birth weights (126g lower mean)</li>
+<li>Higher rates of low Apgar scores (3.0% vs 2.1%)</li>
+<li>Much higher concentration in deprived areas (44.6% vs 19.8% in most deprived quintile)</li>
+</ul>
+<p>Despite these risk factors, NCC admission rates are similar. After adjusting for clinical factors in the sensitivity model, Black babies show <em>slightly higher</em> odds of NCC admission (OR 1.04), suggesting the system is appropriately responding to clinical need.</p>
+</section>
+<section id="hospital-level-variation" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="hospital-level-variation"><span class="header-section-number">4.3.3</span> Hospital-Level Variation</h3>
+<p>While overall access is equitable, there is variation between providers:</p>
+<ul>
+<li>93 trusts have sufficient Black births (≥50) for comparison</li>
+<li>61 (66%) have Black NCC rates higher than White</li>
+<li>13 trusts have disparities exceeding 5 percentage points</li>
+<li>Mean difference: +1.3 percentage points (Black vs White)</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Trusts with &gt;5pp Black-White NCC rate disparity</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Trust</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Black Rate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">White Rate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Difference</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Black Births</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Trust 1</td>
+<td style="text-align: right;">36.3%</td>
+<td style="text-align: right;">24%</td>
+<td style="text-align: right;">+12.2pp</td>
+<td style="text-align: right;">601</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trust 2</td>
+<td style="text-align: right;">31.4%</td>
+<td style="text-align: right;">19.6%</td>
+<td style="text-align: right;">+11.9pp</td>
+<td style="text-align: right;">194</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trust 3</td>
+<td style="text-align: right;">37.9%</td>
+<td style="text-align: right;">28.1%</td>
+<td style="text-align: right;">+9.8pp</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trust 4</td>
+<td style="text-align: right;">36%</td>
+<td style="text-align: right;">27.2%</td>
+<td style="text-align: right;">+8.8pp</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trust 5</td>
+<td style="text-align: right;">22.4%</td>
+<td style="text-align: right;">13.7%</td>
+<td style="text-align: right;">+8.7pp</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trust 6</td>
+<td style="text-align: right;">19.2%</td>
+<td style="text-align: right;">12.3%</td>
+<td style="text-align: right;">+6.9pp</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trust 7</td>
+<td style="text-align: right;">15.4%</td>
+<td style="text-align: right;">9.5%</td>
+<td style="text-align: right;">+5.9pp</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trust 8</td>
+<td style="text-align: right;">22.5%</td>
+<td style="text-align: right;">16.7%</td>
+<td style="text-align: right;">+5.8pp</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trust 9</td>
+<td style="text-align: right;">16.9%</td>
+<td style="text-align: right;">11.4%</td>
+<td style="text-align: right;">+5.5pp</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trust 10</td>
+<td style="text-align: right;">21.6%</td>
+<td style="text-align: right;">16.3%</td>
+<td style="text-align: right;">+5.3pp</td>
+<td style="text-align: right;">574</td>
+<td style="text-align: left;">Black higher</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white"><span class="header-section-number">4.3.4</span> Are there trusts where Black babies are admitted significantly less than White?</h3>
+<p>The review asked specifically whether any individual trusts admit Black babies to NCC at a <em>significantly lower</em> rate than White babies — the signal we would expect if there were localised under-access. To test this we compared the crude NCC admission rate for Black versus White babies within each trust that had at least 50 of each, using a two-proportion test with Benjamini-Hochberg correction across the trusts tested.</p>
+<p>Of the 92 trusts with enough Black and White births to compare, 1 showed a Black admission rate significantly <strong>lower</strong> than White after correction, and 3 showed a significantly <strong>higher</strong> rate.</p>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Trusts where Black NCC admission is significantly lower than White (BH-adjusted p &lt; 0.05)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Trust
+</th>
+<th style="text-align:right;">
+Black rate
+</th>
+<th style="text-align:right;">
+White rate
+</th>
+<th style="text-align:right;">
+Difference
+</th>
+<th style="text-align:right;">
+Black births
+</th>
+<th style="text-align:right;">
+p (BH-adj)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Trust 1 (identity held internally)
+</td>
+<td style="text-align:right;">
+12.9%
+</td>
+<td style="text-align:right;">
+18.8%
+</td>
+<td style="text-align:right;">
+-5.8pp
+</td>
+<td style="text-align:right;">
+666
+</td>
+<td style="text-align:right;">
+0.014
+</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Interpreting the under-access test
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is a <em>crude</em> within-trust comparison: it asks “are Black babies admitted less often than White babies at this trust?”, not “less often than their clinical need warrants?”. Because Black babies in this cohort carry <em>higher</em> average clinical need (lower mean birth weight, more deprivation), a crude rate that is merely <em>equal</em> could still mask relative under-admission — while the national adjusted models (Models 2 and 3) found no overall Black–White gap. Trust-level power is also limited: many trusts have few Black births, so only sizeable gaps reach significance. Significant trusts are a screen for follow-up, not confirmation of inequitable access; a case-mix-standardised version (a per-trust Black observed/expected ratio) is the natural refinement.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="implications-for-maternity-review" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="implications-for-maternity-review"><span class="header-section-number">4.4</span> Implications for Maternity Review</h2>
+<ol type="1">
+<li><p><strong>System-level:</strong> NCC access for Black babies appears equitable on average nationally. This is a positive finding, though it speaks only to admission — not to the wider quality of maternity or neonatal care.</p></li>
+<li><p><strong>Hospital-level:</strong> Crude Black–White gaps vary between providers, but the formal screen above found only <strong>one</strong> trust (of 92 testable) with a significantly <em>lower</em> Black admission rate after correction, against three significantly higher. That trust is flagged for a case-mix-standardised follow-up; the rest of the variation is within what chance and case-mix would produce.</p></li>
+<li><p><strong>Clinical adjustment matters:</strong> After adjusting for birth weight and Apgar, Black babies retain slightly <em>higher</em> NCC odds — the pattern expected if the system is responding appropriately to their higher average clinical need.</p></li>
+<li><p><strong>Contrast with other groups:</strong> Pakistani and Chinese babies show <em>lower</em> NCC odds even after clinical adjustment — the groups where follow-up should focus (see Key Message 4 for the candidate explanations).</p></li>
+</ol>
+</section>
+<section id="deprivation" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="deprivation"><span class="header-section-number">4.5</span> Deprivation</h2>
+<p>The deprivation gradient suggests babies from more deprived areas have higher odds of NCC admission:</p>
+<p>Babies from the most deprived quintile have 2% higher odds of NCC admission than the least deprived, and the gradient steps up consistently across quintiles. Two interpretations are worth separating explicitly, because they carry different implications:</p>
+<ul>
+<li><em>Deprivation as a proxy for unmeasured need (the most likely reading).</em> Our clinical adjustment — gestation, and in the sensitivity model birth weight and Apgar — almost certainly does not capture the full excess morbidity carried by babies from the most deprived areas. On this reading the gradient is the model responding correctly to higher need that our covariates only partly measure; it is <em>consistent with</em> equitable, need-driven admission rather than evidence of a problem. Supporting this, the gradient is essentially unchanged after birth weight and Apgar are added (see the sensitivity comparison below) — what we would expect if it reflects residual, unmeasured need.</li>
+<li><em>A genuine difference in admission propensity.</em> Alternatively, hospitals serving deprived populations may admit at a lower threshold, or high-risk pregnancies may be concentrated in specialist centres in urban/deprived areas. If any part of the gradient reflects a true difference in access rather than need, that would warrant separate investigation.</li>
+</ul>
+<p>These cannot be fully separated with the current model, but there is a direct check available: if morbidity itself rises across IMD quintiles in this cohort — and especially if it rises in ways the model does not adjust for — the unmeasured-need reading is supported.</p>
+<section id="imd-morbidity" class="level3" data-number="4.5.1">
+<h3 data-number="4.5.1" class="anchored" data-anchor-id="imd-morbidity"><span class="header-section-number">4.5.1</span> A direct check: morbidity by deprivation quintile</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Morbidity markers and crude NCC admission by IMD quintile, full 2023/24 birth cohort. Birth-weight measures use the MSDS-only field, recorded for 44–51% of births (completeness is slightly higher in more deprived quintiles).</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">IMD quintile</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Preterm (&lt;37w)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Very preterm (&lt;32w)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Low birth weight (&lt;2,500g)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">LBW among term births</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Crude NCC rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1 - Most deprived</td>
+<td style="text-align: right;">127,725</td>
+<td style="text-align: right;">9.0%</td>
+<td style="text-align: right;">1.6%</td>
+<td style="text-align: right;">9.3%</td>
+<td style="text-align: right;">4.0%</td>
+<td style="text-align: right;">12.5%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">108,771</td>
+<td style="text-align: right;">8.1%</td>
+<td style="text-align: right;">1.4%</td>
+<td style="text-align: right;">8.0%</td>
+<td style="text-align: right;">3.2%</td>
+<td style="text-align: right;">12.1%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">95,315</td>
+<td style="text-align: right;">7.6%</td>
+<td style="text-align: right;">1.2%</td>
+<td style="text-align: right;">6.9%</td>
+<td style="text-align: right;">2.5%</td>
+<td style="text-align: right;">11.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">88,804</td>
+<td style="text-align: right;">7.3%</td>
+<td style="text-align: right;">1.1%</td>
+<td style="text-align: right;">6.2%</td>
+<td style="text-align: right;">2.2%</td>
+<td style="text-align: right;">11.4%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5 - Least deprived</td>
+<td style="text-align: right;">80,839</td>
+<td style="text-align: right;">6.6%</td>
+<td style="text-align: right;">1.0%</td>
+<td style="text-align: right;">5.8%</td>
+<td style="text-align: right;">2.1%</td>
+<td style="text-align: right;">11.3%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Every morbidity marker rises monotonically with deprivation: relative to the least deprived quintile, preterm birth is about a third higher in the most deprived (9.0% vs 6.6%), very preterm birth about two-thirds higher (1.6% vs 1.0%), and low birth weight around 60% higher (9.4% vs 5.8%). The most telling row is <strong>low birth weight among term births</strong>, which nearly doubles (4.0% vs 2.1%): the primary model adjusts for gestation, so a deprivation gradient in <em>growth restriction at a given gestation</em> is precisely the kind of clinical need the model cannot see. The crude NCC gradient (12.5% vs 11.3%, a ~11% relative difference) is of the same order as the adjusted odds gradient (~9%), which is what we would expect if the gradient largely reflects need that the clinical adjustment only partly captures.</p>
+<p>On this evidence the unmeasured-need reading is well supported: deprivation is acting substantially as a proxy for morbidity our covariates do not fully measure. This does not <em>rule out</em> a residual access difference, but it removes the need to posit one to explain the gradient. The main caveat is birth-weight completeness (44–51%, mildly differential by quintile); the gestation-based markers, which are near-complete, show the same pattern.</p>
+</section>
+</section>
+<section id="hospital-variation-the-largest-signal-read-with-care" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="hospital-variation-the-largest-signal-read-with-care"><span class="header-section-number">4.6</span> Hospital Variation: the largest signal, read with care</h2>
+<p>Once gestation, ethnicity and deprivation are controlled for, the trust a baby is born in is the largest remaining source of variation in the model: the ICC of 0.317 dwarfs the ethnicity ORs (typically 0.87–1.05) and the deprivation OR (1.08 for most vs least deprived). It is tempting to read this as “where a baby is born matters most” — but the ICC bundles together at least four things this dataset cannot fully separate:</p>
+<ol type="1">
+<li><em>Genuine practice variation</em> — different clinical thresholds for NCC admission between hospitals.</li>
+<li><em>Reporting variation</em> — MSDS submission completeness varies considerably between providers, and PbR-CC submission is also patchy. The dual-source <code>NCC_Admitted</code> flag mitigates this but does not eliminate it: nationally the CC source captures ~3.8x more NCC admissions than MSDS alone, and that ratio differs by provider.</li>
+<li><em>Case-mix concentration via antenatal referral</em> — high-risk pregnancies are transferred <em>in utero</em> to tertiary centres, so babies <em>born at</em> NICU trusts carry more unmeasured risk than gestation alone records. (Note that <em>postnatal</em> transfers cannot inflate a delivery trust’s rate in this model: an admission is attributed to the trust where the baby was born, not where the care was given.)</li>
+<li><em>Residual case-mix</em> — gestation alone is a thin proxy for clinical need. The sensitivity model (gestation + birth weight + Apgar) reduces but does not remove this.</li>
+</ol>
+<p>The ICC is therefore a useful signal that something at the provider level is driving variation, but it should not be reported as a clean estimate of variation in admission practice. Where we <em>have</em> been able to decompose it — the <a href="#outlier-completeness">funnel-outlier diagnostic</a> — the evidence points to reporting breadth (what gets counted as an NCC day) as the dominant driver at the extremes.</p>
+<p>Hospitals in the tails of the distribution may warrant further investigation, but interpretation should bear in mind that an extreme provider-level estimate could equally reflect a data-completeness issue. Useful follow-up questions include:</p>
+<ul>
+<li>Whether the provider’s MSD402 (and CC) submission rate is in line with peers.</li>
+<li>Whether the provider receives transfers from a wider network (high “admission” rate as a referral centre).</li>
+<li>Whether local clinical thresholds for NCC differ — e.g.&nbsp;routine vs selective admission of late preterm infants.</li>
+<li>Whether case-mix not captured by gestation alone (multiplicity, congenital anomaly) drives the apparent effect.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="sensitivity-analysis-full-clinical-adjustment" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Sensitivity Analysis: Full Clinical Adjustment</h1>
+<p>The sensitivity analysis adds birth weight and Apgar 5-minute score to the model, using 218,886 births with complete clinical data ( 43.2 % of total).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Data Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Birth weight uses MSDS data only (not the CC data fallback) to avoid differential missingness bias. The CC data has 94% birth weight completeness for NCC babies vs 46% for non-NCC babies, which would artificially inflate NCC rates in complete cases. MSDS-only has ~46% completeness for both groups.</p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Sensitivity model: Full clinical adjustment</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Odds Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gestation_Weeks</td>
+<td style="text-align: left;">Gestation (per week)</td>
+<td style="text-align: right;">0.617</td>
+<td style="text-align: center;">(0.61, 0.624)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Birth_Weight_kg</td>
+<td style="text-align: left;">Birth weight (per kg)</td>
+<td style="text-align: right;">0.907</td>
+<td style="text-align: center;">(0.876, 0.94)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Apgar_5_Clean</td>
+<td style="text-align: left;">Apgar 5-min (per point)</td>
+<td style="text-align: right;">0.638</td>
+<td style="text-align: center;">(0.629, 0.647)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedWhite Other</td>
+<td style="text-align: left;">Ethnicity: White Other</td>
+<td style="text-align: right;">0.949</td>
+<td style="text-align: center;">(0.898, 1.003)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedMixed</td>
+<td style="text-align: left;">Ethnicity: Mixed</td>
+<td style="text-align: right;">0.954</td>
+<td style="text-align: center;">(0.897, 1.014)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedIndian</td>
+<td style="text-align: left;">Ethnicity: Indian</td>
+<td style="text-align: right;">1.163</td>
+<td style="text-align: center;">(1.081, 1.251)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedPakistani</td>
+<td style="text-align: left;">Ethnicity: Pakistani</td>
+<td style="text-align: right;">0.969</td>
+<td style="text-align: center;">(0.903, 1.04)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedBangladeshi</td>
+<td style="text-align: left;">Ethnicity: Bangladeshi</td>
+<td style="text-align: right;">1.165</td>
+<td style="text-align: center;">(1.04, 1.304)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedOther Asian</td>
+<td style="text-align: left;">Ethnicity: Other Asian</td>
+<td style="text-align: right;">1.015</td>
+<td style="text-align: center;">(0.928, 1.109)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedBlack</td>
+<td style="text-align: left;">Ethnicity: Black</td>
+<td style="text-align: right;">1.039</td>
+<td style="text-align: center;">(0.974, 1.11)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedChinese</td>
+<td style="text-align: left;">Ethnicity: Chinese</td>
+<td style="text-align: right;">0.761</td>
+<td style="text-align: center;">(0.577, 1.003)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedOther</td>
+<td style="text-align: left;">Ethnicity: Other</td>
+<td style="text-align: right;">0.950</td>
+<td style="text-align: center;">(0.855, 1.056)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">IMD_Quintile4</td>
+<td style="text-align: left;">IMD: 4</td>
+<td style="text-align: right;">1.038</td>
+<td style="text-align: center;">(0.984, 1.095)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IMD_Quintile3</td>
+<td style="text-align: left;">IMD: 3</td>
+<td style="text-align: right;">1.095</td>
+<td style="text-align: center;">(1.039, 1.154)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">IMD_Quintile2</td>
+<td style="text-align: left;">IMD: 2</td>
+<td style="text-align: right;">1.076</td>
+<td style="text-align: center;">(1.021, 1.134)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IMD_Quintile1 - Most deprived</td>
+<td style="text-align: left;">IMD: 1 - Most deprived</td>
+<td style="text-align: right;">1.094</td>
+<td style="text-align: center;">(1.038, 1.153)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="comparing-primary-and-sensitivity-models" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="comparing-primary-and-sensitivity-models"><span class="header-section-number">5.1</span> Comparing Primary and Sensitivity Models</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Ethnicity effects: Primary vs Sensitivity model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Ethnicity</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Primary OR</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Sensitivity OR</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Change</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedWhite Other</td>
+<td style="text-align: left;">White Other</td>
+<td style="text-align: right;">0.924</td>
+<td style="text-align: right;">0.949</td>
+<td style="text-align: right;">0.025</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedMixed</td>
+<td style="text-align: left;">Mixed</td>
+<td style="text-align: right;">0.942</td>
+<td style="text-align: right;">0.954</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: center;">Stable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedIndian</td>
+<td style="text-align: left;">Indian</td>
+<td style="text-align: right;">1.054</td>
+<td style="text-align: right;">1.163</td>
+<td style="text-align: right;">0.109</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedPakistani</td>
+<td style="text-align: left;">Pakistani</td>
+<td style="text-align: right;">0.889</td>
+<td style="text-align: right;">0.969</td>
+<td style="text-align: right;">0.080</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedBangladeshi</td>
+<td style="text-align: left;">Bangladeshi</td>
+<td style="text-align: right;">1.060</td>
+<td style="text-align: right;">1.165</td>
+<td style="text-align: right;">0.105</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedOther Asian</td>
+<td style="text-align: left;">Other Asian</td>
+<td style="text-align: right;">1.013</td>
+<td style="text-align: right;">1.015</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: center;">Stable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedBlack</td>
+<td style="text-align: left;">Black</td>
+<td style="text-align: right;">1.037</td>
+<td style="text-align: right;">1.039</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: center;">Stable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethnicity_Baby_GroupedChinese</td>
+<td style="text-align: left;">Chinese</td>
+<td style="text-align: right;">0.695</td>
+<td style="text-align: right;">0.761</td>
+<td style="text-align: right;">0.066</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethnicity_Baby_GroupedOther</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">0.926</td>
+<td style="text-align: right;">0.950</td>
+<td style="text-align: right;">0.024</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Deprivation effects: Primary vs Sensitivity model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">IMD Quintile</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Primary OR</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Sensitivity OR</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Change</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">IMD_Quintile4</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">1.016</td>
+<td style="text-align: right;">1.038</td>
+<td style="text-align: right;">0.022</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IMD_Quintile3</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">1.063</td>
+<td style="text-align: right;">1.095</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: center;">↑ Increased</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">IMD_Quintile2</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">1.108</td>
+<td style="text-align: right;">1.076</td>
+<td style="text-align: right;">-0.032</td>
+<td style="text-align: center;">↓ Decreased</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IMD_Quintile1 - Most deprived</td>
+<td style="text-align: left;">1 - Most deprived</td>
+<td style="text-align: right;">1.101</td>
+<td style="text-align: right;">1.094</td>
+<td style="text-align: right;">-0.007</td>
+<td style="text-align: center;">Stable</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Sensitivity Analysis Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Some attenuation observed: Adding birth weight and Apgar scores changes some coefficients. This suggests clinical confounding may partially explain the observed ethnicity/deprivation associations. The sensitivity model provides better case-mix adjustment but uses fewer observations.</p>
+<p>Hospital variation (ICC):</p>
+<ul>
+<li>Primary model: 31.7 %</li>
+<li>Sensitivity model: 30.4 %</li>
+</ul>
+<p>Hospital variation remains substantial after full clinical adjustment.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="recommendations" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Recommendations</h1>
+<p>The analysis is reassuring on its headline question — no signal of national under-access for Black babies — but it surfaces concrete follow-ups. In rough priority order:</p>
+<ol type="1">
+<li><p><strong>Standardise what counts as an “NCC day” in PbR-CC returns.</strong> The funnel diagnostic shows the most extreme provider variation is recording breadth, not admission practice: outlier trusts record NCC for 21–40% of their term babies against ~7% nationally. A tighter definition — or an audit of the outlier trusts’ returns — would sharpen every downstream use of this data, including the ICC and any future benchmarking.</p></li>
+<li><p><strong>Improve completeness of birth weight and Apgar in MSDS.</strong> Jointly complete for under half the cohort, this is the single biggest constraint on case-mix adjustment — it is why the primary model must lean on gestation alone.</p></li>
+<li><p><strong>Follow up the one trust flagged for lower Black admission</strong> (identity held internally) with a case-mix-standardised check — a per-trust Black observed/expected ratio — before drawing any conclusion about access.</p></li>
+<li><p><strong>Investigate the Chinese-group gap.</strong> ~24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.</p></li>
+<li><p><strong>Extend to outcomes and timing.</strong> Length of stay once admitted is feasible with current data; mortality can be examined descriptively with heavy ascertainment caveats; and the Phase 2 timing analysis should proceed once the day-of-birth data environment is available.</p></li>
+</ol>
+</section>
+<section id="limitations" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Limitations</h1>
+<ol type="1">
+<li><p>Clinical covariate completeness: Birth weight is recorded for ~46% of births and Apgar for ~79%; jointly they limit the sensitivity model to under half the cohort. The primary model uses gestation alone to preserve sample size.</p></li>
+<li><p>Single year of data: Results may not generalise to other time periods.</p></li>
+<li><p>Residual confounding: While ethnicity is now disaggregated (e.g., Indian, Pakistani, Bangladeshi separately), within-group heterogeneity remains. Black ethnicities are still grouped together in the model.</p></li>
+<li><p>Selection bias: Analysis restricted to births with complete data (94% of all births) — though the retained share is high and similar across providers (see the funnel diagnostic).</p></li>
+<li><p>Outcome definition: “NCC admission” is whatever providers record as NCC in two administrative sources, and the funnel diagnostic shows the breadth of that recording varies materially between providers. The outcome is best read as “received care recorded as NCC”, not “occupied a critical care cot”.</p></li>
+</ol>
+<hr>
+</section>
+<section id="technical-details" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Technical Details</h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Model Specification (click to expand)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Model 2 - Primary (Gestation only):</p>
+<pre><code>NCC_Admitted ~ Gestation_Weeks + Ethnicity_Baby_Grouped + IMD_Quintile + (1 | Delivery_Trust)</code></pre>
+<p>Model 3 - Sensitivity (Full clinical adjustment):</p>
+<pre><code>NCC_Admitted ~ Gestation_Weeks + Birth_Weight_kg + Apgar_5_Clean +
+               Ethnicity_Baby_Grouped + IMD_Quintile + (1 | Delivery_Trust)</code></pre>
+<p><code>Delivery_Trust</code> is constructed in the modelling script as <code>coalesce(LEFT(Delivery_Site_Code, 3), Submitting_Org_Code)</code> — see Methods (Random-effect grouping) for the rationale.</p>
+<ul>
+<li>Family: Binomial (logit link)</li>
+<li>Estimation: Maximum likelihood via Laplace approximation</li>
+<li>Optimizer: bobyqa</li>
+<li>Package: lme4 version 2.0.1</li>
+</ul>
+<p>Note on birth weight data: The sensitivity model uses <code>Birth_Weight_Grams</code> (MSDS source only) rather than <code>Birth_Weight_Combined</code> to avoid differential missingness bias. The combined variable has 94% completeness for NCC babies (due to CC data fallback) vs 46% for non-NCC babies, which would inflate NCC rates in complete case analysis.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Model Fit Statistics (click to expand)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Model 2 (Primary)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Model 3 (Sensitivity)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Number of observations</td>
+<td style="text-align: right;">476,475</td>
+<td style="text-align: right;">218,886</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of trusts (groups)</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">77</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: right;">275,073.8</td>
+<td style="text-align: right;">120,048.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: right;">275,251</td>
+<td style="text-align: right;">120,234</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Log-likelihood</td>
+<td style="text-align: right;">-137,520.9</td>
+<td style="text-align: right;">-60,006.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Deviance</td>
+<td style="text-align: right;">274,183.7</td>
+<td style="text-align: right;">119,549</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+<p>Report generated: 2026-07-06 15:12:27.058841</p>
+<p>R version: R version 4.6.0 (2026-04-24 ucrt)</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
