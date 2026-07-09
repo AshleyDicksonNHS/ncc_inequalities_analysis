@@ -52,6 +52,7 @@ This draft responds to feedback from Anna Everton and Katharine Robbins. Changes
 - **[A4b]** New [completeness diagnostic](#outlier-completeness) for the funnel outliers, responding to the follow-up question of whether their position reflects completeness of *records* or of *specific fields*. Answer: neither — the signal sits in the PbR-CC numerator, and the earlier "referral activity + reporting gap" reading has been withdrawn.
 - **[A2]** New test for [trusts where Black admission is significantly lower than White](#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white).
 - **[K4]** New [broad MBRRACE-comparable ethnicity grouping](#broad-ethnicity) presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).
+- **[A5c]** New [exploratory ethnicity × deprivation interaction](#eth-imd-interaction): a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.
 - **Editorial pass (July 2026):** tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the [overview report](index.html) with the revised findings.
 
 *(This box is temporary review scaffolding and will be removed before final publication.)*
@@ -1168,6 +1169,60 @@ kable(imd_morb, align = c("l", rep("r", 6)),
 Every morbidity marker rises monotonically with deprivation: relative to the least deprived quintile, preterm birth is about a third higher in the most deprived (9.0% vs 6.6%), very preterm birth about two-thirds higher (1.6% vs 1.0%), and low birth weight around 60% higher (9.4% vs 5.8%). The most telling row is **low birth weight among term births**, which nearly doubles (4.0% vs 2.1%): the primary model adjusts for gestation, so a deprivation gradient in *growth restriction at a given gestation* is precisely the kind of clinical need the model cannot see. The crude NCC gradient (12.5% vs 11.3%, a ~11% relative difference) is of the same order as the adjusted odds gradient (~9%), which is what we would expect if the gradient largely reflects need that the clinical adjustment only partly captures.
 
 On this evidence the unmeasured-need reading is well supported: deprivation is acting substantially as a proxy for morbidity our covariates do not fully measure. This does not *rule out* a residual access difference, but it removes the need to posit one to explain the gradient. The main caveat is birth-weight completeness (44–51%, mildly differential by quintile); the gestation-based markers, which are near-complete, show the same pattern.
+
+### Does the deprivation gradient differ by ethnic group? {#eth-imd-interaction}
+
+```{r eth_imd_interaction, echo=FALSE}
+# [A5c] Ethnicity x IMD interaction — global LRT + within-group gradients.
+# Compact summary saved by ncc_a5c_ethnicity_imd_interaction.R (full fit in
+# data/model2_interaction.rds, not loaded here).
+a5c <- readRDS("data/a5c_interaction_lrt.rds")
+
+lrt_chisq <- round(a5c$lrt$Chisq[2], 1)
+lrt_df    <- a5c$lrt$Df[2]
+lrt_p     <- signif(a5c$lrt[["Pr(>Chisq)"]][2], 2)
+d_aic     <- round(a5c$aic$AIC[2] - a5c$aic$AIC[1])
+d_bic     <- round(a5c$bic$BIC[2] - a5c$bic$BIC[1])
+
+pooled_imd <- model2_or %>% filter(raw_term == "IMD_Quintile1 - Most deprived")
+wb_grad <- a5c$gradient_by_eth %>% filter(Ethnicity == "White British")
+```
+
+The models so far constrain the deprivation gradient to be the *same* in every ethnic group (and equivalently, ethnicity gaps to be the same in every deprivation quintile). A natural follow-up question is whether the two dimensions of inequality compound — for example, whether deprivation carries a steeper penalty for some ethnic groups than others.
+
+To test this, the primary model was refitted with a full ethnicity × deprivation interaction. This is presented as **exploratory**: the interaction adds `r a5c$n_interaction_terms` parameters, and picking through 36 individual cell contrasts would invite exactly the multiple-comparison problem flagged elsewhere in this report. The primary readout is therefore a single **global likelihood-ratio test** — "is there evidence the gradient differs at all?" — which is one test and carries no multiplicity burden. The within-group estimates below are shown to describe the pattern, not to make claims about any individual group.
+
+The global test does find evidence that the gradient is not uniform: χ²(`r lrt_df`) = `r lrt_chisq`, p = `r lrt_p`. But the departure is small. Both information criteria prefer the simpler main-effects model (AIC +`r d_aic`, BIC +`r d_bic` for the interaction model): with `r format(a5c$n, big.mark = ",")` births, a likelihood-ratio test is powered to detect departures from uniformity far too small to matter practically, and the extra 36 parameters do not earn their keep. The main-effects model remains the primary specification.
+
+```{r eth_imd_gradient_plot, echo=FALSE, fig.height=4.5}
+#| label: fig-eth-imd-gradient
+#| fig-cap: "Within-group deprivation gradient: odds of NCC admission for the most vs least deprived quintile, estimated separately for each ethnic group (interaction model, adjusted for gestation, with hospital random effects). Dashed line: no gradient. Dotted line: the pooled gradient from the main-effects model. Intervals are wide for smaller groups — exploratory only."
+
+grad_plot <- a5c$gradient_by_eth %>%
+  mutate(Ethnicity = factor(Ethnicity, levels = rev(Ethnicity)))
+
+ggplot(grad_plot, aes(x = OR, y = Ethnicity)) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
+  geom_vline(xintercept = pooled_imd$OR, linetype = "dotted", color = nhs_dark_blue) +
+  geom_errorbarh(aes(xmin = Lower, xmax = Upper), height = 0.2, linewidth = 0.8, color = nhs_pink) +
+  geom_point(size = 3, color = nhs_pink) +
+  scale_x_continuous(breaks = seq(0.4, 1.6, 0.2)) +
+  labs(
+    title = "Deprivation Gradient Within Each Ethnic Group",
+    subtitle = "OR for most vs least deprived quintile; dotted line = pooled gradient",
+    x = "Odds Ratio (95% CI)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.minor = element_blank()
+  )
+```
+
+The pattern behind the global signal (@fig-eth-imd-gradient) is informative, read descriptively. The only within-group gradient whose interval excludes 1 is **White British** (OR `r round(wb_grad$OR, 2)`, 95% CI `r round(wb_grad$Lower, 2)`–`r round(wb_grad$Upper, 2)`) — slightly steeper than the pooled estimate of `r round(pooled_imd$OR, 2)`. Several minority groups have point estimates of similar or larger magnitude (Indian, Pakistani, Black), but with intervals spanning 1; others (Bangladeshi, Chinese, Other Asian) point flat or below, with very wide intervals. The imprecision is structural rather than incidental: minority ethnic births are concentrated in the more deprived quintiles, so the least-deprived *reference* cells are small — 306 Bangladeshi and 376 Chinese births in the least deprived quintile, against tens of thousands of White British.
+
+Two conclusions follow. First, there is **no evidence that deprivation carries a steeper penalty for minority ethnic groups** — the detectable gradient sits within the White British majority, and the pooled deprivation OR reported by the primary model is dominated by that group. Second, that is a statement about the limits of the data as much as about the world: for the smaller groups the data cannot distinguish a flat gradient from a substantial one in either direction, so absence of evidence here is not evidence of absence. Neither conclusion disturbs the [unmeasured-need reading](#imd-morbidity) of the main deprivation effect, and the main-effects model remains the primary specification throughout.
 
 ## Hospital Variation: the largest signal, read with care
 

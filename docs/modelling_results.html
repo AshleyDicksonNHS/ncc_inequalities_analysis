@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2026-07-06">
+<meta name="dcterms.date" content="2026-07-09">
 
 <title>Inequalities in Access to Neonatal Critical Care: Phase 1 Modelling Results – NCC Inequalities Analysis</title>
 <style>
@@ -203,6 +203,7 @@ window.Quarto = {
   <li><a href="#deprivation" id="toc-deprivation" class="nav-link" data-scroll-target="#deprivation"><span class="header-section-number">4.5</span> Deprivation</a>
   <ul class="collapse">
   <li><a href="#imd-morbidity" id="toc-imd-morbidity" class="nav-link" data-scroll-target="#imd-morbidity"><span class="header-section-number">4.5.1</span> A direct check: morbidity by deprivation quintile</a></li>
+  <li><a href="#eth-imd-interaction" id="toc-eth-imd-interaction" class="nav-link" data-scroll-target="#eth-imd-interaction"><span class="header-section-number">4.5.2</span> Does the deprivation gradient differ by ethnic group?</a></li>
   </ul></li>
   <li><a href="#hospital-variation-the-largest-signal-read-with-care" id="toc-hospital-variation-the-largest-signal-read-with-care" class="nav-link" data-scroll-target="#hospital-variation-the-largest-signal-read-with-care"><span class="header-section-number">4.6</span> Hospital Variation: the largest signal, read with care</a></li>
   </ul></li>
@@ -242,7 +243,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 6, 2026</p>
+      <p class="date">July 9, 2026</p>
     </div>
   </div>
   
@@ -275,6 +276,7 @@ window.Quarto = {
 <li><strong>[A4b]</strong> New <a href="#outlier-completeness">completeness diagnostic</a> for the funnel outliers, responding to the follow-up question of whether their position reflects completeness of <em>records</em> or of <em>specific fields</em>. Answer: neither — the signal sits in the PbR-CC numerator, and the earlier “referral activity + reporting gap” reading has been withdrawn.</li>
 <li><strong>[A2]</strong> New test for <a href="#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white">trusts where Black admission is significantly lower than White</a>.</li>
 <li><strong>[K4]</strong> New <a href="#broad-ethnicity">broad MBRRACE-comparable ethnicity grouping</a> presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).</li>
+<li><strong>[A5c]</strong> New <a href="#eth-imd-interaction">exploratory ethnicity × deprivation interaction</a>: a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.</li>
 <li><strong>Editorial pass (July 2026):</strong> tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the <a href="index.html">overview report</a> with the revised findings.</li>
 </ul>
 <p><em>(This box is temporary review scaffolding and will be removed before final publication.)</em></p>
@@ -1616,6 +1618,28 @@ Trust 1 (identity held internally)
 <p>Every morbidity marker rises monotonically with deprivation: relative to the least deprived quintile, preterm birth is about a third higher in the most deprived (9.0% vs 6.6%), very preterm birth about two-thirds higher (1.6% vs 1.0%), and low birth weight around 60% higher (9.4% vs 5.8%). The most telling row is <strong>low birth weight among term births</strong>, which nearly doubles (4.0% vs 2.1%): the primary model adjusts for gestation, so a deprivation gradient in <em>growth restriction at a given gestation</em> is precisely the kind of clinical need the model cannot see. The crude NCC gradient (12.5% vs 11.3%, a ~11% relative difference) is of the same order as the adjusted odds gradient (~9%), which is what we would expect if the gradient largely reflects need that the clinical adjustment only partly captures.</p>
 <p>On this evidence the unmeasured-need reading is well supported: deprivation is acting substantially as a proxy for morbidity our covariates do not fully measure. This does not <em>rule out</em> a residual access difference, but it removes the need to posit one to explain the gradient. The main caveat is birth-weight completeness (44–51%, mildly differential by quintile); the gestation-based markers, which are near-complete, show the same pattern.</p>
 </section>
+<section id="eth-imd-interaction" class="level3" data-number="4.5.2">
+<h3 data-number="4.5.2" class="anchored" data-anchor-id="eth-imd-interaction"><span class="header-section-number">4.5.2</span> Does the deprivation gradient differ by ethnic group?</h3>
+<p>The models so far constrain the deprivation gradient to be the <em>same</em> in every ethnic group (and equivalently, ethnicity gaps to be the same in every deprivation quintile). A natural follow-up question is whether the two dimensions of inequality compound — for example, whether deprivation carries a steeper penalty for some ethnic groups than others.</p>
+<p>To test this, the primary model was refitted with a full ethnicity × deprivation interaction. This is presented as <strong>exploratory</strong>: the interaction adds 36 parameters, and picking through 36 individual cell contrasts would invite exactly the multiple-comparison problem flagged elsewhere in this report. The primary readout is therefore a single <strong>global likelihood-ratio test</strong> — “is there evidence the gradient differs at all?” — which is one test and carries no multiplicity burden. The within-group estimates below are shown to describe the pattern, not to make claims about any individual group.</p>
+<p>The global test does find evidence that the gradient is not uniform: χ²(36) = 65.7, p = 0.0018. But the departure is small. Both information criteria prefer the simpler main-effects model (AIC +6, BIC +405 for the interaction model): with 476,475 births, a likelihood-ratio test is powered to detect departures from uniformity far too small to matter practically, and the extra 36 parameters do not earn their keep. The main-effects model remains the primary specification.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-eth-imd-gradient" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-eth-imd-gradient-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-eth-imd-gradient-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-eth-imd-gradient-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the most vs least deprived quintile, estimated separately for each ethnic group (interaction model, adjusted for gestation, with hospital random effects). Dashed line: no gradient. Dotted line: the pooled gradient from the main-effects model. Intervals are wide for smaller groups — exploratory only.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The pattern behind the global signal (<a href="#fig-eth-imd-gradient" class="quarto-xref">Figure&nbsp;6</a>) is informative, read descriptively. The only within-group gradient whose interval excludes 1 is <strong>White British</strong> (OR 1.13, 95% CI 1.08–1.18) — slightly steeper than the pooled estimate of 1.1. Several minority groups have point estimates of similar or larger magnitude (Indian, Pakistani, Black), but with intervals spanning 1; others (Bangladeshi, Chinese, Other Asian) point flat or below, with very wide intervals. The imprecision is structural rather than incidental: minority ethnic births are concentrated in the more deprived quintiles, so the least-deprived <em>reference</em> cells are small — 306 Bangladeshi and 376 Chinese births in the least deprived quintile, against tens of thousands of White British.</p>
+<p>Two conclusions follow. First, there is <strong>no evidence that deprivation carries a steeper penalty for minority ethnic groups</strong> — the detectable gradient sits within the White British majority, and the pooled deprivation OR reported by the primary model is dominated by that group. Second, that is a statement about the limits of the data as much as about the world: for the smaller groups the data cannot distinguish a flat gradient from a substantial one in either direction, so absence of evidence here is not evidence of absence. Neither conclusion disturbs the <a href="#imd-morbidity">unmeasured-need reading</a> of the main deprivation effect, and the main-effects model remains the primary specification throughout.</p>
+</section>
 </section>
 <section id="hospital-variation-the-largest-signal-read-with-care" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="hospital-variation-the-largest-signal-read-with-care"><span class="header-section-number">4.6</span> Hospital Variation: the largest signal, read with care</h2>
@@ -2045,7 +2069,7 @@ Trust 1 (identity held internally)
 </div>
 </div>
 <hr>
-<p>Report generated: 2026-07-06 15:12:27.058841</p>
+<p>Report generated: 2026-07-09 14:45:53.814209</p>
 <p>R version: R version 4.6.0 (2026-04-24 ucrt)</p>
 
 
