@@ -53,6 +53,7 @@ This draft responds to feedback from Anna Everton and Katharine Robbins. Changes
 - **[A2]** New test for [trusts where Black admission is significantly lower than White](#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white).
 - **[K4]** New [broad MBRRACE-comparable ethnicity grouping](#broad-ethnicity) presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).
 - **[A5c]** New [exploratory ethnicity × deprivation interaction](#eth-imd-interaction): a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.
+- **[A5a]** New [length-of-stay analysis](#length-of-stay) among admitted babies (negative binomial mixed model on CC days): the crude Black excess in stay length is entirely case-mix (RR 0.98 after gestation adjustment, extending the equitable-access finding); Pakistani and Bangladeshi babies stay ~9–10% longer than expected, which for Pakistani babies is the pattern a higher effective admission threshold would produce; the deprivation gradient in stay length is almost entirely case-mix.
 - **Editorial pass (July 2026):** tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the [overview report](index.html) with the revised findings.
 
 *(This box is temporary review scaffolding and will be removed before final publication.)*
@@ -1393,6 +1394,146 @@ cat(":::\n")
 
 ---
 
+# Length of Stay Among Admitted Babies {#length-of-stay}
+
+```{r a5a_setup, echo=FALSE}
+# [A5a] Length of stay — compact summary saved by ncc_a5a_length_of_stay.R
+# (full glmer.nb fit in data/model_a5a_los_nb.rds, not loaded here).
+a5a <- readRDS("data/a5a_los_summary.rds")
+
+rr <- a5a$rr_table %>%
+  filter(raw_term != "(Intercept)") %>%
+  mutate(
+    term = raw_term,
+    term = str_replace(term, "Gestation_Band", ""),
+    term = str_replace(term, "Ethnicity_Baby_Grouped", ""),
+    term = str_replace(term, "IMD_Quintile", "IMD: ")
+  )
+
+rr_of <- function(pattern) rr %>% filter(str_detect(raw_term, fixed(pattern)))
+rr_black <- rr_of("Black")
+rr_pak   <- rr_of("Pakistani")
+rr_bang  <- rr_of("Bangladeshi")
+rr_imd1  <- rr_of("1 - Most deprived")
+rr_ext   <- rr_of("Extremely")
+
+fmt_rr <- function(r) sprintf("%.2f (%.2f–%.2f)", r$RR, r$Lower, r$Upper)
+
+trust_sd_pct <- round((exp(sqrt(a5a$trust_var)) - 1) * 100)
+```
+
+The models above ask who *gets* NCC care; this section asks how much care admitted babies then receive. Unlike the timing analysis (Phase 2, on hold), length of stay does not depend on a birth datetime: the outcome is `NCC_CC_Total_Days`, a count of daily critical-care records, so it is available now.
+
+**Sample and outcome.** Of the `r format(a5a$n_admitted, big.mark = ",")` admitted babies in the primary analysis sample, `r format(a5a$n_los, big.mark = ",")` (93%) have at least one CC daily record and form the length-of-stay sample. The remaining `r format(a5a$n_msds_only, big.mark = ",")` are MSDS-only admissions with no CC records — their stay length is unobservable in this data, an exclusion to bear in mind if MSDS-only status is unevenly distributed across providers (it is; see the funnel section). Stay length is the total number of days with an NCC critical-care record within 90 days of birth, summed across care periods.
+
+The distribution is heavily skewed — median `r a5a$los_quantiles[["50%"]]` days (IQR `r a5a$los_quantiles[["25%"]]`–`r a5a$los_quantiles[["75%"]]`), 99th percentile `r a5a$los_quantiles[["99%"]]` days — and gestation dominates it: median stays run from 3 days at term to 61 days below 28 weeks. Any crude group comparison therefore mostly re-describes each group's preterm mix.
+
+```{r a5a_descriptives, echo=FALSE}
+desc_fmt <- function(d, label_col) {
+  d %>%
+    mutate(
+      Group = as.character(.data[[label_col]]),
+      `Median (IQR)` = paste0(median, " (", q1, "–", q3, ")"),
+      Mean = round(mean, 1),
+      `Stay ≥28 days` = percent(pct_28plus, accuracy = 0.1),
+      n = format(n, big.mark = ",")
+    ) %>%
+    dplyr::select(Group, n, `Median (IQR)`, Mean, `Stay ≥28 days`)
+}
+
+desc_tbl <- bind_rows(
+  desc_fmt(a5a$desc_eth, "Ethnicity_Baby_Grouped"),
+  desc_fmt(a5a$desc_imd, "IMD_Quintile")
+)
+
+kable(desc_tbl, align = c("l", "r", "r", "r", "r"),
+      caption = "Crude length of NCC stay (days) among admitted babies with CC records, FY 2023/24. Group differences concentrate in the tail: medians are identical, while the share of long stays varies.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  pack_rows("Ethnicity", 1, nrow(a5a$desc_eth)) %>%
+  pack_rows("IMD quintile", nrow(a5a$desc_eth) + 1, nrow(desc_tbl))
+```
+
+The crude pattern is striking but misleading: every group's *median* stay is 4 days, while mean stays and the share of long stays (≥28 days) look elevated for Black babies (mean 11.5 vs 9.2 for White British; 11.1% vs 7.4% staying ≥28 days) and for the most deprived quintile. Whether that reflects anything beyond case-mix is exactly what the adjusted model tests.
+
+**Model.** Stay length is modelled with a negative binomial mixed model (log link; the variance/mean ratio of ~28 rules out Poisson), with gestation entered as clinical bands — extremely/very/moderately/late preterm vs term — because its effect is far too nonlinear for a linear week term, plus ethnicity, IMD quintile, and a delivery-trust random intercept. Exponentiated coefficients are **rate ratios**: multiplicative differences in expected days of NCC care, conditional on gestation band and trust. BH adjustment is applied within the ethnicity and deprivation families, as elsewhere in this report.
+
+```{r a5a_rr_table, echo=FALSE}
+rr %>%
+  mutate(
+    RR = round(RR, 3),
+    CI = paste0("(", round(Lower, 3), ", ", round(Upper, 3), ")"),
+    p.value = ifelse(p.value < 0.001, "<0.001", as.character(round(p.value, 3))),
+    p.adj_BH = case_when(
+      is.na(p.adj_BH) ~ "—",
+      p.adj_BH < 0.001 ~ "<0.001",
+      TRUE ~ as.character(round(p.adj_BH, 3))
+    )
+  ) %>%
+  dplyr::select(term, RR, CI, p.value, p.adj_BH) %>%
+  kable(
+    col.names = c("Variable", "Rate Ratio", "95% CI", "p-value", "p (BH-adj)"),
+    align = c("l", "r", "c", "r", "r"),
+    caption = "Adjusted rate ratios for days of NCC care among admitted babies (negative binomial mixed model with delivery-trust random intercept)."
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  pack_rows("Gestation (ref: Term 37w+)", 1, 4) %>%
+  pack_rows("Ethnicity (ref: White British)", 5, 13) %>%
+  pack_rows("Deprivation (ref: Least Deprived)", 14, 17) %>%
+  add_footnote("BH-adjusted p-values computed within each family (9 ethnicity contrasts; 4 IMD contrasts).",
+               notation = "none")
+```
+
+```{r a5a_forest, echo=FALSE, fig.height=5}
+#| label: fig-los-forest
+#| fig-cap: "Adjusted rate ratios for length of NCC stay by ethnicity and deprivation (negative binomial mixed model, adjusted for gestation band, with hospital random effects). Gestation-band effects (RR 1.8–13.2) are omitted from the plot for scale."
+
+los_plot <- rr %>%
+  filter(family %in% c("ethnicity", "imd")) %>%
+  mutate(
+    category = ifelse(family == "ethnicity", "Ethnicity", "Deprivation"),
+    term = str_replace(term, "IMD: ", ""),
+    term = factor(term, levels = rev(term))
+  )
+
+ggplot(los_plot, aes(x = RR, y = term, color = category)) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
+  geom_errorbarh(aes(xmin = Lower, xmax = Upper), height = 0.2, linewidth = 0.8) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Ethnicity" = nhs_blue, "Deprivation" = nhs_pink)) +
+  scale_x_continuous(breaks = seq(0.8, 1.2, 0.1)) +
+  facet_grid(category ~ ., scales = "free_y", space = "free_y") +
+  labs(
+    title = "Adjusted Rate Ratios for Length of NCC Stay",
+    subtitle = "Reference groups: White British (ethnicity), Least Deprived quintile (IMD)",
+    x = "Rate Ratio (95% CI)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## What adjustment does to the crude picture
+
+**The Black crude excess is case-mix, fully.** After gestation-band adjustment the rate ratio for Black babies is `r fmt_rr(rr_black)` — the 25% crude excess in mean stay disappears entirely, because Black babies' longer average stays reflect their higher preterm rates, not longer stays at a given severity. Combined with the admission model (OR ~1.04) this extends the equitable-access finding: Black babies are admitted at parity *and*, once admitted, receive the expected quantity of care for their gestation.
+
+**Pakistani and Bangladeshi babies stay ~9–10% longer than expected.** The two groups with the most interesting admission-model results are also the ones with adjusted stay excesses that survive BH correction: Pakistani `r fmt_rr(rr_pak)` and Bangladeshi `r fmt_rr(rr_bang)`. For **Pakistani** babies the direction is notable: this group had ~11% *lower* adjusted odds of admission, and lower admission propensity combined with longer stays once admitted is the pattern one would expect if the effective admission threshold is higher — the marginal, milder cases don't get admitted, so those who do are sicker and stay longer. That is a hypothesis, not a demonstration: greater within-gestation-band morbidity (e.g. growth restriction, congenital anomaly rates) would produce the same signature, and this model cannot separate the two. For **Bangladeshi** babies, whose admission odds were slightly *above* parity, the threshold reading does not fit, and residual severity is the more natural explanation. Either way, the two groups the broad "Asian" category would average away are again the ones carrying the signal.
+
+**The deprivation gradient in stay length is almost entirely case-mix.** The crude mean gap (10.5 vs 9.0 days, most vs least deprived) shrinks to a residual `r round((rr_imd1$RR - 1) * 100, 1)`% (RR `r fmt_rr(rr_imd1)`) — small, and consistent with the [unmeasured-need reading](#imd-morbidity): the model adjusts for gestation band but not for the growth restriction that rises with deprivation *within* gestation bands.
+
+**Trusts vary substantially in recorded stay length.** The trust random-intercept SD (`r round(sqrt(a5a$trust_var), 2)` on the log scale) implies a trust one SD above average records ~`r trust_sd_pct`% longer stays than expected for its case-mix. This should not be read as pure clinical practice: the [funnel diagnostic](#outlier-completeness) showed that what gets *counted* as an NCC day varies markedly between trusts, and that recording breadth flows directly into this outcome. The stay-length measure here is "days carrying an NCC critical-care record", not independently verified cot-days.
+
+::: {.callout-warning}
+## Reading length of stay conditional on admission
+This analysis conditions on admission, which is itself the outcome of the earlier models. If a group's admission threshold differs, its admitted babies are a differently-selected slice of the same underlying population — which changes expected stay length without any difference in care received. Rate ratios here should therefore be read jointly with the admission model, never in isolation. The Pakistani finding above is the concrete example: its interpretation depends directly on the admission result.
+:::
+
+---
+
 # Recommendations
 
 The analysis is reassuring on its headline question — no signal of national under-access for Black babies — but it surfaces concrete follow-ups. In rough priority order:
@@ -1405,7 +1546,9 @@ The analysis is reassuring on its headline question — no signal of national un
 
 4. **Investigate the Chinese-group gap.** ~24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.
 
-5. **Extend to outcomes and timing.** Length of stay once admitted is feasible with current data; mortality can be examined descriptively with heavy ascertainment caveats; and the Phase 2 timing analysis should proceed once the day-of-birth data environment is available.
+5. **Extend to outcomes and timing.** Length of stay is now analysed [above](#length-of-stay) — its Pakistani finding (fewer admissions, longer stays) sharpens the case for the Phase 2 timing analysis once the day-of-birth data environment is available. Mortality can be examined descriptively with heavy ascertainment caveats.
+
+6. **Follow up the Pakistani stay-length excess.** Fewer admissions plus longer stays once admitted is consistent with a higher effective admission threshold, but equally with greater within-gestation morbidity; distinguishing them needs severity-at-admission data (care level at day 1, organ support) — a planned extension.
 
 # Limitations
 

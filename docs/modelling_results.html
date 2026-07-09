@@ -211,9 +211,13 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#comparing-primary-and-sensitivity-models" id="toc-comparing-primary-and-sensitivity-models" class="nav-link" data-scroll-target="#comparing-primary-and-sensitivity-models"><span class="header-section-number">5.1</span> Comparing Primary and Sensitivity Models</a></li>
   </ul></li>
-  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">6</span> Recommendations</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">7</span> Limitations</a></li>
-  <li><a href="#technical-details" id="toc-technical-details" class="nav-link" data-scroll-target="#technical-details"><span class="header-section-number">8</span> Technical Details</a></li>
+  <li><a href="#length-of-stay" id="toc-length-of-stay" class="nav-link" data-scroll-target="#length-of-stay"><span class="header-section-number">6</span> Length of Stay Among Admitted Babies</a>
+  <ul class="collapse">
+  <li><a href="#what-adjustment-does-to-the-crude-picture" id="toc-what-adjustment-does-to-the-crude-picture" class="nav-link" data-scroll-target="#what-adjustment-does-to-the-crude-picture"><span class="header-section-number">6.1</span> What adjustment does to the crude picture</a></li>
+  </ul></li>
+  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">7</span> Recommendations</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">8</span> Limitations</a></li>
+  <li><a href="#technical-details" id="toc-technical-details" class="nav-link" data-scroll-target="#technical-details"><span class="header-section-number">9</span> Technical Details</a></li>
   </ul>
 </nav>
 </nav>
@@ -277,6 +281,7 @@ window.Quarto = {
 <li><strong>[A2]</strong> New test for <a href="#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white">trusts where Black admission is significantly lower than White</a>.</li>
 <li><strong>[K4]</strong> New <a href="#broad-ethnicity">broad MBRRACE-comparable ethnicity grouping</a> presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).</li>
 <li><strong>[A5c]</strong> New <a href="#eth-imd-interaction">exploratory ethnicity × deprivation interaction</a>: a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.</li>
+<li><strong>[A5a]</strong> New <a href="#length-of-stay">length-of-stay analysis</a> among admitted babies (negative binomial mixed model on CC days): the crude Black excess in stay length is entirely case-mix (RR 0.98 after gestation adjustment, extending the equitable-access finding); Pakistani and Bangladeshi babies stay ~9–10% longer than expected, which for Pakistani babies is the pattern a higher effective admission threshold would produce; the deprivation gradient in stay length is almost entirely case-mix.</li>
 <li><strong>Editorial pass (July 2026):</strong> tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the <a href="index.html">overview report</a> with the revised findings.</li>
 </ul>
 <p><em>(This box is temporary review scaffolding and will be removed before final publication.)</em></p>
@@ -1956,19 +1961,347 @@ Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the 
 <hr>
 </section>
 </section>
-<section id="recommendations" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Recommendations</h1>
+<section id="length-of-stay" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Length of Stay Among Admitted Babies</h1>
+<p>The models above ask who <em>gets</em> NCC care; this section asks how much care admitted babies then receive. Unlike the timing analysis (Phase 2, on hold), length of stay does not depend on a birth datetime: the outcome is <code>NCC_CC_Total_Days</code>, a count of daily critical-care records, so it is available now.</p>
+<p><strong>Sample and outcome.</strong> Of the 57,072 admitted babies in the primary analysis sample, 53,090 (93%) have at least one CC daily record and form the length-of-stay sample. The remaining 3,982 are MSDS-only admissions with no CC records — their stay length is unobservable in this data, an exclusion to bear in mind if MSDS-only status is unevenly distributed across providers (it is; see the funnel section). Stay length is the total number of days with an NCC critical-care record within 90 days of birth, summed across care periods.</p>
+<p>The distribution is heavily skewed — median 4 days (IQR 2–8), 99th percentile 86 days — and gestation dominates it: median stays run from 3 days at term to 61 days below 28 weeks. Any crude group comparison therefore mostly re-describes each group’s preterm mix.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Crude length of NCC stay (days) among admitted babies with CC records, FY 2023/24. Group differences concentrate in the tail: medians are identical, while the share of long stays varies.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Group</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Median (IQR)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Stay ≥28 days</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="10">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Ethnicity</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White British</td>
+<td style="text-align: right;">32,197</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.2</td>
+<td style="text-align: right;">7.4%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White Other</td>
+<td style="text-align: right;">4,580</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">7.9%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Mixed</td>
+<td style="text-align: right;">3,588</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.3</td>
+<td style="text-align: right;">8.4%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Indian</td>
+<td style="text-align: right;">2,746</td>
+<td style="text-align: right;">4 (2–9)</td>
+<td style="text-align: right;">9.7</td>
+<td style="text-align: right;">9.1%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Pakistani</td>
+<td style="text-align: right;">2,562</td>
+<td style="text-align: right;">4 (2–10)</td>
+<td style="text-align: right;">10.4</td>
+<td style="text-align: right;">8.9%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Bangladeshi</td>
+<td style="text-align: right;">856</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.9</td>
+<td style="text-align: right;">8.5%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other Asian</td>
+<td style="text-align: right;">1,597</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.2</td>
+<td style="text-align: right;">8.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Black</td>
+<td style="text-align: right;">3,636</td>
+<td style="text-align: right;">4 (2–9)</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">11.1%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Chinese</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">4 (2–9)</td>
+<td style="text-align: right;">9.2</td>
+<td style="text-align: right;">7.3%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other</td>
+<td style="text-align: right;">1,177</td>
+<td style="text-align: right;">4 (2–10)</td>
+<td style="text-align: right;">11.6</td>
+<td style="text-align: right;">11.6%</td>
+</tr>
+<tr class="even" data-grouplength="5">
+<td colspan="5" style="border-bottom: 1px solid"><strong>IMD quintile</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">5 - Least deprived</td>
+<td style="text-align: right;">8,147</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.0</td>
+<td style="text-align: right;">7.5%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">4</td>
+<td style="text-align: right;">9,064</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.0</td>
+<td style="text-align: right;">7.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3</td>
+<td style="text-align: right;">10,032</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.1</td>
+<td style="text-align: right;">7.4%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2</td>
+<td style="text-align: right;">11,520</td>
+<td style="text-align: right;">4 (2–8)</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">8.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1 - Most deprived</td>
+<td style="text-align: right;">14,327</td>
+<td style="text-align: right;">4 (2–10)</td>
+<td style="text-align: right;">10.5</td>
+<td style="text-align: right;">9.4%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The crude pattern is striking but misleading: every group’s <em>median</em> stay is 4 days, while mean stays and the share of long stays (≥28 days) look elevated for Black babies (mean 11.5 vs 9.2 for White British; 11.1% vs 7.4% staying ≥28 days) and for the most deprived quintile. Whether that reflects anything beyond case-mix is exactly what the adjusted model tests.</p>
+<p><strong>Model.</strong> Stay length is modelled with a negative binomial mixed model (log link; the variance/mean ratio of ~28 rules out Poisson), with gestation entered as clinical bands — extremely/very/moderately/late preterm vs term — because its effect is far too nonlinear for a linear week term, plus ethnicity, IMD quintile, and a delivery-trust random intercept. Exponentiated coefficients are <strong>rate ratios</strong>: multiplicative differences in expected days of NCC care, conditional on gestation band and trust. BH adjustment is applied within the ethnicity and deprivation families, as elsewhere in this report.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Adjusted rate ratios for days of NCC care among admitted babies (negative binomial mixed model with delivery-trust random intercept).</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Rate Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">95% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p-value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p (BH-adj)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="4">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Gestation (ref: Term 37w+)</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Extremely preterm (&lt;28w)</td>
+<td style="text-align: right;">13.238</td>
+<td style="text-align: center;">(12.754, 13.74)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Very preterm (28-31w)</td>
+<td style="text-align: right;">8.806</td>
+<td style="text-align: center;">(8.569, 9.05)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Moderate preterm (32-33w)</td>
+<td style="text-align: right;">4.456</td>
+<td style="text-align: center;">(4.343, 4.571)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Late preterm (34-36w)</td>
+<td style="text-align: right;">1.757</td>
+<td style="text-align: center;">(1.729, 1.785)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr class="even" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Ethnicity (ref: White British)</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White Other</td>
+<td style="text-align: right;">0.970</td>
+<td style="text-align: center;">(0.946, 0.994)</td>
+<td style="text-align: right;">0.014</td>
+<td style="text-align: right;">0.041</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Mixed</td>
+<td style="text-align: right;">0.986</td>
+<td style="text-align: center;">(0.959, 1.013)</td>
+<td style="text-align: right;">0.295</td>
+<td style="text-align: right;">0.402</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Indian</td>
+<td style="text-align: right;">1.015</td>
+<td style="text-align: center;">(0.983, 1.048)</td>
+<td style="text-align: right;">0.357</td>
+<td style="text-align: right;">0.402</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Pakistani</td>
+<td style="text-align: right;">1.086</td>
+<td style="text-align: center;">(1.05, 1.122)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Bangladeshi</td>
+<td style="text-align: right;">1.097</td>
+<td style="text-align: center;">(1.038, 1.159)</td>
+<td style="text-align: right;">&lt;0.001</td>
+<td style="text-align: right;">0.004</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other Asian</td>
+<td style="text-align: right;">1.027</td>
+<td style="text-align: center;">(0.987, 1.068)</td>
+<td style="text-align: right;">0.193</td>
+<td style="text-align: right;">0.347</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Black</td>
+<td style="text-align: right;">0.979</td>
+<td style="text-align: center;">(0.952, 1.006)</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.292</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Chinese</td>
+<td style="text-align: right;">0.940</td>
+<td style="text-align: center;">(0.83, 1.064)</td>
+<td style="text-align: right;">0.328</td>
+<td style="text-align: right;">0.402</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other</td>
+<td style="text-align: right;">1.019</td>
+<td style="text-align: center;">(0.974, 1.066)</td>
+<td style="text-align: right;">0.412</td>
+<td style="text-align: right;">0.412</td>
+</tr>
+<tr class="even" data-grouplength="4">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Deprivation (ref: Least Deprived)</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 4</td>
+<td style="text-align: right;">0.992</td>
+<td style="text-align: center;">(0.969, 1.016)</td>
+<td style="text-align: right;">0.528</td>
+<td style="text-align: right;">0.635</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 3</td>
+<td style="text-align: right;">1.009</td>
+<td style="text-align: center;">(0.986, 1.032)</td>
+<td style="text-align: right;">0.454</td>
+<td style="text-align: right;">0.635</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 2</td>
+<td style="text-align: right;">1.006</td>
+<td style="text-align: center;">(0.983, 1.029)</td>
+<td style="text-align: right;">0.635</td>
+<td style="text-align: right;">0.635</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">IMD: 1 - Most deprived</td>
+<td style="text-align: right;">1.032</td>
+<td style="text-align: center;">(1.008, 1.056)</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.031</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="padding: 0; border: 0"><sup></sup> BH-adjusted p-values computed within each family (9 ethnicity contrasts; 4 IMD contrasts).</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-los-forest" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-los-forest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-los-forest-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-los-forest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and deprivation (negative binomial mixed model, adjusted for gestation band, with hospital random effects). Gestation-band effects (RR 1.8–13.2) are omitted from the plot for scale.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="what-adjustment-does-to-the-crude-picture" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="what-adjustment-does-to-the-crude-picture"><span class="header-section-number">6.1</span> What adjustment does to the crude picture</h2>
+<p><strong>The Black crude excess is case-mix, fully.</strong> After gestation-band adjustment the rate ratio for Black babies is 0.98 (0.95–1.01) — the 25% crude excess in mean stay disappears entirely, because Black babies’ longer average stays reflect their higher preterm rates, not longer stays at a given severity. Combined with the admission model (OR ~1.04) this extends the equitable-access finding: Black babies are admitted at parity <em>and</em>, once admitted, receive the expected quantity of care for their gestation.</p>
+<p><strong>Pakistani and Bangladeshi babies stay ~9–10% longer than expected.</strong> The two groups with the most interesting admission-model results are also the ones with adjusted stay excesses that survive BH correction: Pakistani 1.09 (1.05–1.12) and Bangladeshi 1.10 (1.04–1.16). For <strong>Pakistani</strong> babies the direction is notable: this group had ~11% <em>lower</em> adjusted odds of admission, and lower admission propensity combined with longer stays once admitted is the pattern one would expect if the effective admission threshold is higher — the marginal, milder cases don’t get admitted, so those who do are sicker and stay longer. That is a hypothesis, not a demonstration: greater within-gestation-band morbidity (e.g.&nbsp;growth restriction, congenital anomaly rates) would produce the same signature, and this model cannot separate the two. For <strong>Bangladeshi</strong> babies, whose admission odds were slightly <em>above</em> parity, the threshold reading does not fit, and residual severity is the more natural explanation. Either way, the two groups the broad “Asian” category would average away are again the ones carrying the signal.</p>
+<p><strong>The deprivation gradient in stay length is almost entirely case-mix.</strong> The crude mean gap (10.5 vs 9.0 days, most vs least deprived) shrinks to a residual 3.2% (RR 1.03 (1.01–1.06)) — small, and consistent with the <a href="#imd-morbidity">unmeasured-need reading</a>: the model adjusts for gestation band but not for the growth restriction that rises with deprivation <em>within</em> gestation bands.</p>
+<p><strong>Trusts vary substantially in recorded stay length.</strong> The trust random-intercept SD (0.31 on the log scale) implies a trust one SD above average records ~36% longer stays than expected for its case-mix. This should not be read as pure clinical practice: the <a href="#outlier-completeness">funnel diagnostic</a> showed that what gets <em>counted</em> as an NCC day varies markedly between trusts, and that recording breadth flows directly into this outcome. The stay-length measure here is “days carrying an NCC critical-care record”, not independently verified cot-days.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Reading length of stay conditional on admission
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This analysis conditions on admission, which is itself the outcome of the earlier models. If a group’s admission threshold differs, its admitted babies are a differently-selected slice of the same underlying population — which changes expected stay length without any difference in care received. Rate ratios here should therefore be read jointly with the admission model, never in isolation. The Pakistani finding above is the concrete example: its interpretation depends directly on the admission result.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="recommendations" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Recommendations</h1>
 <p>The analysis is reassuring on its headline question — no signal of national under-access for Black babies — but it surfaces concrete follow-ups. In rough priority order:</p>
 <ol type="1">
 <li><p><strong>Standardise what counts as an “NCC day” in PbR-CC returns.</strong> The funnel diagnostic shows the most extreme provider variation is recording breadth, not admission practice: outlier trusts record NCC for 21–40% of their term babies against ~7% nationally. A tighter definition — or an audit of the outlier trusts’ returns — would sharpen every downstream use of this data, including the ICC and any future benchmarking.</p></li>
 <li><p><strong>Improve completeness of birth weight and Apgar in MSDS.</strong> Jointly complete for under half the cohort, this is the single biggest constraint on case-mix adjustment — it is why the primary model must lean on gestation alone.</p></li>
 <li><p><strong>Follow up the one trust flagged for lower Black admission</strong> (identity held internally) with a case-mix-standardised check — a per-trust Black observed/expected ratio — before drawing any conclusion about access.</p></li>
 <li><p><strong>Investigate the Chinese-group gap.</strong> ~24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.</p></li>
-<li><p><strong>Extend to outcomes and timing.</strong> Length of stay once admitted is feasible with current data; mortality can be examined descriptively with heavy ascertainment caveats; and the Phase 2 timing analysis should proceed once the day-of-birth data environment is available.</p></li>
+<li><p><strong>Extend to outcomes and timing.</strong> Length of stay is now analysed <a href="#length-of-stay">above</a> — its Pakistani finding (fewer admissions, longer stays) sharpens the case for the Phase 2 timing analysis once the day-of-birth data environment is available. Mortality can be examined descriptively with heavy ascertainment caveats.</p></li>
+<li><p><strong>Follow up the Pakistani stay-length excess.</strong> Fewer admissions plus longer stays once admitted is consistent with a higher effective admission threshold, but equally with greater within-gestation morbidity; distinguishing them needs severity-at-admission data (care level at day 1, organ support) — a planned extension.</p></li>
 </ol>
 </section>
-<section id="limitations" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Limitations</h1>
+<section id="limitations" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Limitations</h1>
 <ol type="1">
 <li><p>Clinical covariate completeness: Birth weight is recorded for ~46% of births and Apgar for ~79%; jointly they limit the sensitivity model to under half the cohort. The primary model uses gestation alone to preserve sample size.</p></li>
 <li><p>Single year of data: Results may not generalise to other time periods.</p></li>
@@ -1978,10 +2311,10 @@ Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the 
 </ol>
 <hr>
 </section>
-<section id="technical-details" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Technical Details</h1>
+<section id="technical-details" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Technical Details</h1>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1990,7 +2323,7 @@ Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the 
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Model 2 - Primary (Gestation only):</p>
 <pre><code>NCC_Admitted ~ Gestation_Weeks + Ethnicity_Baby_Grouped + IMD_Quintile + (1 | Delivery_Trust)</code></pre>
@@ -2009,7 +2342,7 @@ Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the 
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2018,7 +2351,7 @@ Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the 
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
 <div class="cell-output-display">
@@ -2069,7 +2402,7 @@ Figure&nbsp;6: Within-group deprivation gradient: odds of NCC admission for the 
 </div>
 </div>
 <hr>
-<p>Report generated: 2026-07-09 14:45:53.814209</p>
+<p>Report generated: 2026-07-09 15:23:53.911257</p>
 <p>R version: R version 4.6.0 (2026-04-24 ucrt)</p>
 
 
