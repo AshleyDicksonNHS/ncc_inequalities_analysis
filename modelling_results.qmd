@@ -50,21 +50,19 @@ This draft responds to feedback from Anna Everton and Katharine Robbins. Changes
 - **[A3b]** New [direct check of the morbidity-proxy hypothesis](#imd-morbidity): preterm, very-preterm and low-birth-weight rates all rise monotonically with deprivation, and term low birth weight nearly doubles — supporting the unmeasured-need reading of the deprivation gradient.
 - **[A4]** New [funnel plot](#funnel-plot-case-mix-adjusted-admission-rates) of case-mix-adjusted admission rates, with a contextualised outlier table.
 - **[A4b]** New [completeness diagnostic](#outlier-completeness) for the funnel outliers, responding to the follow-up question of whether their position reflects completeness of *records* or of *specific fields*. Answer: neither — the signal sits in the PbR-CC numerator, and the earlier "referral activity + reporting gap" reading has been withdrawn.
-- **[A2]** New test for [trusts where Black admission is significantly lower than White](#are-there-trusts-where-black-babies-are-admitted-significantly-less-than-white).
+- **[A2]** New test for [trusts where Black admission is significantly lower than White](#black-underaccess-screen).
 - **[K4]** New [broad MBRRACE-comparable ethnicity grouping](#broad-ethnicity) presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).
 - **[A5c]** New [exploratory ethnicity × deprivation interaction](#eth-imd-interaction): a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.
 - **[A5a]** New [length-of-stay analysis](#length-of-stay) among admitted babies (negative binomial mixed model on CC days): the crude Black excess in stay length is entirely case-mix (RR 0.98 after gestation adjustment, extending the equitable-access finding); Pakistani and Bangladeshi babies stay ~9–10% longer than expected, which for Pakistani babies is the pattern a higher effective admission threshold would produce; the deprivation gradient in stay length is almost entirely case-mix.
-- **[A5b]** New [descriptive mortality section](#mortality) using a dual-source death flag (MSDS death date + APCS spell discharge method, added in a July 2026 extract refresh; 94% date-concordant where both record a death). Crude rates for Pakistani and Black babies run at twice the White British rate, but gestation-standardisation splits them: the Black excess is mostly gestational mix (O/E 1.18, ns) while the Pakistani excess is emphatically not (O/E 1.81, BH p<0.001) — converging with the admission and length-of-stay findings on the severity-at-admission follow-up. Deprivation gradient survives standardisation. Heavy ascertainment caveats; explicitly deferential to MBRRACE.
-- **Editorial pass (July 2026):** tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the [overview report](index.html) with the revised findings.
+- **[A5b]** New [descriptive mortality section](#mortality) using a dual-source death flag (MSDS death date + APCS spell discharge method, added in a July 2026 extract refresh). Gestation-standardisation splits the crude ethnic-group excesses: the Black excess largely reflects gestational mix (O/E 1.18, ns) while the Pakistani excess does not (O/E 1.81, BH p<0.001), converging with the admission and length-of-stay findings. The deprivation gradient survives standardisation. Heavy ascertainment caveats; defers to MBRRACE.
+- **Editorial pass (July 2026):** restructured for concision — key messages merged into the executive summary, Model 1 moved to the technical appendix, duplicated caveats consolidated, emphasis formatting reduced throughout, and tone aligned with NHS analytical reporting style. No numbers or findings changed.
 
 *(This box is temporary review scaffolding and will be removed before final publication.)*
 :::
 
 # Executive Summary
 
-This report asks one question of ~476,000 English hospital births in 2023/24: **after accounting for how sick a baby is, does access to neonatal critical care (NCC) differ by ethnicity or deprivation?** We answer it with hierarchical logistic regression — a primary model adjusting for gestation, and a sensitivity model additionally adjusting for birth weight and Apgar score — with each delivery trust given its own baseline admission rate.
-
-Key findings:
+This report examines whether, after accounting for clinical need, access to neonatal critical care (NCC) differs by ethnicity or deprivation, using around 476,000 English hospital births in 2023/24. The analysis uses hierarchical logistic regression: a primary model adjusting for gestation, a sensitivity model additionally adjusting for birth weight and Apgar score, and a baseline admission rate for each delivery trust.
 
 ```{r exec_summary, echo=FALSE}
 # Extract key results from primary model
@@ -84,30 +82,19 @@ var_trust <- as.numeric(VarCorr(model2)$Delivery_Trust)
 icc <- var_trust / (var_trust + (pi^2 / 3))
 ```
 
-- **Clinical need dominates admission.** Each week of gestation reduces the odds of NCC admission by ~38%; each kg of birth weight by ~9%; each Apgar point by ~36%. Ethnicity and deprivation effects are small by comparison — the system looks need-led on its central question.
-- **No evidence of under-admission for Black babies.** Odds ratios of ~1.04 in both the primary and sensitivity models — essentially parity with White British, despite higher average clinical need.
-- **Pakistani and Chinese groups show lower recorded NCC odds.** Pakistani moves to near-parity once birth weight and Apgar are added — largely a case-mix story. Chinese remains ~24% lower after adjustment; several explanations are plausible (residual case-mix, upstream maternal risk, statistical fragility, under-recording) and this data cannot separate them.
-- **The deprivation gradient is robust and looks like need.** ~9.4% higher odds for most vs least deprived, stable after clinical adjustment. A direct morbidity check supports reading this largely as unmeasured clinical need: preterm and low-birth-weight rates rise steadily with deprivation, and low birth weight *among term births* — need the model cannot see — nearly doubles from least to most deprived.
-- **Between-hospital variation is large but cannot be read at face value.** The trust-level ICC of `r round(icc * 100, 1)`% is the dominant residual signal, but it bundles practice with reporting: the CC source captures roughly 3.8 times more NCC admissions than MSDS alone, and completeness varies by provider. The funnel-outlier diagnostic gives concrete evidence for the reporting component — the most extreme trusts record NCC for 21–40% of their *term* babies (~7% nationally), a coding signature, not an admission-practice one.
-- **Data completeness is itself a core finding.** Birth weight and Apgar are jointly complete for under half the cohort, and what providers count as an "NCC day" in returns evidently varies. Both belong in the recommendations.
-
 ## Key Messages
 
-1. Between-trust variation is the largest residual signal (ICC ~32%), but with this dataset alone we cannot separate practice variation from data-completeness variation. The MSDS source captures only ~26% of the NCC admissions visible in PbR-CC, and submission completeness varies between providers — some apparent provider effects may be reporting artefacts rather than admission-policy differences. The funnel-outlier diagnostic (see Hospital Variation) now shows this concretely: all four statistical outliers share a term-heavy, short-stay numerator signature consistent with over-broad NCC coding in the PbR-CC return, not a different admission threshold. We cluster at trust rather than site level (see Methods), which absorbs within-trust between-site variation into the residual; the ICC is therefore a slightly conservative estimate of true between-hospital variation.
+1. Clinical need drives admission. Each additional week of gestation reduces the odds of NCC admission by around 38%; ethnicity and deprivation effects are small by comparison. On its central question, the system appears need-led.
 
-2. The fully-adjusted (sensitivity) model is the conceptually preferred specification. After adjusting for gestation, birth weight and Apgar, ethnicity ORs change non-trivially compared with the gestation-only primary model (Pakistani 0.89→0.97; Indian 1.05→1.16). The primary model's larger sample comes at the cost of unadjusted clinical case-mix.
+2. There is no evidence of under-admission for Black babies at national level. Odds ratios are approximately 1.04 in both the primary and sensitivity models — essentially parity with White British, despite higher average clinical need. This is a finding about admission rates only, not about the wider quality of care received.
 
-3. Recorded NCC access for Black babies appears close to White British in both models (OR ~1.04 in both primary and sensitivity). This is a single-aspect finding about admission rates, not about the wider quality of care received.
+3. Two groups warrant follow-up. Pakistani babies' lower odds in the primary model move to near-parity once birth weight and Apgar are added, so are largely explained by case-mix — though the [length-of-stay](#length-of-stay) and [mortality](#mortality) analyses add further Pakistani findings that together point to a severity-at-admission follow-up. Chinese babies show around 24% lower odds even after adjustment; at least four explanations are consistent with this and the data cannot separate them (see [Ethnicity](#ethnicity)).
 
-4. The Chinese group shows about 24% lower odds of *recorded* NCC admission than White British babies, even after adjusting for gestation, birth weight and Apgar — though in the smaller sensitivity sample this sits at the boundary of conventional significance. This is not, by itself, evidence that Chinese babies are under-served: at least four explanations are consistent with it, and we cannot separate them with this data.
-   - *Lower genuine need.* Our clinical adjustment is imperfect. Chinese babies tend to be a little smaller at term without being clinically compromised, and a single linear birth-weight term may not fully capture that — so part of the gap may be appropriate rather than a shortfall.
-   - *Different upstream maternal risk.* Differences in maternal age, parity or rates of high-risk pregnancy could mean proportionally fewer babies reach the threshold for NCC.
-   - *Statistical fragility.* Chinese is one of the smaller ethnic groups, so the estimate is less stable, and once we correct for testing many groups at once the strength of evidence is weaker than the raw odds ratio suggests.
-   - *Under-recording.* Some genuine NCC episodes for this group may simply not be captured in the two administrative sources we use, which would understate the true rate.
+4. The deprivation gradient is consistent with need rather than over-admission. Odds are around 9% higher for the most deprived quintile relative to the least, stable after clinical adjustment, and a [direct morbidity check](#imd-morbidity) shows clinical need itself rising with deprivation in ways the model does not capture.
 
-   Telling "lower need" apart from "lower access or recording" would need richer clinical data or direct engagement with providers (see Recommendations).
+5. Between-trust variation is the largest residual signal (ICC around 32%), but it bundles admission practice with recording practice and cannot be read at face value. The [funnel-outlier diagnostic](#outlier-completeness) shows the most extreme trusts record NCC for 21–40% of their term babies, against roughly 7% nationally — a recording signature, not an admission-practice one. Standardising what counts as an NCC day in PbR-CC returns is the highest-value data improvement identified by this work.
 
-5. These results address *whether* a baby is admitted, not *when*. A planned Phase 2 survival analysis (timing of admission) is on hold pending access to a data environment that includes baby date of birth.
+6. These results address whether a baby is admitted, not when. The planned Phase 2 analysis of admission timing is on hold pending access to a data environment with a usable date of birth.
 
 ---
 
@@ -140,16 +127,14 @@ Two further constraints apply to the primary cohort:
 
 ## Variable selection
 
-This is a *causal estimation* problem, not a *prediction* problem, and that distinction governs the whole approach to selecting variables. The aim is not to predict NCC admission as accurately as possible; it is to estimate the association of ethnicity and deprivation with admission *conditional on clinical need*. The two goals select variables on entirely different grounds — and conflating them is the most common source of error in this kind of analysis.
+This is a causal estimation problem rather than a prediction problem, and that distinction governs the approach to selecting variables. The aim is not to predict NCC admission as accurately as possible; it is to estimate the association of ethnicity and deprivation with admission conditional on clinical need. Each candidate variable is therefore judged first on its causal role, and only then on whether it is usable:
 
-Because the goal is causal, each candidate variable is judged first on its **causal role** in relation to the question, and only then on whether it is usable:
+- Causal role. A variable is an exposure of interest (ethnicity, IMD — the inequalities being measured), a confounder of need (clinical case-mix that must be adjusted for so that "conditional on need" is meaningful), a mediator (on the causal pathway from exposure to admission, which must not be adjusted for if the total effect is wanted — the "Table 2 fallacy"), or a collider (adjusting for which would introduce bias). Confounders are candidates for adjustment; mediators and colliders are left out, however predictive they are.
+- Clinical relevance. Among confounders, how strongly the variable drives genuine NCC need.
+- Completeness. Whether it is recorded for enough of the cohort to use without shrinking or biasing the sample. A near-complete weak confounder can be preferable to a strong but half-missing one — the gestation-versus-birth-weight trade-off below.
+- Collinearity. Correlation among the adjustment variables inflates the variance of those coefficients, but does not bias the ethnicity/IMD estimates unless a covariate is collinear with ethnicity or IMD. Correlated clinical measures are a reason for parsimony, not a threat to the headline estimates.
 
-- *Causal role.* A variable is an **exposure of interest** (ethnicity, IMD — the inequalities we want to measure), a **confounder of need** (clinical case-mix that we must adjust for so that "conditional on need" is meaningful), a **mediator** (something on the causal pathway *from* the exposure *to* admission — which we must **not** adjust for if we want the total effect; doing so is the "Table 2 fallacy"), or a **collider** (adjusting for which would *open* bias). Confounders are candidates for adjustment; exposures are the dimensions of interest; mediators and colliders are deliberately left out, however predictive they are.
-- *Clinical relevance.* Among confounders, how strongly the variable drives genuine NCC need.
-- *Completeness.* Whether it is recorded for enough of the cohort to use without shrinking or biasing the sample. A near-complete *weak* confounder can be preferable to a strong but half-missing one, because the latter forces either a smaller complete-case sample or imputation. This is exactly the gestation-versus-birth-weight trade-off below.
-- *Collinearity.* Correlation *among the adjustment variables*. Collinearity inflates the variance of the correlated coefficients themselves, but it does **not** bias the ethnicity/IMD estimates unless a covariate is collinear *with* ethnicity or IMD. So correlated clinical measures are a reason for parsimony, not a threat to the headline estimates.
-
-### Why not a data-driven search (stepwise / LASSO)?
+### Why selection is not data-driven (stepwise / LASSO)
 
 Algorithmic selection — stepwise regression, LASSO, and similar — optimises *predictive fit* and is blind to causal role. Such a procedure would happily adjust for a mediator (biasing the exposure estimate toward the null), or drop a true confounder because it is collinear with another. For a causal access question this is the wrong tool: it answers "what predicts admission?" when we are asking "is admission equitable conditional on need?". Selection here is therefore *pre-specified on clinical and causal grounds* by design. Where robustness to the adjustment set matters, the appropriate check is not a data-driven search but a small set of pre-specified alternative specifications (see Recommendations).
 
@@ -159,24 +144,24 @@ The table sets out the variables that were considered, their likely causal role,
 
 | Variable | Likely role | In extract? | Decision and rationale |
 |---|---|:---:|---|
-| Gestational age | Confounder (need) | Yes | **In, primary.** Dominant driver of need; recorded for almost every birth, so it anchors the model on the full sample. |
-| Birth weight | Confounder (need) | Yes | **In, sensitivity only.** Adds genuine signal beyond gestation (small-for-gestational-age), but only ~46% complete; confined to the sensitivity model to avoid shrinking the primary sample. |
-| Apgar (5-min) | Confounder (need) | Yes | **In, sensitivity only.** Captures acute intrapartum compromise — a partly distinct axis from prematurity. Same completeness constraint as birth weight. |
-| Apgar (1-min) | Confounder (need) | Yes | **Excluded.** Very highly collinear with the 5-minute score, which is the more prognostic and standard measure; little marginal information. |
-| Baby sex | Confounder (weak) | Yes | **Candidate to add now.** Males carry modestly higher risk; near-complete. Cheap robustness addition; unlikely to move the headline estimates. |
-| Birth order / plurality | Confounder (need) | Yes (`Birth_Order`) | **Candidate to add now.** Multiple births are a major driver of prematurity with different ethnicity/deprivation distributions; worth testing as a covariate. |
-| Unit type (NICU / LNU / SCBU) | Structural confounder | Derivable | **Candidate to add now.** Admission probability depends heavily on whether the baby was *born* in a unit with tertiary cots. Currently absorbed into the trust random effect; could be made explicit via the NNAP unit mapping. |
-| Delivery method | **Mediator / collider** | Yes | **Excluded by design.** Plausibly downstream of fetal compromise (compromise → emergency caesarean → NCC); adjusting for it would bias the access estimate. |
-| Complex social factors / employment / disability (at booking) | Part of the exposure construct | Yes | **Excluded by design.** Arguably components of the deprivation/inequality construct rather than confounders; adjusting for them could regress away part of the very inequality being measured. |
-| Smoking at booking (CQIM) | Confounder, partly mediator of IMD | No — rebuild | **Future.** Strong driver of growth restriction and preterm birth, but correlated with deprivation, so partly *on* the IMD pathway. A natural addition; needs extraction. |
-| Maternal BMI / parity | Confounder (need) | No — rebuild | **Future.** Plausible upstream confounders; need extraction. |
-| Maternal age | Confounder (need) | No — blocked | **Future.** U-shaped risk and a confounder for both exposures, but the source date-of-birth field is missing in this environment. |
-| Gestational diabetes / hypertension / pre-eclampsia | Confounder (need) | No — rebuild | **Future.** Drive prematurity and NCC need; need extraction. |
-| Postpartum haemorrhage (CQIM) | Maternal outcome (not a clean confounder) | No — rebuild | **Future, descriptive only.** A maternal *intrapartum* outcome largely downstream of the determinants of the baby's need; its link to *neonatal* CC is weak and via shared causes. Worth a descriptive look, but not a case-mix adjustment. |
-| Congenital anomaly | Confounder / part-outcome | No — rebuild | **Future, with caution.** A strong driver of admission, but MSDS ascertainment is poor and it is arguably part outcome rather than pure case-mix. |
-| Ethnicity (disaggregated) | **Exposure** | Yes | **In.** The granularity itself is a finding (within-Asian heterogeneity). A [broad MBRRACE-style grouping](#broad-ethnicity) is presented alongside for comparability and small-number stability. |
-| IMD quintile | **Exposure** | Yes | **In.** Area-level deprivation of the mother's recorded address (2015 vintage; see above). |
-| Delivery trust | Random effect | Yes | **In.** Random intercept; see *Random-effect Grouping*. |
+| Gestational age | Confounder (need) | Yes | In, primary. Dominant driver of need; recorded for almost every birth, so it anchors the model on the full sample. |
+| Birth weight | Confounder (need) | Yes | In, sensitivity only. Adds genuine signal beyond gestation (small-for-gestational-age), but only ~46% complete; confined to the sensitivity model to avoid shrinking the primary sample. |
+| Apgar (5-min) | Confounder (need) | Yes | In, sensitivity only. Captures acute intrapartum compromise — a partly distinct axis from prematurity. Same completeness constraint as birth weight. |
+| Apgar (1-min) | Confounder (need) | Yes | Excluded. Very highly collinear with the 5-minute score, which is the more prognostic and standard measure; little marginal information. |
+| Baby sex | Confounder (weak) | Yes | Candidate to add now. Males carry modestly higher risk; near-complete. Cheap robustness addition; unlikely to move the headline estimates. |
+| Birth order / plurality | Confounder (need) | Yes (`Birth_Order`) | Candidate to add now. Multiple births are a major driver of prematurity with different ethnicity/deprivation distributions; worth testing as a covariate. |
+| Unit type (NICU / LNU / SCBU) | Structural confounder | Derivable | Candidate to add now. Admission probability depends heavily on whether the baby was *born* in a unit with tertiary cots. Currently absorbed into the trust random effect; could be made explicit via the NNAP unit mapping. |
+| Delivery method | Mediator / collider | Yes | Excluded by design. Plausibly downstream of fetal compromise (compromise → emergency caesarean → NCC); adjusting for it would bias the access estimate. |
+| Complex social factors / employment / disability (at booking) | Part of the exposure construct | Yes | Excluded by design. Arguably components of the deprivation/inequality construct rather than confounders; adjusting for them could regress away part of the very inequality being measured. |
+| Smoking at booking (CQIM) | Confounder, partly mediator of IMD | No — rebuild | Future. Strong driver of growth restriction and preterm birth, but correlated with deprivation, so partly *on* the IMD pathway. A natural addition; needs extraction. |
+| Maternal BMI / parity | Confounder (need) | No — rebuild | Future. Plausible upstream confounders; need extraction. |
+| Maternal age | Confounder (need) | No — blocked | Future. U-shaped risk and a confounder for both exposures, but the source date-of-birth field is missing in this environment. |
+| Gestational diabetes / hypertension / pre-eclampsia | Confounder (need) | No — rebuild | Future. Drive prematurity and NCC need; need extraction. |
+| Postpartum haemorrhage (CQIM) | Maternal outcome (not a clean confounder) | No — rebuild | Future, descriptive only. A maternal *intrapartum* outcome largely downstream of the determinants of the baby's need; its link to *neonatal* CC is weak and via shared causes. Worth a descriptive look, but not a case-mix adjustment. |
+| Congenital anomaly | Confounder / part-outcome | No — rebuild | Future, with caution. A strong driver of admission, but MSDS ascertainment is poor and it is arguably part outcome rather than pure case-mix. |
+| Ethnicity (disaggregated) | Exposure | Yes | In. The granularity itself is a finding (within-Asian heterogeneity). A [broad MBRRACE-style grouping](#broad-ethnicity) is presented alongside for comparability and small-number stability. |
+| IMD quintile | Exposure | Yes | In. Area-level deprivation of the mother's recorded address (2015 vintage; see above). |
+| Delivery trust | Random effect | Yes | In. Random intercept; see *Random-effect Grouping*. |
 
 In short, the primary model deliberately carries the need signal on gestation alone — the one near-complete clinical confounder — adds the two exposures of interest, and leaves the trust structure to the random intercept. The sensitivity model adds birth weight and Apgar where they are observed. The remaining candidates are excluded either *by causal role* (mediators, colliders, and components of the exposure construct) or *by data availability* (factors awaiting a dataset rebuild), and are picked up as future work rather than omitted for convenience.
 
@@ -184,7 +169,7 @@ In short, the primary model deliberately carries the need signal on gestation al
 
 We fitted three models:
 
-1. Model 1 (Fixed effects only): Standard logistic regression adjusting for gestation, ethnicity, and deprivation. Included as a stepping-stone reference.
+1. Model 1 (Fixed effects only): Standard logistic regression adjusting for gestation, ethnicity, and deprivation. Retained as a reference point; estimates are in the technical appendix.
 
 2. Model 2 (Mixed effects, gestation only): Hierarchical logistic regression with random intercepts for delivery trust, adjusting only for gestation among clinical covariates
    $$\text{logit}(P[\text{NCC}]) = \beta_0 + \beta_1 \text{Gestation} + \beta_2 \text{Ethnicity} + \beta_3 \text{IMD} + u_j$$
@@ -218,61 +203,9 @@ The mixed-effects model fixes this by giving each trust its own baseline admissi
 
 # Results
 
-## Model 1: Fixed Effects Logistic Regression
-
-We start with a standard logistic regression on the full sample — a reference point and stepping stone to the mixed-effects models.
-
-```{r model1_summary, echo=FALSE}
-# Tidy model output
-model1_tidy <- tidy(model1, conf.int = TRUE, exponentiate = TRUE) %>%
-  mutate(
-    term = case_when(
-      term == "(Intercept)" ~ "Intercept",
-      term == "Gestation_Weeks" ~ "Gestation (per week)",
-      str_detect(term, "Ethnicity_Baby_Grouped") ~ str_replace(term, "Ethnicity_Baby_Grouped", "Ethnicity: "),
-      str_detect(term, "IMD_Quintile") ~ str_replace(term, "IMD_Quintile", "IMD: "),
-      TRUE ~ term
-    ),
-    significance = case_when(
-      p.value < 0.001 ~ "***",
-      p.value < 0.01 ~ "**",
-      p.value < 0.05 ~ "*",
-      TRUE ~ ""
-    )
-  )
-```
-
-### Odds Ratios
-
-```{r model1_or_table, echo=FALSE}
-model1_tidy %>%
-  filter(term != "Intercept") %>%
-  dplyr::select(term, estimate, conf.low, conf.high, p.value, significance) %>%
-  mutate(
-    estimate = round(estimate, 3),
-    conf.low = round(conf.low, 3),
-    conf.high = round(conf.high, 3),
-    p.value = ifelse(p.value < 0.001, "<0.001", round(p.value, 3)),
-    CI = paste0("(", conf.low, ", ", conf.high, ")")
-  ) %>%
-  dplyr::select(term, estimate, CI, p.value, significance) %>%
-  kable(
-    col.names = c("Variable", "Odds Ratio", "95% CI", "p-value", ""),
-    align = c("l", "r", "c", "r", "l")
-  ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
-  pack_rows("Clinical", 1, 1) %>%
-  pack_rows("Ethnicity (ref: White British)", 2, 10) %>%
-  pack_rows("Deprivation (ref: Least Deprived)", 11, 14)
-```
-
-<small>Significance: \*\*\* p<0.001, \*\* p<0.01, \* p<0.05</small>
-
----
-
 ## Model 2: Mixed Effects Logistic Regression
 
-The mixed effects model adds random intercepts for delivery trust, allowing each provider to have its own baseline NCC admission rate.
+The primary model. Random intercepts for delivery trust allow each provider its own baseline NCC admission rate; a fixed-effects-only reference fit (Model 1) is in the technical appendix.
 
 ### Fixed Effects (Odds Ratios)
 
@@ -420,18 +353,11 @@ kable(re_summary, align = c("l", "r")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-::: {.callout-note}
-## Interpreting the ICC
-The Intraclass Correlation Coefficient (ICC) of `r round(icc, 3)` means that approximately `r round(icc * 100, 1)`% of the unexplained variation in NCC admission (after accounting for gestation, ethnicity and deprivation) sits *between* delivery trusts rather than between babies. This is the largest residual signal in the model — but it bundles clinical practice, capacity, case-mix and reporting differences together. What it can and cannot be taken to mean is unpacked in the Interpretation section ([Hospital Variation](#hospital-variation-the-largest-signal-read-with-care)).
+The intraclass correlation coefficient (ICC) of `r round(icc, 3)` means that approximately `r round(icc * 100, 1)`% of the unexplained variation in NCC admission, after accounting for gestation, ethnicity and deprivation, sits between delivery trusts rather than between babies. This is the largest residual signal in the model, but it bundles clinical practice, capacity, case-mix and reporting differences together; what it can and cannot be taken to mean is discussed under [Hospital Variation](#hospital-variation). Because clustering is at trust rather than site level, within-trust between-site variation is absorbed into the residual, making the ICC a slightly conservative estimate of between-hospital variation.
 
-Because we cluster at trust rather than site level, within-trust between-site variation is absorbed into the residual; the ICC is a slightly conservative estimate of between-hospital variation.
-:::
-
-### Distribution of Hospital Effects
-
-```{r hospital_effects, echo=FALSE, fig.height=5}
-#| label: fig-hospital-effects
-#| fig-cap: "Distribution of hospital-level random effects (log-odds scale)"
+```{r caterpillar, echo=FALSE, fig.height=7}
+#| label: fig-caterpillar
+#| fig-cap: "Hospital-level effects ranked from lowest to highest NCC admission rate (after case-mix adjustment)"
 
 re_df <- ranef(model2)$Delivery_Trust %>%
   as.data.frame() %>%
@@ -442,26 +368,7 @@ re_df <- ranef(model2)$Delivery_Trust %>%
     rank = rank(effect)
   )
 
-ggplot(re_df, aes(x = effect)) +
-  geom_histogram(bins = 30, fill = nhs_blue, color = "white", alpha = 0.8) +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red", linewidth = 1) +
-  labs(
-    title = "Distribution of Trust-Level Random Effects",
-    subtitle = "Values > 0 indicate higher than average NCC admission rates (after case-mix adjustment)",
-    x = "Random Effect (log-odds)",
-    y = "Number of Trusts"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold", size = 14)
-  )
-```
-
-```{r caterpillar, echo=FALSE, fig.height=7}
-#| label: fig-caterpillar
-#| fig-cap: "Hospital-level effects ranked from lowest to highest NCC admission rate (after case-mix adjustment)"
-
-# Get confidence intervals for random effects
+# Confidence intervals for random effects
 re_se <- arm::se.ranef(model2)$Delivery_Trust
 
 re_df <- re_df %>%
@@ -496,7 +403,7 @@ ggplot(re_df, aes(x = rank, y = effect, color = significant)) +
 
 The review suggested a funnel plot — as used in the GIRFT programme — as an alternative to the caterpillar plot above. The two show the same trust-level variation but answer slightly different questions. The caterpillar ranks trusts by their estimated random effect; the funnel asks, more directly, *which trusts admit at a rate that case-mix alone cannot explain?*
 
-Each trust is plotted against the number of NCC admissions we would **expect** given the case-mix of the babies born there (gestation, ethnicity and deprivation), using the fixed-effects part of the primary model — i.e. the model with the trust's own random effect removed. The horizontal line is the national crude NCC rate across the trusts plotted (~12%; this is computed on the complete-case modelling sample used for the funnel and so sits marginally below the ~13% rate for the full birth cohort reported elsewhere). The curved lines are 95% and 99.8% control limits. A trust inside the funnel is varying no more than chance would predict; a trust outside the 99.8% (≈3-sigma) limit is a statistical outlier. Because the genuine between-trust variation is large (the same signal as the ICC), the limits are widened to account for this overdispersion (see the method note below), so that only the most extreme trusts are flagged rather than the majority.
+Each trust is plotted against the number of NCC admissions expected given the case-mix of the babies born there (gestation, ethnicity and deprivation), using the fixed-effects part of the primary model, i.e. with the trust's own random effect removed. The horizontal line is the national crude NCC rate across the trusts plotted (~12%; this is computed on the complete-case modelling sample used for the funnel and so sits marginally below the ~13% rate for the full birth cohort reported elsewhere). The curved lines are 95% and 99.8% control limits. A trust inside the funnel is varying no more than chance would predict; a trust outside the 99.8% (≈3-sigma) limit is a statistical outlier. Because the genuine between-trust variation is large (the same signal as the ICC), the limits are widened to account for this overdispersion (see the method note below), so that only the most extreme trusts are flagged rather than the majority.
 
 ```{r funnel_plot, echo=FALSE, fig.height=6}
 #| label: fig-funnel
@@ -580,7 +487,7 @@ ggplot() +
         legend.position = "bottom")
 ```
 
-An extreme position can reflect genuine practice variation, but equally a tertiary referral centre (which legitimately admits more), or a provider whose MSDS / PbR-CC submission is out of step with peers. The table below flags each 99.8% outlier with its neonatal unit type (NICU units are tertiary and expected to sit high) and its **MSDS source share** — the proportion of the trust's NCC babies that appear in the MSDS neonatal record rather than only in the CC extract. A low share points to under-submission in MSDS and heavier reliance on the CC source: a data-quality signal rather than a clinical one. Note, though, that a low share changes *where* an admission is recorded, not *whether* it is counted — the combined admission flag picks a baby up from either source — so MSDS under-submission cannot by itself inflate a trust's admission rate (see the diagnostic below).
+An extreme position can reflect genuine practice variation, but equally a tertiary referral centre (which legitimately admits more), or a provider whose MSDS / PbR-CC submission is out of step with peers. The table below flags each 99.8% outlier with its neonatal unit type (NICU units are tertiary and expected to sit high) and its MSDS source share — the proportion of the trust's NCC babies that appear in the MSDS neonatal record rather than only in the CC extract. A low share points to under-submission in MSDS and heavier reliance on the CC source: a data-quality signal rather than a clinical one. Note, though, that a low share changes *where* an admission is recorded, not *whether* it is counted — the combined admission flag picks a baby up from either source — so MSDS under-submission cannot by itself inflate a trust's admission rate (see the diagnostic below).
 
 ```{r funnel_outliers, echo=FALSE}
 # Data-quality proxy: share of a trust's NCC babies recorded in MSDS (vs CC-only)
@@ -627,15 +534,15 @@ kable(outlier_tbl,
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-At face value the four flagged trusts appear to split into two readable groups: two tertiary NICUs whose MSDS source share is near zero — suggesting a reporting gap combined with legitimate referral-centre activity — and two local neonatal units (LNUs) admitting well above expectation, seemingly the more natural candidates for genuine practice variation. An earlier draft of this section presented exactly that reading. Follow-up discussion raised the right challenge to it: is the outlier signal really about the **completeness of the records** these trusts submit, or just the **completeness of specific fields** on records that are present? The diagnostic below tests both mechanisms directly — and finds that neither holds. All four outliers instead share a single, different signature.
+At face value the four flagged trusts appear to split into two groups: two tertiary NICUs whose MSDS source share is near zero, suggesting a reporting gap combined with referral-centre activity, and two local neonatal units (LNUs) admitting well above expectation. An earlier draft of this section presented that reading. Follow-up discussion raised a fair challenge: is the outlier signal about the completeness of the records these trusts submit, or the completeness of specific fields on records that are present? The diagnostic below tests both mechanisms directly and finds that neither holds; all four outliers share a different signature.
 
 #### Missing records, missing fields, or a broader numerator? {#outlier-completeness}
 
 Three data mechanisms could place a trust spuriously outside the funnel:
 
-1. **Record-level completeness** — the trust submits few MSDS birth records, so its denominator is a small, unrepresentative slice of its true delivery population.
-2. **Field-level completeness** — births are submitted, but the model fields (gestation, ethnicity, IMD) are missing, so the complete-case sample keeps a selected — likely sicker, better-documented — subset of its births.
-3. **Numerator breadth** — the denominator is sound, but the trust's PbR-CC return counts more of its neonatal unit activity as "NCC" days than peers' returns do.
+1. Record-level completeness: the trust submits few MSDS birth records, so its denominator is a small, unrepresentative slice of its true delivery population.
+2. Field-level completeness: births are submitted, but the model fields (gestation, ethnicity, IMD) are missing, so the complete-case sample keeps a selected, likely sicker and better-documented, subset of its births.
+3. Numerator breadth: the denominator is sound, but the trust's PbR-CC return counts more of its neonatal unit activity as "NCC" days than peers' returns do.
 
 ```{r funnel_outlier_diagnostic, echo=FALSE}
 # [A4b] Test whether outlier status reflects missing records, missing fields,
@@ -678,19 +585,19 @@ kable(diag_tbl, align = c("l", rep("r", 7)),
 
 The table rules out the first two mechanisms for all four outliers:
 
-- **Their birth records are present in expected volumes.** Each outlier trust submitted between roughly 4,900 and 10,800 births — all above the median trust (~3,700) — in line with their real delivery-service size. This is nothing like a missing-denominator pattern.
-- **Their field completeness is unremarkable.** 93–99% of their births carry all three model fields (nationally 94%), and each trust's crude NCC rate is essentially unchanged when restricted to the model-usable subset. Complete-case selection is not what lifts them out of the funnel.
-- A third explanation also fails on arithmetic: **referral activity cannot raise a trust's position in a delivery-cohort funnel.** The funnel counts babies *born* at each trust, and over 99% of the NCC recorded for those babies was provided by the delivery trust itself. Transfers into a tertiary unit never enter its numerator here.
+- Their birth records are present in expected volumes: each outlier trust submitted between roughly 4,900 and 10,800 births — all above the median trust (~3,700) — in line with their real delivery-service size. This is nothing like a missing-denominator pattern.
+- Their field completeness is unremarkable: 93–99% of their births carry all three model fields (nationally 94%), and each trust's crude NCC rate is essentially unchanged when restricted to the model-usable subset. Complete-case selection is not what lifts them out of the funnel.
+- A third explanation also fails on arithmetic: referral activity cannot raise a trust's position in a delivery-cohort funnel. The funnel counts babies *born* at each trust, and over 99% of the NCC recorded for those babies was provided by the delivery trust itself. Transfers into a tertiary unit never enter its numerator here.
 
 What remains — and what the right-hand columns show — is the third data mechanism. At the outlier trusts, 21–40% of *term* (≥37-week) babies carry an NCC record, against ~7% everywhere else, while their preterm birth shares are unremarkable (7.7–8.7%, national 7.9%). Their admitted babies are correspondingly term-heavy and their recorded stays short; at three of the four trusts the admissions are also recorded almost entirely in the CC extract. A true critical-care rate of one in four term births is not clinically plausible; the far more likely reading is that these providers return a broader span of neonatal unit activity — special or transitional care, possibly routine observation — as NCC critical-care days in PbR-CC. This extract cannot fully separate "admits more term babies to the unit" (practice) from "codes more unit days as critical care" (recording), because the care-level fields that would settle it (Level 2/3 days, unit function) are unpopulated here; but the recording component is likely dominant.
 
-Two consequences follow. First, the NICU-vs-LNU split above dissolves: the near-zero MSDS source share at the two NICU outliers is a genuine reporting gap, but it cannot inflate their rate, and all four outliers share the same term-heavy, short-stay signature. Second, the practical follow-up changes: the first question for these trusts is not "why do you admit so much?" but "what unit activity does your PbR-CC return count as an NCC day?" — a data-definition conversation before a clinical-practice one. This also sharpens the caution attached to the ICC throughout this report: a material share of the apparent between-trust variation is reporting breadth, not admission practice. (Trust identities are held internally and omitted from this published version.)
+Two consequences follow. First, the NICU-vs-LNU split above no longer holds: the near-zero MSDS source share at the two NICU outliers is a genuine reporting gap, but it cannot inflate their rate, and all four outliers share the same term-heavy, short-stay signature. Second, the practical follow-up changes: the first question for these trusts concerns what unit activity their PbR-CC return counts as an NCC day — a data-definition conversation before a clinical-practice one. This also sharpens the caution attached to the ICC throughout this report: a material share of the apparent between-trust variation is reporting breadth, not admission practice. (Trust identities are held internally and omitted from this published version.)
 
-::: {.callout-note}
-## How the funnel is built
+::: {.callout-note collapse="true"}
+## How the funnel is built (click to expand)
 Expected admissions are the population-average (case-mix only) predictions from the primary model with the trust random effect removed (`predict(..., re.form = NA)`), aggregated per trust and indirectly standardised so the national observed/expected ratio is 1. Control limits use the standard funnel formulation (Spiegelhalter, *Statistics in Medicine*, 2005): on the standardised-ratio scale the limits are $1 \pm z\sqrt{\phi}/\sqrt{E}$, shown here multiplied by the national crude rate.
 
-Because between-trust variation here is far larger than binomial sampling noise (the same signal as the ICC), the limits include a **multiplicative overdispersion factor** $\phi$, estimated from the winsorised standardised residuals so that a handful of extreme trusts do not themselves inflate it. Without this adjustment almost every trust would fall outside the limits — a true reflection of the large ICC, but useless for isolating individual outliers. Even so, the same data-quality caveats apply as to the ICC: MSDS / PbR-CC submission completeness varies between providers, so outliers should be read as *flags for follow-up*, not as confirmed differences in admission practice. The completeness diagnostic above shows how to separate these readings — for the current outliers the evidence points to numerator breadth in the PbR-CC return rather than either missing records or missing fields.
+Because between-trust variation here is far larger than binomial sampling noise (the same signal as the ICC), the limits include a multiplicative overdispersion factor $\phi$, estimated from the winsorised standardised residuals so that a handful of extreme trusts do not themselves inflate it. Without this adjustment almost every trust would fall outside the limits — a true reflection of the large ICC, but useless for isolating individual outliers. Even so, the same data-quality caveats apply as to the ICC: MSDS / PbR-CC submission completeness varies between providers, so outliers should be read as flags for follow-up, not as confirmed differences in admission practice. The completeness diagnostic above shows how to separate these readings — for the current outliers the evidence points to numerator breadth in the PbR-CC return rather than either missing records or missing fields.
 :::
 
 ---
@@ -699,53 +606,35 @@ Because between-trust variation here is far larger than binomial sampling noise 
 
 ## Clinical Factors
 
-Gestation is by far the strongest predictor of NCC admission:
+Gestation is by far the strongest predictor of NCC admission: each additional week reduces the odds by approximately `r round((1 - or_data$OR[or_data$term == "Gestation_Weeks"]) * 100, 0)`%. Preterm babies are correspondingly more likely to be admitted, confirming that the model is capturing genuine clinical need.
 
-- Each additional week of gestation reduces the odds of NCC admission by approximately `r round((1 - or_data$OR[or_data$term == "Gestation_Weeks"]) * 100, 0)`%
-- This confirms that the model is capturing genuine clinical need
-- Preterm babies are appropriately more likely to be admitted to NCC
+## Ethnicity {#ethnicity}
 
-## Ethnicity
-
-After adjusting for gestation and comparing within trusts, most ethnic groups sit within a few percent of parity with White British babies (full estimates in the Model 2 table and @fig-forest). Three patterns carry the story: the **Black** group sits at near-exact parity; **Pakistani** and **Chinese** babies sit below parity in this model; and **Indian** and **Bangladeshi** babies sit slightly above. What happens to each of these once birth weight and Apgar are added is the key to interpreting them — that is the subject of the callout below.
-
-::: {.callout-warning}
-## Interpreting Ethnicity Findings
-
-Some ethnic minority groups (Pakistani, Chinese) show lower odds of NCC admission than White British babies in the primary model. The sensitivity analysis (see below) helps interpret this:
-
-After adjusting for birth weight and Apgar:
+After adjusting for gestation and comparing within trusts, most ethnic groups sit within a few percent of parity with White British babies (full estimates in the Model 2 table and @fig-forest). The Black group sits at near-exact parity; Pakistani and Chinese babies sit below parity in this model; Indian and Bangladeshi babies sit slightly above. How each estimate responds when birth weight and Apgar are added is the key to interpreting them:
 
 | Group | Primary OR | Sensitivity OR | Interpretation |
 |-------|-----------|----------------|----------------|
-| Pakistani | 0.89 | 0.97 | Moves towards parity—clinical factors explain much of the difference |
-| Chinese | 0.70 | 0.76 | Still notably lower, though M3 sits at the boundary of nominal significance |
-| Indian | 1.05 | 1.16 | Increases further—higher access after clinical adjustment |
-| Bangladeshi | 1.06 | 1.17 | Similar pattern to Indian—higher access after clinical adjustment |
-| Black | 1.04 | 1.04 | Stable—equitable access confirmed |
+| Pakistani | 0.89 | 0.97 | Moves towards parity — clinical factors explain much of the difference |
+| Chinese | 0.70 | 0.76 | Still notably lower, at the boundary of nominal significance in the smaller sample |
+| Indian | 1.05 | 1.16 | Increases further — higher access after clinical adjustment |
+| Bangladeshi | 1.06 | 1.17 | Similar pattern to Indian |
+| Black | 1.04 | 1.04 | Stable — consistent with equitable access |
 
-Key insights:
+The Pakistani estimate is largely a case-mix finding: the lower odds in the primary model move to near-parity once birth weight and Apgar are adjusted for. The Indian and Bangladeshi estimates move further above parity, suggesting NCC use at least proportionate to clinical need. The differences among Indian, Pakistani and Bangladeshi babies after adjustment are the clearest demonstration of why this report uses disaggregated ethnicity coding.
 
-1. Pakistani: The lower OR in the primary model is largely explained by clinical factors (birth weight, Apgar). After adjustment, Pakistani babies have near-equal NCC odds.
+The Chinese group is the largest unexplained deviation: around 24% lower odds remain after clinical adjustment (the BH-adjusted p-value in the Model 2 table is the appropriate test of evidence). At least five explanations are consistent with this, and the data cannot separate them:
 
-2. Chinese: ~24% lower odds remain after clinical adjustment, sitting at the boundary of nominal significance in the smaller M3 sample (and the BH-adjusted p in the M2 table is the appropriate test of evidence). We cannot determine the cause from this dataset, and several explanations are plausible:
+- Residual case-mix confounding — Chinese babies have lower mean birth weight at term in UK data, and a single linear birth-weight term may not fully capture this.
+- Lower upstream clinical risk — different maternal age structure, parity distribution, or rates of high-risk pregnancy.
+- Sample size — Chinese is one of the smaller ethnic groups in the cohort, so the estimate is less stable than the odds ratio alone suggests.
+- Care-seeking and access differences — different patterns of antenatal engagement, including selective use of private antenatal care.
+- Ascertainment — possible under-recording of NCC episodes in this group, though there is no direct evidence for this.
 
-   - *Residual case-mix confounding* — Chinese babies have lower mean birth weight at term in UK data; the linear birth-weight covariate may not fully capture this.
-   - *Lower upstream clinical risk* — different age structure, parity distribution, or rates of high-risk pregnancy among Chinese mothers.
-   - *Sample size and CI width* — Chinese is one of the smaller ethnic groups in the cohort; the OR is reasonably precise but the BH-adjusted p-value is the appropriate test of evidence (see the Model 2 table).
-   - *Care-seeking and access differences* — different patterns of antenatal engagement, including selective access to private antenatal care.
-   - *Ascertainment differences* — possible under-recording of NCC episodes in this group, though we have no direct evidence for this.
-
-   These cannot be distinguished without further work (e.g. richer clinical covariates, or qualitative engagement with maternity providers).
-
-3. Indian: Higher odds *increase* after clinical adjustment, suggesting NCC use is at least proportionate to clinical need at given gestation/birth weight/Apgar.
-
-4. Within-Asian heterogeneity: The differences between Indian (OR 1.16), Pakistani (OR 0.97), and Bangladeshi (OR 1.17) after adjustment demonstrate why disaggregated analysis is essential.
-:::
+Distinguishing these would need richer clinical covariates or direct engagement with providers (see Recommendations). The estimate should be treated as a question rather than a conclusion.
 
 ### A broad, MBRRACE-comparable grouping {#broad-ethnicity}
 
-MBRRACE-UK reports present their headline ethnicity findings using broad groups (White, Mixed, Asian, Black, Other), and it is a fair question whether the ten-category grouping used here is more detailed than the data can support. To allow direct comparison, the primary model was refitted on the **same `r format(nobs(model2), big.mark = ",")` births** with ethnicity collapsed to the five broad ONS groups; every other part of the model specification is unchanged. The broad grouping is an exact aggregation of the detailed one (each detailed category maps into exactly one broad group), so any difference between the two tables below is purely a consequence of the grouping choice.
+MBRRACE-UK reports present their headline ethnicity findings using broad groups (White, Mixed, Asian, Black, Other), and it is a fair question whether the ten-category grouping used here is more detailed than the data can support. To allow direct comparison, the primary model was refitted on the same `r format(nobs(model2), big.mark = ",")` births with ethnicity collapsed to the five broad ONS groups; every other part of the model specification is unchanged. The broad grouping is an exact aggregation of the detailed one (each detailed category maps into exactly one broad group), so any difference between the two tables below is purely a consequence of the grouping choice.
 
 ```{r broad_ethnicity_model, echo=FALSE}
 model2_broad <- readRDS("data/model2_broad_ethnicity.rds")
@@ -848,11 +737,11 @@ fmt_or <- function(x) sprintf("%.2f", x)
 asian_detail <- detailed_or %>% filter(Family == "Asian or Asian British")
 ```
 
-**What the broad grouping shows — and what it hides.** At the broad level the story is simple: the Asian or Asian British group sits at OR `r fmt_or(or_b("Asian or Asian British"))`, the Black or Black British group at `r fmt_or(or_b("Black or Black British"))`, and no broad group deviates dramatically from the White reference. That is a useful headline for comparison with MBRRACE-style reporting, and it confirms that no broad ethnic group faces large systematic under-admission at national level.
+At the broad level the picture is straightforward: the Asian or Asian British group sits at OR `r fmt_or(or_b("Asian or Asian British"))`, the Black or Black British group at `r fmt_or(or_b("Black or Black British"))`, and no broad group deviates dramatically from the White reference. This is a useful headline for comparison with MBRRACE-style reporting, and it confirms that no broad ethnic group faces large systematic under-admission at national level.
 
-But @fig-broad-ethnicity shows what the aggregation costs. The single broad Asian estimate is a weighted average of detailed groups whose estimates point in *opposite directions* — Pakistani below parity, Indian and Bangladeshi above it (a spread from `r round(min(asian_detail$OR), 2)` to `r round(max(asian_detail$OR), 2)`) — and these are not noise: the sensitivity analysis showed they respond differently to clinical adjustment, which is exactly the behaviour of real, distinct patterns of need and access. Likewise, the Chinese group — the largest single-group deviation in the analysis (OR 0.70) — is diluted into the broad "Other" category, where a 30% deficit attached to an identifiable group becomes a `r round((1 - or_b("Other (incl. Chinese)")) * 100)`% deficit attached to a heterogeneous residual one. A model using only broad groups would have reported near-exact parity for Asian babies and a modest unattributable deficit for "Other" — losing the two most interpretable ethnicity findings in this report.
+@fig-broad-ethnicity shows what the aggregation costs. The single broad Asian estimate is a weighted average of detailed groups whose estimates point in opposite directions — Pakistani below parity, Indian and Bangladeshi above it (a spread from `r round(min(asian_detail$OR), 2)` to `r round(max(asian_detail$OR), 2)`) — and these are not noise: the sensitivity analysis showed they respond differently to clinical adjustment, as would be expected of real, distinct patterns of need and access. Likewise, the Chinese group — the largest single-group deviation in the analysis (OR 0.70) — is diluted into the broad "Other" category, where a 30% deficit attached to an identifiable group becomes a `r round((1 - or_b("Other (incl. Chinese)")) * 100)`% deficit attached to a heterogeneous residual one. A model using only broad groups would have reported near-exact parity for Asian babies and a modest unattributable deficit for "Other", losing the two most interpretable ethnicity findings in this report.
 
-This is why the report leads with the detailed grouping and treats the broad grouping as a comparability view rather than the primary analysis. The multiple-testing cost of the extra detail is handled explicitly (Benjamini–Hochberg adjustment within the ethnicity family), and MBRRACE itself disaggregates beyond the broad groups in its extended tables where numbers allow. The recommendation that follows is about *reporting*, not remodelling: broad groups are the right currency for headline cross-programme comparison, but equity monitoring should retain the disaggregated view, because the groups with the clearest signals in these data are precisely the ones the broad categories average away.
+This is why the report leads with the detailed grouping and treats the broad grouping as a comparability view rather than the primary analysis. The multiple-testing cost of the extra detail is handled explicitly (Benjamini–Hochberg adjustment within the ethnicity family), and MBRRACE itself disaggregates beyond the broad groups in its extended tables where numbers allow. The recommendation that follows concerns reporting, not remodelling: broad groups are the right currency for headline cross-programme comparison, but equity monitoring should retain the disaggregated view, because the groups with the clearest signals in these data are precisely the ones the broad categories average away.
 
 ## Focus: Black Ethnicity and the Maternity Review Context
 
@@ -902,18 +791,7 @@ black_subgroup_rates %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-::: {.callout-note}
-## Key Finding: Equitable Access for Black Babies
-
-Black babies have NCC admission rates essentially identical to White British babies (13.4-13.8% vs 13.4%). This is in contrast to some other ethnic minority groups (Pakistani, Chinese) who show lower admission rates.
-
-The model estimates confirm this:
-
-- Primary model OR: 1.04 (very close to parity)
-- Sensitivity model OR: 1.04 (unchanged after clinical adjustment)
-
-After adjusting for clinical factors (birth weight, Apgar), Black babies show essentially the same ~4% higher NCC odds, suggesting the system is responding appropriately — and slightly more — to higher clinical need.
-:::
+Black babies have NCC admission rates essentially identical to White British babies (13.4–13.8% vs 13.4%), and the model estimates confirm this: OR 1.04 in the primary model, unchanged at 1.04 after clinical adjustment in the sensitivity model. This contrasts with the Pakistani and Chinese groups, which show lower admission rates.
 
 ### Clinical Context: Higher Need, Equitable Access
 
@@ -945,13 +823,7 @@ black_clinical %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-Black babies have higher clinical need on average:
-
-- Lower birth weights (126g lower mean)
-- Higher rates of low Apgar scores (3.0% vs 2.1%)
-- Much higher concentration in deprived areas (44.6% vs 19.8% in most deprived quintile)
-
-Despite these risk factors, NCC admission rates are similar. After adjusting for clinical factors in the sensitivity model, Black babies show *slightly higher* odds of NCC admission (OR 1.04), suggesting the system is appropriately responding to clinical need.
+Black babies carry higher clinical need on average — lower mean birth weight, higher rates of low Apgar scores, and a much higher concentration in the most deprived areas. Despite these risk factors, admission rates are similar, and after clinical adjustment Black babies show slightly higher odds of admission (OR 1.04), consistent with the system responding to clinical need.
 
 ### Hospital-Level Variation
 
@@ -1023,7 +895,7 @@ if (nrow(large_disparities) > 0) {
 }
 ```
 
-### Are there trusts where Black babies are admitted significantly less than White?
+### Trust-level screen for lower Black admission rates {#black-underaccess-screen}
 
 The review asked specifically whether any individual trusts admit Black babies to NCC at a *significantly lower* rate than White babies — the signal we would expect if there were localised under-access. To test this we compared the crude NCC admission rate for Black versus White babies within each trust that had at least 50 of each, using a two-proportion test with Benjamini-Hochberg correction across the trusts tested.
 
@@ -1066,7 +938,7 @@ n_black_lower_sig  <- sum(bw_test$sig & bw_test$direction == "Black lower")
 n_black_higher_sig <- sum(bw_test$sig & bw_test$direction == "Black higher")
 ```
 
-Of the `r n_tested` trusts with enough Black and White births to compare, `r n_black_lower_sig` showed a Black admission rate significantly **lower** than White after correction, and `r n_black_higher_sig` showed a significantly **higher** rate.
+Of the `r n_tested` trusts with enough Black and White births to compare, `r n_black_lower_sig` showed a Black admission rate significantly lower than White after correction, and `r n_black_higher_sig` showed a significantly higher rate.
 
 ```{r black_underaccess_table, echo=FALSE, results='asis'}
 under <- bw_test %>%
@@ -1091,21 +963,10 @@ if (nrow(under) > 0) {
 }
 ```
 
-::: {.callout-note}
-## Interpreting the under-access test
-This is a *crude* within-trust comparison: it asks "are Black babies admitted less often than White babies at this trust?", not "less often than their clinical need warrants?". Because Black babies in this cohort carry *higher* average clinical need (lower mean birth weight, more deprivation), a crude rate that is merely *equal* could still mask relative under-admission — while the national adjusted models (Models 2 and 3) found no overall Black–White gap. Trust-level power is also limited: many trusts have few Black births, so only sizeable gaps reach significance. Significant trusts are a screen for follow-up, not confirmation of inequitable access; a case-mix-standardised version (a per-trust Black observed/expected ratio) is the natural refinement.
-:::
+This is a crude within-trust comparison: it asks whether Black babies are admitted less often than White babies at a given trust, not whether they are admitted less often than their clinical need warrants. Because Black babies in this cohort carry higher average clinical need, a crude rate that is merely equal could still mask relative under-admission. Trust-level power is also limited: many trusts have few Black births, so only sizeable gaps reach significance. Significant trusts are a screen for follow-up rather than confirmation of inequitable access; a case-mix-standardised version (a per-trust Black observed/expected ratio) is the natural refinement.
 
 
-## Implications for Maternity Review
-
-1. **System-level:** NCC access for Black babies appears equitable on average nationally. This is a positive finding, though it speaks only to admission — not to the wider quality of maternity or neonatal care.
-
-2. **Hospital-level:** Crude Black–White gaps vary between providers, but the formal screen above found only **one** trust (of 92 testable) with a significantly *lower* Black admission rate after correction, against three significantly higher. That trust is flagged for a case-mix-standardised follow-up; the rest of the variation is within what chance and case-mix would produce.
-
-3. **Clinical adjustment matters:** After adjusting for birth weight and Apgar, Black babies retain slightly *higher* NCC odds — the pattern expected if the system is responding appropriately to their higher average clinical need.
-
-4. **Contrast with other groups:** Pakistani and Chinese babies show *lower* NCC odds even after clinical adjustment — the groups where follow-up should focus (see Key Message 4 for the candidate explanations).
+In the context of recent maternity reviews, the overall picture is that NCC access for Black babies appears equitable on average nationally — a finding about admission only, not about the wider quality of maternity or neonatal care. At provider level, the screen above found one trust (of 92 testable) with a significantly lower Black admission rate, now flagged for a case-mix-standardised follow-up; the remaining variation is within what chance and case-mix would produce. The groups where follow-up should focus are Pakistani and Chinese (see [Ethnicity](#ethnicity)).
 
 
 ## Deprivation
@@ -1168,7 +1029,7 @@ kable(imd_morb, align = c("l", rep("r", 6)),
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-Every morbidity marker rises monotonically with deprivation: relative to the least deprived quintile, preterm birth is about a third higher in the most deprived (9.0% vs 6.6%), very preterm birth about two-thirds higher (1.6% vs 1.0%), and low birth weight around 60% higher (9.4% vs 5.8%). The most telling row is **low birth weight among term births**, which nearly doubles (4.0% vs 2.1%): the primary model adjusts for gestation, so a deprivation gradient in *growth restriction at a given gestation* is precisely the kind of clinical need the model cannot see. The crude NCC gradient (12.5% vs 11.3%, a ~11% relative difference) is of the same order as the adjusted odds gradient (~9%), which is what we would expect if the gradient largely reflects need that the clinical adjustment only partly captures.
+Every morbidity marker rises monotonically with deprivation: relative to the least deprived quintile, preterm birth is about a third higher in the most deprived (9.0% vs 6.6%), very preterm birth about two-thirds higher (1.6% vs 1.0%), and low birth weight around 60% higher (9.4% vs 5.8%). The most telling row is low birth weight among term births, which nearly doubles (4.0% vs 2.1%): the primary model adjusts for gestation, so a deprivation gradient in *growth restriction at a given gestation* is precisely the kind of clinical need the model cannot see. The crude NCC gradient (12.5% vs 11.3%, a ~11% relative difference) is of the same order as the adjusted odds gradient (~9%), which is what we would expect if the gradient largely reflects need that the clinical adjustment only partly captures.
 
 On this evidence the unmeasured-need reading is well supported: deprivation is acting substantially as a proxy for morbidity our covariates do not fully measure. This does not *rule out* a residual access difference, but it removes the need to posit one to explain the gradient. The main caveat is birth-weight completeness (44–51%, mildly differential by quintile); the gestation-based markers, which are near-complete, show the same pattern.
 
@@ -1192,9 +1053,9 @@ wb_grad <- a5c$gradient_by_eth %>% filter(Ethnicity == "White British")
 
 The models so far constrain the deprivation gradient to be the *same* in every ethnic group (and equivalently, ethnicity gaps to be the same in every deprivation quintile). A natural follow-up question is whether the two dimensions of inequality compound — for example, whether deprivation carries a steeper penalty for some ethnic groups than others.
 
-To test this, the primary model was refitted with a full ethnicity × deprivation interaction. This is presented as **exploratory**: the interaction adds `r a5c$n_interaction_terms` parameters, and picking through 36 individual cell contrasts would invite exactly the multiple-comparison problem flagged elsewhere in this report. The primary readout is therefore a single **global likelihood-ratio test** — "is there evidence the gradient differs at all?" — which is one test and carries no multiplicity burden. The within-group estimates below are shown to describe the pattern, not to make claims about any individual group.
+To test this, the primary model was refitted with a full ethnicity × deprivation interaction. This is presented as exploratory: the interaction adds `r a5c$n_interaction_terms` parameters, and picking through 36 individual cell contrasts would invite exactly the multiple-comparison problem flagged elsewhere in this report. The primary readout is therefore a single global likelihood-ratio test of whether there is evidence the gradient differs at all, which is one test and carries no multiplicity burden. The within-group estimates below are shown to describe the pattern, not to make claims about any individual group.
 
-The global test does find evidence that the gradient is not uniform: χ²(`r lrt_df`) = `r lrt_chisq`, p = `r lrt_p`. But the departure is small. Both information criteria prefer the simpler main-effects model (AIC +`r d_aic`, BIC +`r d_bic` for the interaction model): with `r format(a5c$n, big.mark = ",")` births, a likelihood-ratio test is powered to detect departures from uniformity far too small to matter practically, and the extra 36 parameters do not earn their keep. The main-effects model remains the primary specification.
+The global test does find evidence that the gradient is not uniform: χ²(`r lrt_df`) = `r lrt_chisq`, p = `r lrt_p`. But the departure is small. Both information criteria prefer the simpler main-effects model (AIC +`r d_aic`, BIC +`r d_bic` for the interaction model): with `r format(a5c$n, big.mark = ",")` births, a likelihood-ratio test is powered to detect departures from uniformity far too small to matter practically. The main-effects model remains the primary specification.
 
 ```{r eth_imd_gradient_plot, echo=FALSE, fig.height=4.5}
 #| label: fig-eth-imd-gradient
@@ -1222,28 +1083,20 @@ ggplot(grad_plot, aes(x = OR, y = Ethnicity)) +
   )
 ```
 
-The pattern behind the global signal (@fig-eth-imd-gradient) is informative, read descriptively. The only within-group gradient whose interval excludes 1 is **White British** (OR `r round(wb_grad$OR, 2)`, 95% CI `r round(wb_grad$Lower, 2)`–`r round(wb_grad$Upper, 2)`) — slightly steeper than the pooled estimate of `r round(pooled_imd$OR, 2)`. Several minority groups have point estimates of similar or larger magnitude (Indian, Pakistani, Black), but with intervals spanning 1; others (Bangladeshi, Chinese, Other Asian) point flat or below, with very wide intervals. The imprecision is structural rather than incidental: minority ethnic births are concentrated in the more deprived quintiles, so the least-deprived *reference* cells are small — 306 Bangladeshi and 376 Chinese births in the least deprived quintile, against tens of thousands of White British.
+The pattern behind the global signal (@fig-eth-imd-gradient) is informative, read descriptively. The only within-group gradient whose interval excludes 1 is White British (OR `r round(wb_grad$OR, 2)`, 95% CI `r round(wb_grad$Lower, 2)`–`r round(wb_grad$Upper, 2)`) — slightly steeper than the pooled estimate of `r round(pooled_imd$OR, 2)`. Several minority groups have point estimates of similar or larger magnitude (Indian, Pakistani, Black), but with intervals spanning 1; others (Bangladeshi, Chinese, Other Asian) point flat or below, with very wide intervals. The imprecision is structural rather than incidental: minority ethnic births are concentrated in the more deprived quintiles, so the least-deprived *reference* cells are small — 306 Bangladeshi and 376 Chinese births in the least deprived quintile, against tens of thousands of White British.
 
-Two conclusions follow. First, there is **no evidence that deprivation carries a steeper penalty for minority ethnic groups** — the detectable gradient sits within the White British majority, and the pooled deprivation OR reported by the primary model is dominated by that group. Second, that is a statement about the limits of the data as much as about the world: for the smaller groups the data cannot distinguish a flat gradient from a substantial one in either direction, so absence of evidence here is not evidence of absence. Neither conclusion disturbs the [unmeasured-need reading](#imd-morbidity) of the main deprivation effect, and the main-effects model remains the primary specification throughout.
+Two conclusions follow. First, there is no evidence that deprivation carries a steeper penalty for minority ethnic groups — the detectable gradient sits within the White British majority, and the pooled deprivation OR reported by the primary model is dominated by that group. Second, that is a statement about the limits of the data as much as about the world: for the smaller groups the data cannot distinguish a flat gradient from a substantial one in either direction, so absence of evidence here is not evidence of absence. Neither conclusion disturbs the [unmeasured-need reading](#imd-morbidity) of the main deprivation effect, and the main-effects model remains the primary specification throughout.
 
-## Hospital Variation: the largest signal, read with care
+## Hospital Variation {#hospital-variation}
 
-Once gestation, ethnicity and deprivation are controlled for, the trust a baby is born in is the largest remaining source of variation in the model: the ICC of `r round(icc, 3)` dwarfs the ethnicity ORs (typically 0.87–1.05) and the deprivation OR (1.08 for most vs least deprived). It is tempting to read this as "where a baby is born matters most" — but the ICC bundles together at least four things this dataset cannot fully separate:
+Once gestation, ethnicity and deprivation are controlled for, the trust a baby is born in is the largest remaining source of variation in the model: the ICC of `r round(icc, 3)` dwarfs the ethnicity ORs (typically 0.87–1.05) and the deprivation OR (1.08 for most vs least deprived). This should not be read simply as "where a baby is born matters most": the ICC bundles together at least four things this dataset cannot fully separate:
 
-1. *Genuine practice variation* — different clinical thresholds for NCC admission between hospitals.
-2. *Reporting variation* — MSDS submission completeness varies considerably between providers, and PbR-CC submission is also patchy. The dual-source `NCC_Admitted` flag mitigates this but does not eliminate it: nationally the CC source captures ~3.8x more NCC admissions than MSDS alone, and that ratio differs by provider.
-3. *Case-mix concentration via antenatal referral* — high-risk pregnancies are transferred *in utero* to tertiary centres, so babies *born at* NICU trusts carry more unmeasured risk than gestation alone records. (Note that *postnatal* transfers cannot inflate a delivery trust's rate in this model: an admission is attributed to the trust where the baby was born, not where the care was given.)
-4. *Residual case-mix* — gestation alone is a thin proxy for clinical need. The sensitivity model (gestation + birth weight + Apgar) reduces but does not remove this.
+1. Genuine practice variation — different clinical thresholds for NCC admission between hospitals.
+2. Reporting variation — MSDS submission completeness varies considerably between providers, and PbR-CC submission is also patchy. The dual-source `NCC_Admitted` flag mitigates this but does not eliminate it: nationally the CC source captures ~3.8x more NCC admissions than MSDS alone, and that ratio differs by provider.
+3. Case-mix concentration via antenatal referral — high-risk pregnancies are transferred in utero to tertiary centres, so babies born at NICU trusts carry more unmeasured risk than gestation alone records. (Postnatal transfers cannot inflate a delivery trust's rate in this model: an admission is attributed to the trust where the baby was born, not where the care was given.)
+4. Residual case-mix — gestation alone is a thin proxy for clinical need. The sensitivity model (gestation + birth weight + Apgar) reduces but does not remove this.
 
-The ICC is therefore a useful signal that something at the provider level is driving variation, but it should not be reported as a clean estimate of variation in admission practice. Where we *have* been able to decompose it — the [funnel-outlier diagnostic](#outlier-completeness) — the evidence points to reporting breadth (what gets counted as an NCC day) as the dominant driver at the extremes.
-
-
-Hospitals in the tails of the distribution may warrant further investigation, but interpretation should bear in mind that an extreme provider-level estimate could equally reflect a data-completeness issue. Useful follow-up questions include:
-
-- Whether the provider's MSD402 (and CC) submission rate is in line with peers.
-- Whether the provider receives transfers from a wider network (high "admission" rate as a referral centre).
-- Whether local clinical thresholds for NCC differ — e.g. routine vs selective admission of late preterm infants.
-- Whether case-mix not captured by gestation alone (multiplicity, congenital anomaly) drives the apparent effect.
+The ICC is therefore a useful signal that something at the provider level is driving variation, but it should not be reported as a clean estimate of variation in admission practice. Where it has been possible to decompose it — the [funnel-outlier diagnostic](#outlier-completeness) — the evidence points to reporting breadth (what gets counted as an NCC day) as the dominant driver at the extremes. Providers in the tails may warrant follow-up, but an extreme estimate could equally reflect submission completeness, referral patterns, local thresholds for late-preterm admission, or case-mix not captured by gestation alone.
 
 ---
 
@@ -1277,18 +1130,7 @@ var_trust3 <- as.numeric(VarCorr(model3)$Delivery_Trust)
 icc3 <- var_trust3 / (var_trust3 + (pi^2 / 3))
 ```
 
-```{r sensitivity_summary, echo=FALSE, results='asis'}
-cat("The sensitivity analysis adds birth weight and Apgar 5-minute score to the model, using",
-    format(nobs(model3), big.mark = ","), "births with complete clinical data (",
-    round(100 * nobs(model3) / nrow(ncc_data), 1), "% of total).\n\n")
-
-cat("::: {.callout-note}\n")
-cat("## Data Note\n")
-cat("Birth weight uses MSDS data only (not the CC data fallback) to avoid differential missingness bias. ")
-cat("The CC data has 94% birth weight completeness for NCC babies vs 46% for non-NCC babies, which would ")
-cat("artificially inflate NCC rates in complete cases. MSDS-only has ~46% completeness for both groups.\n")
-cat(":::\n\n")
-```
+The sensitivity analysis adds birth weight and Apgar 5-minute score to the model, using `r format(nobs(model3), big.mark = ",")` births with complete clinical data (`r round(100 * nobs(model3) / nrow(ncc_data), 1)`% of total). Birth weight uses the MSDS source only, for the reasons set out in Methods.
 
 ```{r sensitivity_table, echo=FALSE}
 model3_or %>%
@@ -1362,36 +1204,12 @@ comparison_imd %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-```{r sensitivity_interpretation, echo=FALSE, results='asis'}
-# Calculate max change
+```{r sensitivity_changes, echo=FALSE}
 max_eth_change <- max(abs(comparison_eth$Change))
 max_imd_change <- max(abs(comparison_imd$Change))
-
-cat("::: {.callout-important}\n")
-cat("## Sensitivity Analysis Interpretation\n\n")
-
-if (max_eth_change < 0.05 && max_imd_change < 0.05) {
-  cat("Results are robust: Ethnicity and deprivation effects are similar between the primary model ")
-  cat("(gestation only) and the sensitivity model (gestation + birth weight + Apgar). ")
-  cat("This suggests the primary model findings are not substantially confounded by unmeasured clinical factors.\n")
-} else {
-  cat("Some attenuation observed: Adding birth weight and Apgar scores changes some coefficients. ")
-  cat("This suggests clinical confounding may partially explain the observed ethnicity/deprivation associations. ")
-  cat("The sensitivity model provides better case-mix adjustment but uses fewer observations.\n")
-}
-
-cat("\n\nHospital variation (ICC):\n\n")
-cat("- Primary model: ", round(icc * 100, 1), "%\n")
-cat("- Sensitivity model: ", round(icc3 * 100, 1), "%\n\n")
-
-if (abs(icc - icc3) < 0.03) {
-  cat("Hospital variation remains substantial after full clinical adjustment.\n")
-} else if (icc3 < icc) {
-  cat("Hospital variation is reduced after clinical adjustment, suggesting some between-hospital ")
-  cat("differences are explained by case-mix.\n")
-}
-cat(":::\n")
 ```
+
+Adding birth weight and Apgar moves some ethnicity coefficients materially (the largest change is `r sprintf("%.2f", max_eth_change)` in odds-ratio terms, for the Pakistani and Indian groups), indicating that clinical case-mix explains part of the associations seen in the primary model; the deprivation coefficients are essentially unchanged (largest change `r sprintf("%.2f", max_imd_change)`). The sensitivity model provides fuller case-mix adjustment at the cost of a smaller sample. Hospital variation is essentially unaffected by the fuller adjustment: the ICC is `r round(icc * 100, 1)`% in the primary model and `r round(icc3 * 100, 1)`% in the sensitivity model, so between-trust variation remains substantial.
 
 ---
 
@@ -1425,7 +1243,7 @@ trust_sd_pct <- round((exp(sqrt(a5a$trust_var)) - 1) * 100)
 
 The models above ask who *gets* NCC care; this section asks how much care admitted babies then receive. Unlike the timing analysis (Phase 2, on hold), length of stay does not depend on a birth datetime: the outcome is `NCC_CC_Total_Days`, a count of daily critical-care records, so it is available now.
 
-**Sample and outcome.** Of the `r format(a5a$n_admitted, big.mark = ",")` admitted babies in the primary analysis sample, `r format(a5a$n_los, big.mark = ",")` (93%) have at least one CC daily record and form the length-of-stay sample. The remaining `r format(a5a$n_msds_only, big.mark = ",")` are MSDS-only admissions with no CC records — their stay length is unobservable in this data, an exclusion to bear in mind if MSDS-only status is unevenly distributed across providers (it is; see the funnel section). Stay length is the total number of days with an NCC critical-care record within 90 days of birth, summed across care periods.
+Of the `r format(a5a$n_admitted, big.mark = ",")` admitted babies in the primary analysis sample, `r format(a5a$n_los, big.mark = ",")` (93%) have at least one CC daily record and form the length-of-stay sample. The remaining `r format(a5a$n_msds_only, big.mark = ",")` are MSDS-only admissions with no CC records — their stay length is unobservable in this data, an exclusion to bear in mind if MSDS-only status is unevenly distributed across providers (it is; see the funnel section). Stay length is the total number of days with an NCC critical-care record within 90 days of birth, summed across care periods.
 
 The distribution is heavily skewed — median `r a5a$los_quantiles[["50%"]]` days (IQR `r a5a$los_quantiles[["25%"]]`–`r a5a$los_quantiles[["75%"]]`), 99th percentile `r a5a$los_quantiles[["99%"]]` days — and gestation dominates it: median stays run from 3 days at term to 61 days below 28 weeks. Any crude group comparison therefore mostly re-describes each group's preterm mix.
 
@@ -1454,9 +1272,9 @@ kable(desc_tbl, align = c("l", "r", "r", "r", "r"),
   pack_rows("IMD quintile", nrow(a5a$desc_eth) + 1, nrow(desc_tbl))
 ```
 
-The crude pattern is striking but misleading: every group's *median* stay is 4 days, while mean stays and the share of long stays (≥28 days) look elevated for Black babies (mean 11.5 vs 9.2 for White British; 11.1% vs 7.4% staying ≥28 days) and for the most deprived quintile. Whether that reflects anything beyond case-mix is exactly what the adjusted model tests.
+The crude pattern needs careful reading: every group's median stay is 4 days, while mean stays and the share of long stays (≥28 days) look elevated for Black babies (mean 11.5 vs 9.2 for White British; 11.1% vs 7.4% staying ≥28 days) and for the most deprived quintile. Whether that reflects anything beyond case-mix is exactly what the adjusted model tests.
 
-**Model.** Stay length is modelled with a negative binomial mixed model (log link; the variance/mean ratio of ~28 rules out Poisson), with gestation entered as clinical bands — extremely/very/moderately/late preterm vs term — because its effect is far too nonlinear for a linear week term, plus ethnicity, IMD quintile, and a delivery-trust random intercept. Exponentiated coefficients are **rate ratios**: multiplicative differences in expected days of NCC care, conditional on gestation band and trust. BH adjustment is applied within the ethnicity and deprivation families, as elsewhere in this report.
+Stay length is modelled with a negative binomial mixed model (log link; the variance/mean ratio of ~28 rules out Poisson), with gestation entered as clinical bands — extremely/very/moderately/late preterm vs term — because its effect is far too nonlinear for a linear week term, plus ethnicity, IMD quintile, and a delivery-trust random intercept. Exponentiated coefficients are rate ratios: multiplicative differences in expected days of NCC care, conditional on gestation band and trust. BH adjustment is applied within the ethnicity and deprivation families, as elsewhere in this report.
 
 ```{r a5a_rr_table, echo=FALSE}
 rr %>%
@@ -1520,13 +1338,13 @@ ggplot(los_plot, aes(x = RR, y = term, color = category)) +
 
 ## What adjustment does to the crude picture
 
-**The Black crude excess is case-mix, fully.** After gestation-band adjustment the rate ratio for Black babies is `r fmt_rr(rr_black)` — the 25% crude excess in mean stay disappears entirely, because Black babies' longer average stays reflect their higher preterm rates, not longer stays at a given severity. Combined with the admission model (OR ~1.04) this extends the equitable-access finding: Black babies are admitted at parity *and*, once admitted, receive the expected quantity of care for their gestation.
+The Black crude excess is entirely case-mix. After gestation-band adjustment the rate ratio for Black babies is `r fmt_rr(rr_black)` — the 25% crude excess in mean stay disappears entirely, because Black babies' longer average stays reflect their higher preterm rates, not longer stays at a given severity. Combined with the admission model (OR ~1.04) this extends the equitable-access finding: Black babies are admitted at parity *and*, once admitted, receive the expected quantity of care for their gestation.
 
-**Pakistani and Bangladeshi babies stay ~9–10% longer than expected.** The two groups with the most interesting admission-model results are also the ones with adjusted stay excesses that survive BH correction: Pakistani `r fmt_rr(rr_pak)` and Bangladeshi `r fmt_rr(rr_bang)`. For **Pakistani** babies the direction is notable: this group had ~11% *lower* adjusted odds of admission, and lower admission propensity combined with longer stays once admitted is the pattern one would expect if the effective admission threshold is higher — the marginal, milder cases don't get admitted, so those who do are sicker and stay longer. That is a hypothesis, not a demonstration: greater within-gestation-band morbidity (e.g. growth restriction, congenital anomaly rates) would produce the same signature, and this model cannot separate the two. For **Bangladeshi** babies, whose admission odds were slightly *above* parity, the threshold reading does not fit, and residual severity is the more natural explanation. Either way, the two groups the broad "Asian" category would average away are again the ones carrying the signal.
+Pakistani and Bangladeshi babies stay around 9–10% longer than expected. The two groups with the most interesting admission-model results are also the ones with adjusted stay excesses that survive BH correction: Pakistani `r fmt_rr(rr_pak)` and Bangladeshi `r fmt_rr(rr_bang)`. For Pakistani babies the direction is notable: this group had ~11% *lower* adjusted odds of admission, and lower admission propensity combined with longer stays once admitted is the pattern one would expect if the effective admission threshold is higher — the marginal, milder cases don't get admitted, so those who do are sicker and stay longer. This is a hypothesis, not a demonstration: greater within-gestation-band morbidity (e.g. growth restriction, congenital anomaly rates) would produce the same signature, and this model cannot separate the two. For Bangladeshi babies, whose admission odds were slightly *above* parity, the threshold reading does not fit, and residual severity is the more natural explanation. Either way, these are again the two groups that a broad "Asian" category would average away.
 
-**The deprivation gradient in stay length is almost entirely case-mix.** The crude mean gap (10.5 vs 9.0 days, most vs least deprived) shrinks to a residual `r round((rr_imd1$RR - 1) * 100, 1)`% (RR `r fmt_rr(rr_imd1)`) — small, and consistent with the [unmeasured-need reading](#imd-morbidity): the model adjusts for gestation band but not for the growth restriction that rises with deprivation *within* gestation bands.
+The deprivation gradient in stay length is almost entirely case-mix. The crude mean gap (10.5 vs 9.0 days, most vs least deprived) shrinks to a residual `r round((rr_imd1$RR - 1) * 100, 1)`% (RR `r fmt_rr(rr_imd1)`) — small, and consistent with the [unmeasured-need reading](#imd-morbidity): the model adjusts for gestation band but not for the growth restriction that rises with deprivation *within* gestation bands.
 
-**Trusts vary substantially in recorded stay length.** The trust random-intercept SD (`r round(sqrt(a5a$trust_var), 2)` on the log scale) implies a trust one SD above average records ~`r trust_sd_pct`% longer stays than expected for its case-mix. This should not be read as pure clinical practice: the [funnel diagnostic](#outlier-completeness) showed that what gets *counted* as an NCC day varies markedly between trusts, and that recording breadth flows directly into this outcome. The stay-length measure here is "days carrying an NCC critical-care record", not independently verified cot-days.
+Trusts vary substantially in recorded stay length. The trust random-intercept SD (`r round(sqrt(a5a$trust_var), 2)` on the log scale) implies a trust one SD above average records ~`r trust_sd_pct`% longer stays than expected for its case-mix. This should not be read as pure clinical practice: the [funnel diagnostic](#outlier-completeness) showed that what gets *counted* as an NCC day varies markedly between trusts, and that recording breadth flows directly into this outcome. The stay-length measure here is "days carrying an NCC critical-care record", not independently verified cot-days.
 
 ::: {.callout-warning}
 ## Reading length of stay conditional on admission
@@ -1559,15 +1377,15 @@ n_msds_only <- a5b$source_overlap$n[a5b$source_overlap$Death_Source == "MSDS onl
 n_both      <- a5b$source_overlap$n[a5b$source_overlap$Death_Source == "Both sources"]
 ```
 
-The final feedback item asks about outcomes. This section is deliberately **descriptive** — no regression model, and heavier caveats than anywhere else in this report — because death ascertainment in this extract is partial in ways that could differ between groups. MBRRACE-UK, with linked death registrations, is the authoritative source on neonatal mortality inequalities; the purpose here is the narrower one of checking whether the mortality patterns visible in *this* data are consistent with the access story told above.
+The final feedback item asks about outcomes. This section is deliberately descriptive — no regression model, and heavier caveats than elsewhere in this report — because death ascertainment in this extract is partial in ways that could differ between groups. MBRRACE-UK, with linked death registrations, is the authoritative source on neonatal mortality inequalities; the purpose here is the narrower one of checking whether the mortality patterns visible in this data are consistent with the access findings above.
 
 ## Measuring death in this data
 
-Mirroring the dual-source design of the NCC admission flag, a baby is counted as having died if **either** source records it: the MSDS death date (deaths known to the maternity service), or — added in a July 2026 extract refresh — a hospital spell in APCS ending with discharge method "died", which also captures deaths *after* maternity discharge in any hospital, up to the end of the extract window (30 April 2024). Among `r format(a5b$n_cohort, big.mark = ",")` live births, `r format(n_deaths, big.mark = ",")` deaths are recorded (`r sprintf("%.2f", a5b$crude_overall$rate)` per 1,000): `r format(n_both, big.mark = ",")` in both sources, `r format(n_apcs_only, big.mark = ",")` in APCS only and `r n_msds_only` in MSDS only. The two sources corroborate each other well — where both record a death, `r a5b$concordance$within_1_day` of `r a5b$concordance$n_both_dates` (`r percent(a5b$concordance$within_1_day / a5b$concordance$n_both_dates, accuracy = 1)`) agree on the date to within a day — but neither alone is complete: MSDS sees `r pct_msds` of the combined total and APCS `r pct_apcs`. A further `r a5b$n_sb_discordant` babies recorded as live births in MSDS but coded as stillbirths in APCS were removed as vital-status-uncertain.
+Mirroring the dual-source design of the NCC admission flag, a baby is counted as having died if either source records it: the MSDS death date (deaths known to the maternity service), or — added in a July 2026 extract refresh — a hospital spell in APCS ending with discharge method "died", which also captures deaths *after* maternity discharge in any hospital, up to the end of the extract window (30 April 2024). Among `r format(a5b$n_cohort, big.mark = ",")` live births, `r format(n_deaths, big.mark = ",")` deaths are recorded (`r sprintf("%.2f", a5b$crude_overall$rate)` per 1,000): `r format(n_both, big.mark = ",")` in both sources, `r format(n_apcs_only, big.mark = ",")` in APCS only and `r n_msds_only` in MSDS only. The two sources corroborate each other well — where both record a death, `r a5b$concordance$within_1_day` of `r a5b$concordance$n_both_dates` (`r percent(a5b$concordance$within_1_day / a5b$concordance$n_both_dates, accuracy = 1)`) agree on the date to within a day — but neither alone is complete: MSDS sees `r pct_msds` of the combined total and APCS `r pct_apcs`. A further `r a5b$n_sb_discordant` babies recorded as live births in MSDS but coded as stillbirths in APCS were removed as vital-status-uncertain.
 
-Three properties of this flag must be kept in view. First, it means **"death recorded in hospital or by the maternity service within the extract window"** — not 28-day neonatal mortality. With no day of birth available in this environment, age at death cannot be computed, so no clinically standard mortality window can be constructed. Second, follow-up is uneven: a baby born in March 2024 has around two months of in-window observation against thirteen for an April 2023 birth. In practice this matters little — recorded death rates are flat across birth months (2.6–3.1 per 1,000, with no decline at the end of the year), as expected when most in-hospital infant deaths occur close to birth. Third, deaths outside hospital after discharge are invisible here, and that invisibility need not be evenly distributed across groups.
+Three properties of this flag must be kept in view. First, it means "death recorded in hospital or by the maternity service within the extract window", not 28-day neonatal mortality. With no day of birth available in this environment, age at death cannot be computed, so no clinically standard mortality window can be constructed. Second, follow-up is uneven: a baby born in March 2024 has around two months of in-window observation against thirteen for an April 2023 birth. In practice this matters little — recorded death rates are flat across birth months (2.6–3.1 per 1,000, with no decline at the end of the year), as expected when most in-hospital infant deaths occur close to birth. Third, deaths outside hospital after discharge are invisible here, and that invisibility need not be evenly distributed across groups.
 
-The flag behaves exactly as clinical reality demands, which is reassuring on validity: rates run from `r sprintf("%.0f", a5b$crude_gest$rate[1])` per 1,000 below 28 weeks' gestation to `r sprintf("%.1f", a5b$crude_gest$rate[5])` per 1,000 at term — a gradient of roughly 350-fold — and NCC-admitted babies die at `r sprintf("%.1f", a5b$crude_ncc$rate[a5b$crude_ncc$NCC_Admitted == 1])` per 1,000 against `r sprintf("%.1f", a5b$crude_ncc$rate[a5b$crude_ncc$NCC_Admitted == 0])` among the never-admitted.
+The flag behaves as clinical reality would predict: rates run from `r sprintf("%.0f", a5b$crude_gest$rate[1])` per 1,000 below 28 weeks' gestation to `r sprintf("%.1f", a5b$crude_gest$rate[5])` per 1,000 at term — a gradient of roughly 350-fold — and NCC-admitted babies die at `r sprintf("%.1f", a5b$crude_ncc$rate[a5b$crude_ncc$NCC_Admitted == 1])` per 1,000 against `r sprintf("%.1f", a5b$crude_ncc$rate[a5b$crude_ncc$NCC_Admitted == 0])` among the never-admitted.
 
 ## Crude rates and gestation-standardised ratios
 
@@ -1595,7 +1413,7 @@ kable(crude_tbl, align = c("l", "r", "r", "r"),
   pack_rows("IMD quintile", nrow(a5b$crude_eth) + 1, nrow(crude_tbl))
 ```
 
-The crude pattern echoes the national picture: rates for Pakistani (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "Pakistani"))` per 1,000) and Black (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "Black"))`) babies run at roughly twice the White British rate (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "White British"))`), and the most deprived quintile at roughly twice the least deprived. But crude rates largely re-describe each group's prematurity mix, so — in place of another regression — each group's observed deaths are compared with the number **expected given its gestational-age distribution** (indirect standardisation over the five gestation bands used in the length-of-stay analysis; exact Poisson intervals; BH adjustment within families; `r format(a5b$n_no_gest, big.mark = ",")` babies with missing or implausible gestation are excluded here — note they carry a grossly elevated death rate, `r format(a5b$deaths_no_gest, big.mark = ",")` deaths, so the standardised analysis is slightly conservative).
+The crude pattern echoes the national picture: rates for Pakistani (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "Pakistani"))` per 1,000) and Black (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "Black"))`) babies run at roughly twice the White British rate (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "White British"))`), and the most deprived quintile at roughly twice the least deprived. But crude rates largely re-describe each group's prematurity mix, so — in place of another regression — each group's observed deaths are compared with the number expected given its gestational-age distribution (indirect standardisation over the five gestation bands used in the length-of-stay analysis; exact Poisson intervals; BH adjustment within families; `r format(a5b$n_no_gest, big.mark = ",")` babies with missing or implausible gestation are excluded here — note they carry a grossly elevated death rate, `r format(a5b$deaths_no_gest, big.mark = ",")` deaths, so the standardised analysis is slightly conservative).
 
 ```{r a5b_oe_table, echo=FALSE}
 oe_tbl <- bind_rows(a5b$oe_eth, a5b$oe_imd) %>%
@@ -1650,17 +1468,17 @@ ggplot(oe_plot, aes(x = OE, y = Group, color = category)) +
 
 ## What standardisation does to the crude picture
 
-**The Black crude excess is mostly gestational mix.** After standardisation the Black O/E is `r fmt_oe(oe_black)` — the crude doubling largely reflects higher preterm rates, the same mechanism as the length-of-stay finding. The residual leans above 1 without reaching significance; MBRRACE, with full death-registration linkage and richer adjustment, does find a genuine residual excess for Black babies, so the near-parity here should be read as limited power and crude adjustment, not as contradicting it.
+The Black crude excess is mostly gestational mix. After standardisation the Black O/E is `r fmt_oe(oe_black)` — the crude doubling largely reflects higher preterm rates, the same mechanism as the length-of-stay finding. The residual leans above 1 without reaching significance; MBRRACE, with full death-registration linkage and richer adjustment, does find a genuine residual excess for Black babies, so the near-parity here should be read as limited power and crude adjustment, not as contradicting it.
 
-**The Pakistani excess is emphatically *not* gestational mix.** Pakistani babies show `r round(oe_pak$OE * 100 - 100)`% more recorded deaths than their gestational-age distribution predicts (O/E `r fmt_oe(oe_pak)`, BH-adjusted p < 0.001) — by far the strongest signal in this section, and consistent with MBRRACE findings of elevated perinatal mortality for babies of Pakistani ethnicity at every gestation, in which congenital anomalies are a documented contributor. Set alongside this report's other Pakistani findings — ~11% lower adjusted odds of NCC admission, ~9% longer stays once admitted — a coherent picture accumulates of a group with higher within-gestation clinical need whose access does not appear correspondingly higher. All three signals point at the same follow-up: [severity at admission](#recommendations) (recommendation 6).
+The Pakistani excess is not gestational mix. Pakistani babies show `r round(oe_pak$OE * 100 - 100)`% more recorded deaths than their gestational-age distribution predicts (O/E `r fmt_oe(oe_pak)`, BH-adjusted p < 0.001) — the strongest signal in this section, and consistent with MBRRACE findings of elevated perinatal mortality for babies of Pakistani ethnicity at every gestation, in which congenital anomalies are a documented contributor. Set alongside this report's other Pakistani findings — around 11% lower adjusted odds of NCC admission, and around 9% longer stays once admitted — a consistent picture emerges of a group with higher within-gestation clinical need whose access does not appear correspondingly higher. All three signals point to the same follow-up: severity at admission (recommendation 6).
 
-**The deprivation gradient survives standardisation.** The most deprived quintile records `r round(oe_imd1$OE * 100 - 100)`% more deaths than its gestational mix predicts (O/E `r fmt_oe(oe_imd1)`) and the least deprived `r abs(round(oe_imd5$OE * 100 - 100))`% fewer (`r fmt_oe(oe_imd5)`), a monotone gradient across quintiles. As with the [admission-model gradient](#deprivation), this is consistent with deprivation-linked morbidity *within* gestation bands (growth restriction rises with deprivation even among term babies — see the [morbidity check](#imd-morbidity)).
+The deprivation gradient survives standardisation. The most deprived quintile records `r round(oe_imd1$OE * 100 - 100)`% more deaths than its gestational mix predicts (O/E `r fmt_oe(oe_imd1)`) and the least deprived `r abs(round(oe_imd5$OE * 100 - 100))`% fewer (`r fmt_oe(oe_imd5)`), a monotone gradient across quintiles. As with the [admission-model gradient](#deprivation), this is consistent with deprivation-linked morbidity *within* gestation bands (growth restriction rises with deprivation even among term babies — see the [morbidity check](#imd-morbidity)).
 
-**One group is suspiciously low.** White Other babies record `r abs(round(oe_wo$OE * 100 - 100))`% *fewer* deaths than expected (O/E `r fmt_oe(oe_wo)`, BH-adjusted p < 0.001). A genuinely lower risk is possible, but this group plausibly includes families with stronger ties abroad, and a death after leaving the country — or after transfer out of NHS hospital care — is invisible to both sources. It is a concrete reminder that ascertainment, not just risk, can differ by group, which is why this section stays descriptive.
+One estimate is implausibly low. White Other babies record `r abs(round(oe_wo$OE * 100 - 100))`% *fewer* deaths than expected (O/E `r fmt_oe(oe_wo)`, BH-adjusted p < 0.001). A genuinely lower risk is possible, but this group plausibly includes families with stronger ties abroad, and a death after leaving the country — or after transfer out of NHS hospital care — is invisible to both sources. This is a concrete reminder that ascertainment, as well as risk, can differ by group — which is why this section stays descriptive.
 
 ::: {.callout-warning}
 ## What this mortality flag is not
-This is **not** neonatal mortality as nationally defined: no age at death can be computed (no day of birth in this environment), deaths are only visible while in hospital or known to the maternity service, and the observation window is administrative (to 30 April 2024) rather than clinical (28 days). Group comparisons assume ascertainment is equal across groups, which the White Other result suggests may not hold. These figures are an internal consistency check on this dataset's access findings — for population inequalities in neonatal mortality, MBRRACE-UK perinatal surveillance is the appropriate reference.
+This is not neonatal mortality as nationally defined: no age at death can be computed (no day of birth in this environment), deaths are only visible while in hospital or known to the maternity service, and the observation window is administrative (to 30 April 2024) rather than clinical (28 days). Group comparisons assume ascertainment is equal across groups, which the White Other result suggests may not hold. These figures are an internal consistency check on this dataset's access findings — for population inequalities in neonatal mortality, MBRRACE-UK perinatal surveillance is the appropriate reference.
 :::
 
 ---
@@ -1669,17 +1487,17 @@ This is **not** neonatal mortality as nationally defined: no age at death can be
 
 The analysis is reassuring on its headline question — no signal of national under-access for Black babies — but it surfaces concrete follow-ups. In rough priority order:
 
-1. **Standardise what counts as an "NCC day" in PbR-CC returns.** The funnel diagnostic shows the most extreme provider variation is recording breadth, not admission practice: outlier trusts record NCC for 21–40% of their term babies against ~7% nationally. A tighter definition — or an audit of the outlier trusts' returns — would sharpen every downstream use of this data, including the ICC and any future benchmarking.
+1. Standardise what counts as an "NCC day" in PbR-CC returns. The funnel diagnostic shows the most extreme provider variation is recording breadth, not admission practice: outlier trusts record NCC for 21–40% of their term babies against ~7% nationally. A tighter definition — or an audit of the outlier trusts' returns — would sharpen every downstream use of this data, including the ICC and any future benchmarking.
 
-2. **Improve completeness of birth weight and Apgar in MSDS.** Jointly complete for under half the cohort, this is the single biggest constraint on case-mix adjustment — it is why the primary model must lean on gestation alone.
+2. Improve completeness of birth weight and Apgar in MSDS. Jointly complete for under half the cohort, this is the single biggest constraint on case-mix adjustment — it is why the primary model must lean on gestation alone.
 
-3. **Follow up the one trust flagged for lower Black admission** (identity held internally) with a case-mix-standardised check — a per-trust Black observed/expected ratio — before drawing any conclusion about access.
+3. Follow up the one trust flagged for lower Black admission (identity held internally) with a case-mix-standardised check — a per-trust Black observed/expected ratio — before drawing any conclusion about access.
 
-4. **Investigate the Chinese-group gap.** ~24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.
+4. Investigate the Chinese-group gap. Around 24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.
 
-5. **Extend to outcomes and timing.** Length of stay and a descriptive mortality look are now analysed above ([stay length](#length-of-stay), [mortality](#mortality)) — both add Pakistani findings that sharpen the case for the Phase 2 timing analysis once the day-of-birth data environment is available. A definitive mortality analysis needs linked death registrations (MBRRACE territory), not this extract.
+5. Extend to outcomes and timing. Length of stay and a descriptive mortality look are now analysed above ([stay length](#length-of-stay), [mortality](#mortality)) — both add Pakistani findings that sharpen the case for the Phase 2 timing analysis once the day-of-birth data environment is available. A definitive mortality analysis needs linked death registrations (MBRRACE territory), not this extract.
 
-6. **Follow up the Pakistani stay-length excess.** Fewer admissions plus longer stays once admitted is consistent with a higher effective admission threshold, but equally with greater within-gestation morbidity; distinguishing them needs severity-at-admission data (care level at day 1, organ support) — a planned extension.
+6. Follow up the Pakistani stay-length excess. Fewer admissions plus longer stays once admitted is consistent with a higher effective admission threshold, but equally with greater within-gestation morbidity; distinguishing them needs severity-at-admission data (care level at day 1, organ support) — a planned extension.
 
 # Limitations
 
@@ -1719,6 +1537,56 @@ NCC_Admitted ~ Gestation_Weeks + Birth_Weight_kg + Apgar_5_Clean +
 - Package: lme4 version `r packageVersion("lme4")`
 
 Note on birth weight data: The sensitivity model uses `Birth_Weight_Grams` (MSDS source only) rather than `Birth_Weight_Combined` to avoid differential missingness bias. The combined variable has 94% completeness for NCC babies (due to CC data fallback) vs 46% for non-NCC babies, which would inflate NCC rates in complete case analysis.
+:::
+
+::: {.callout-note collapse="true"}
+## Model 1: Fixed Effects Only (click to expand)
+
+A standard logistic regression on the same sample, without trust random intercepts — retained as a reference point for the mixed-effects models.
+
+```{r model1_summary, echo=FALSE}
+# Tidy model output
+model1_tidy <- tidy(model1, conf.int = TRUE, exponentiate = TRUE) %>%
+  mutate(
+    term = case_when(
+      term == "(Intercept)" ~ "Intercept",
+      term == "Gestation_Weeks" ~ "Gestation (per week)",
+      str_detect(term, "Ethnicity_Baby_Grouped") ~ str_replace(term, "Ethnicity_Baby_Grouped", "Ethnicity: "),
+      str_detect(term, "IMD_Quintile") ~ str_replace(term, "IMD_Quintile", "IMD: "),
+      TRUE ~ term
+    ),
+    significance = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01 ~ "**",
+      p.value < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  )
+```
+
+```{r model1_or_table, echo=FALSE}
+model1_tidy %>%
+  filter(term != "Intercept") %>%
+  dplyr::select(term, estimate, conf.low, conf.high, p.value, significance) %>%
+  mutate(
+    estimate = round(estimate, 3),
+    conf.low = round(conf.low, 3),
+    conf.high = round(conf.high, 3),
+    p.value = ifelse(p.value < 0.001, "<0.001", round(p.value, 3)),
+    CI = paste0("(", conf.low, ", ", conf.high, ")")
+  ) %>%
+  dplyr::select(term, estimate, CI, p.value, significance) %>%
+  kable(
+    col.names = c("Variable", "Odds Ratio", "95% CI", "p-value", ""),
+    align = c("l", "r", "c", "r", "l")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  pack_rows("Clinical", 1, 1) %>%
+  pack_rows("Ethnicity (ref: White British)", 2, 10) %>%
+  pack_rows("Deprivation (ref: Least Deprived)", 11, 14)
+```
+
+<small>Significance: \*\*\* p<0.001, \*\* p<0.01, \* p<0.05</small>
 :::
 
 ::: {.callout-note collapse="true"}
