@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ashley Dickson">
-<meta name="dcterms.date" content="2026-07-09">
+<meta name="dcterms.date" content="2026-07-10">
 
 <title>Inequalities in Access to Neonatal Critical Care: Phase 1 Modelling Results – NCC Inequalities Analysis</title>
 <style>
@@ -215,9 +215,15 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#what-adjustment-does-to-the-crude-picture" id="toc-what-adjustment-does-to-the-crude-picture" class="nav-link" data-scroll-target="#what-adjustment-does-to-the-crude-picture"><span class="header-section-number">6.1</span> What adjustment does to the crude picture</a></li>
   </ul></li>
-  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">7</span> Recommendations</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">8</span> Limitations</a></li>
-  <li><a href="#technical-details" id="toc-technical-details" class="nav-link" data-scroll-target="#technical-details"><span class="header-section-number">9</span> Technical Details</a></li>
+  <li><a href="#mortality" id="toc-mortality" class="nav-link" data-scroll-target="#mortality"><span class="header-section-number">7</span> Mortality Among Live Births: A Descriptive Look</a>
+  <ul class="collapse">
+  <li><a href="#measuring-death-in-this-data" id="toc-measuring-death-in-this-data" class="nav-link" data-scroll-target="#measuring-death-in-this-data"><span class="header-section-number">7.1</span> Measuring death in this data</a></li>
+  <li><a href="#crude-rates-and-gestation-standardised-ratios" id="toc-crude-rates-and-gestation-standardised-ratios" class="nav-link" data-scroll-target="#crude-rates-and-gestation-standardised-ratios"><span class="header-section-number">7.2</span> Crude rates and gestation-standardised ratios</a></li>
+  <li><a href="#what-standardisation-does-to-the-crude-picture" id="toc-what-standardisation-does-to-the-crude-picture" class="nav-link" data-scroll-target="#what-standardisation-does-to-the-crude-picture"><span class="header-section-number">7.3</span> What standardisation does to the crude picture</a></li>
+  </ul></li>
+  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">8</span> Recommendations</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">9</span> Limitations</a></li>
+  <li><a href="#technical-details" id="toc-technical-details" class="nav-link" data-scroll-target="#technical-details"><span class="header-section-number">10</span> Technical Details</a></li>
   </ul>
 </nav>
 </nav>
@@ -247,7 +253,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 9, 2026</p>
+      <p class="date">July 10, 2026</p>
     </div>
   </div>
   
@@ -282,6 +288,7 @@ window.Quarto = {
 <li><strong>[K4]</strong> New <a href="#broad-ethnicity">broad MBRRACE-comparable ethnicity grouping</a> presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).</li>
 <li><strong>[A5c]</strong> New <a href="#eth-imd-interaction">exploratory ethnicity × deprivation interaction</a>: a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.</li>
 <li><strong>[A5a]</strong> New <a href="#length-of-stay">length-of-stay analysis</a> among admitted babies (negative binomial mixed model on CC days): the crude Black excess in stay length is entirely case-mix (RR 0.98 after gestation adjustment, extending the equitable-access finding); Pakistani and Bangladeshi babies stay ~9–10% longer than expected, which for Pakistani babies is the pattern a higher effective admission threshold would produce; the deprivation gradient in stay length is almost entirely case-mix.</li>
+<li><strong>[A5b]</strong> New <a href="#mortality">descriptive mortality section</a> using a dual-source death flag (MSDS death date + APCS spell discharge method, added in a July 2026 extract refresh; 94% date-concordant where both record a death). Crude rates for Pakistani and Black babies run at twice the White British rate, but gestation-standardisation splits them: the Black excess is mostly gestational mix (O/E 1.18, ns) while the Pakistani excess is emphatically not (O/E 1.81, BH p&lt;0.001) — converging with the admission and length-of-stay findings on the severity-at-admission follow-up. Deprivation gradient survives standardisation. Heavy ascertainment caveats; explicitly deferential to MBRRACE.</li>
 <li><strong>Editorial pass (July 2026):</strong> tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the <a href="index.html">overview report</a> with the revised findings.</li>
 </ul>
 <p><em>(This box is temporary review scaffolding and will be removed before final publication.)</em></p>
@@ -1025,7 +1032,7 @@ Figure&nbsp;4: Funnel plot of case-mix-adjusted NCC admission rates by delivery 
 <td style="text-align: right;">99%</td>
 <td style="text-align: right;">8.7%</td>
 <td style="text-align: right;">29.0%</td>
-<td style="text-align: right;">24.4%</td>
+<td style="text-align: right;">24.3%</td>
 <td style="text-align: right;">100%</td>
 <td style="text-align: right;">39%</td>
 </tr>
@@ -1268,7 +1275,7 @@ Figure&nbsp;5: Broad MBRRACE-style ethnicity groups (diamonds) and the detailed 
 <tr class="odd">
 <td style="text-align: left;">White British</td>
 <td style="text-align: right;">275,252</td>
-<td style="text-align: right;">34,831</td>
+<td style="text-align: right;">34,837</td>
 <td style="text-align: right;">12.7%</td>
 </tr>
 <tr class="even">
@@ -1613,7 +1620,7 @@ Trust 1 (identity held internally)
 <td style="text-align: right;">6.6%</td>
 <td style="text-align: right;">1.0%</td>
 <td style="text-align: right;">5.8%</td>
-<td style="text-align: right;">2.1%</td>
+<td style="text-align: right;">2.0%</td>
 <td style="text-align: right;">11.3%</td>
 </tr>
 </tbody>
@@ -2288,20 +2295,327 @@ Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and depr
 <hr>
 </section>
 </section>
-<section id="recommendations" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Recommendations</h1>
+<section id="mortality" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Mortality Among Live Births: A Descriptive Look</h1>
+<p>The final feedback item asks about outcomes. This section is deliberately <strong>descriptive</strong> — no regression model, and heavier caveats than anywhere else in this report — because death ascertainment in this extract is partial in ways that could differ between groups. MBRRACE-UK, with linked death registrations, is the authoritative source on neonatal mortality inequalities; the purpose here is the narrower one of checking whether the mortality patterns visible in <em>this</em> data are consistent with the access story told above.</p>
+<section id="measuring-death-in-this-data" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="measuring-death-in-this-data"><span class="header-section-number">7.1</span> Measuring death in this data</h2>
+<p>Mirroring the dual-source design of the NCC admission flag, a baby is counted as having died if <strong>either</strong> source records it: the MSDS death date (deaths known to the maternity service), or — added in a July 2026 extract refresh — a hospital spell in APCS ending with discharge method “died”, which also captures deaths <em>after</em> maternity discharge in any hospital, up to the end of the extract window (30 April 2024). Among 504,392 live births, 1,448 deaths are recorded (2.87 per 1,000): 731 in both sources, 593 in APCS only and 124 in MSDS only. The two sources corroborate each other well — where both record a death, 685 of 731 (94%) agree on the date to within a day — but neither alone is complete: MSDS sees 59% of the combined total and APCS 91%. A further 45 babies recorded as live births in MSDS but coded as stillbirths in APCS were removed as vital-status-uncertain.</p>
+<p>Three properties of this flag must be kept in view. First, it means <strong>“death recorded in hospital or by the maternity service within the extract window”</strong> — not 28-day neonatal mortality. With no day of birth available in this environment, age at death cannot be computed, so no clinically standard mortality window can be constructed. Second, follow-up is uneven: a baby born in March 2024 has around two months of in-window observation against thirteen for an April 2023 birth. In practice this matters little — recorded death rates are flat across birth months (2.6–3.1 per 1,000, with no decline at the end of the year), as expected when most in-hospital infant deaths occur close to birth. Third, deaths outside hospital after discharge are invisible here, and that invisibility need not be evenly distributed across groups.</p>
+<p>The flag behaves exactly as clinical reality demands, which is reassuring on validity: rates run from 270 per 1,000 below 28 weeks’ gestation to 0.8 per 1,000 at term — a gradient of roughly 350-fold — and NCC-admitted babies die at 12.3 per 1,000 against 1.6 among the never-admitted.</p>
+</section>
+<section id="crude-rates-and-gestation-standardised-ratios" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="crude-rates-and-gestation-standardised-ratios"><span class="header-section-number">7.2</span> Crude rates and gestation-standardised ratios</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Crude recorded deaths per 1,000 live births (either source), FY 2023/24. Wilson 95% confidence intervals.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Group</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Deaths</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Rate per 1,000 (95% CI)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="10">
+<td colspan="4" style="border-bottom: 1px solid"><strong>Ethnicity</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White British</td>
+<td style="text-align: right;">274,346</td>
+<td style="text-align: right;">630</td>
+<td style="text-align: right;">2.3 (2.1–2.5)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White Other</td>
+<td style="text-align: right;">53,186</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">1.7 (1.4–2.1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Mixed</td>
+<td style="text-align: right;">34,367</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">2.9 (2.3–3.5)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Indian</td>
+<td style="text-align: right;">24,857</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">2.4 (1.8–3.1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Pakistani</td>
+<td style="text-align: right;">25,764</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">6.1 (5.2–7.1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Bangladeshi</td>
+<td style="text-align: right;">8,682</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">3.2 (2.2–4.7)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other Asian</td>
+<td style="text-align: right;">14,627</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">3.2 (2.4–4.3)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Black</td>
+<td style="text-align: right;">31,733</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">5.6 (4.8–6.5)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Chinese</td>
+<td style="text-align: right;">1,811</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3.3 (1.5–7.2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other</td>
+<td style="text-align: right;">12,506</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">3.4 (2.6–4.6)</td>
+</tr>
+<tr class="even" data-grouplength="5">
+<td colspan="4" style="border-bottom: 1px solid"><strong>IMD quintile</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">5 - Least deprived</td>
+<td style="text-align: right;">80,556</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">1.8 (1.6–2.1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">4</td>
+<td style="text-align: right;">88,479</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">2.1 (1.8–2.5)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3</td>
+<td style="text-align: right;">94,909</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">2.6 (2.3–2.9)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2</td>
+<td style="text-align: right;">108,260</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">2.9 (2.6–3.3)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1 - Most deprived</td>
+<td style="text-align: right;">127,034</td>
+<td style="text-align: right;">522</td>
+<td style="text-align: right;">4.1 (3.8–4.5)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The crude pattern echoes the national picture: rates for Pakistani (6.1 (5.2–7.1) per 1,000) and Black (5.6 (4.8–6.5)) babies run at roughly twice the White British rate (2.3 (2.1–2.5)), and the most deprived quintile at roughly twice the least deprived. But crude rates largely re-describe each group’s prematurity mix, so — in place of another regression — each group’s observed deaths are compared with the number <strong>expected given its gestational-age distribution</strong> (indirect standardisation over the five gestation bands used in the length-of-stay analysis; exact Poisson intervals; BH adjustment within families; 2,675 babies with missing or implausible gestation are excluded here — note they carry a grossly elevated death rate, 291 deaths, so the standardised analysis is slightly conservative).</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Observed vs expected deaths, standardised for gestational age (expected counts from national gestation-band-specific rates). O/E above 1: more deaths than the group's gestational mix predicts.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Group</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Observed</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Expected</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">O/E (95% CI)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p (BH-adj)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="10">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Ethnicity</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White British</td>
+<td style="text-align: right;">273,403</td>
+<td style="text-align: right;">519</td>
+<td style="text-align: right;">565.3</td>
+<td style="text-align: right;">0.92 (0.84–1.00)</td>
+<td style="text-align: right;">0.135</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">White Other</td>
+<td style="text-align: right;">52,912</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">108.4</td>
+<td style="text-align: right;">0.63 (0.49–0.80)</td>
+<td style="text-align: right;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Mixed</td>
+<td style="text-align: right;">34,201</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">1.09 (0.87–1.35)</td>
+<td style="text-align: right;">0.654</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Indian</td>
+<td style="text-align: right;">24,470</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">56.4</td>
+<td style="text-align: right;">0.85 (0.63–1.13)</td>
+<td style="text-align: right;">0.573</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Pakistani</td>
+<td style="text-align: right;">25,642</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">67.6</td>
+<td style="text-align: right;">1.80 (1.50–2.15)</td>
+<td style="text-align: right;">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Bangladeshi</td>
+<td style="text-align: right;">8,643</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">21.4</td>
+<td style="text-align: right;">1.07 (0.68–1.61)</td>
+<td style="text-align: right;">0.833</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other Asian</td>
+<td style="text-align: right;">14,474</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">38.2</td>
+<td style="text-align: right;">0.94 (0.66–1.30)</td>
+<td style="text-align: right;">0.898</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Black</td>
+<td style="text-align: right;">31,474</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">113.3</td>
+<td style="text-align: right;">1.18 (0.99–1.40)</td>
+<td style="text-align: right;">0.135</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Chinese</td>
+<td style="text-align: right;">1,804</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">1.23 (0.40–2.86)</td>
+<td style="text-align: right;">0.833</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Other</td>
+<td style="text-align: right;">12,440</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">33.8</td>
+<td style="text-align: right;">1.01 (0.70–1.41)</td>
+<td style="text-align: right;">0.931</td>
+</tr>
+<tr class="even" data-grouplength="5">
+<td colspan="6" style="border-bottom: 1px solid"><strong>IMD quintile</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">5 - Least deprived</td>
+<td style="text-align: right;">80,202</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">151.6</td>
+<td style="text-align: right;">0.77 (0.64–0.92)</td>
+<td style="text-align: right;">0.011</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">4</td>
+<td style="text-align: right;">88,089</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">175.4</td>
+<td style="text-align: right;">0.85 (0.72–1.00)</td>
+<td style="text-align: right;">0.076</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3</td>
+<td style="text-align: right;">94,348</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">204.7</td>
+<td style="text-align: right;">0.92 (0.80–1.06)</td>
+<td style="text-align: right;">0.368</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2</td>
+<td style="text-align: right;">107,445</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: right;">254.6</td>
+<td style="text-align: right;">0.98 (0.86–1.11)</td>
+<td style="text-align: right;">0.754</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1 - Most deprived</td>
+<td style="text-align: right;">126,505</td>
+<td style="text-align: right;">425</td>
+<td style="text-align: right;">353.7</td>
+<td style="text-align: right;">1.20 (1.09–1.32)</td>
+<td style="text-align: right;">0.001</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mortality-oe" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mortality-oe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="modelling_results_files/figure-html/fig-mortality-oe-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mortality-oe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Gestation-standardised mortality ratios (observed/expected recorded deaths) by ethnicity and deprivation, with exact Poisson 95% intervals. Dashed line: deaths in line with the group’s gestational-age mix. Descriptive only — ascertainment caveats in the text apply.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-standardisation-does-to-the-crude-picture" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="what-standardisation-does-to-the-crude-picture"><span class="header-section-number">7.3</span> What standardisation does to the crude picture</h2>
+<p><strong>The Black crude excess is mostly gestational mix.</strong> After standardisation the Black O/E is 1.18 (0.99–1.40) — the crude doubling largely reflects higher preterm rates, the same mechanism as the length-of-stay finding. The residual leans above 1 without reaching significance; MBRRACE, with full death-registration linkage and richer adjustment, does find a genuine residual excess for Black babies, so the near-parity here should be read as limited power and crude adjustment, not as contradicting it.</p>
+<p><strong>The Pakistani excess is emphatically <em>not</em> gestational mix.</strong> Pakistani babies show 80% more recorded deaths than their gestational-age distribution predicts (O/E 1.80 (1.50–2.15), BH-adjusted p &lt; 0.001) — by far the strongest signal in this section, and consistent with MBRRACE findings of elevated perinatal mortality for babies of Pakistani ethnicity at every gestation, in which congenital anomalies are a documented contributor. Set alongside this report’s other Pakistani findings — ~11% lower adjusted odds of NCC admission, ~9% longer stays once admitted — a coherent picture accumulates of a group with higher within-gestation clinical need whose access does not appear correspondingly higher. All three signals point at the same follow-up: <a href="#recommendations">severity at admission</a> (recommendation 6).</p>
+<p><strong>The deprivation gradient survives standardisation.</strong> The most deprived quintile records 20% more deaths than its gestational mix predicts (O/E 1.20 (1.09–1.32)) and the least deprived 23% fewer (0.77 (0.64–0.92)), a monotone gradient across quintiles. As with the <a href="#deprivation">admission-model gradient</a>, this is consistent with deprivation-linked morbidity <em>within</em> gestation bands (growth restriction rises with deprivation even among term babies — see the <a href="#imd-morbidity">morbidity check</a>).</p>
+<p><strong>One group is suspiciously low.</strong> White Other babies record 37% <em>fewer</em> deaths than expected (O/E 0.63 (0.49–0.80), BH-adjusted p &lt; 0.001). A genuinely lower risk is possible, but this group plausibly includes families with stronger ties abroad, and a death after leaving the country — or after transfer out of NHS hospital care — is invisible to both sources. It is a concrete reminder that ascertainment, not just risk, can differ by group, which is why this section stays descriptive.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>What this mortality flag is not
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is <strong>not</strong> neonatal mortality as nationally defined: no age at death can be computed (no day of birth in this environment), deaths are only visible while in hospital or known to the maternity service, and the observation window is administrative (to 30 April 2024) rather than clinical (28 days). Group comparisons assume ascertainment is equal across groups, which the White Other result suggests may not hold. These figures are an internal consistency check on this dataset’s access findings — for population inequalities in neonatal mortality, MBRRACE-UK perinatal surveillance is the appropriate reference.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="recommendations" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Recommendations</h1>
 <p>The analysis is reassuring on its headline question — no signal of national under-access for Black babies — but it surfaces concrete follow-ups. In rough priority order:</p>
 <ol type="1">
 <li><p><strong>Standardise what counts as an “NCC day” in PbR-CC returns.</strong> The funnel diagnostic shows the most extreme provider variation is recording breadth, not admission practice: outlier trusts record NCC for 21–40% of their term babies against ~7% nationally. A tighter definition — or an audit of the outlier trusts’ returns — would sharpen every downstream use of this data, including the ICC and any future benchmarking.</p></li>
 <li><p><strong>Improve completeness of birth weight and Apgar in MSDS.</strong> Jointly complete for under half the cohort, this is the single biggest constraint on case-mix adjustment — it is why the primary model must lean on gestation alone.</p></li>
 <li><p><strong>Follow up the one trust flagged for lower Black admission</strong> (identity held internally) with a case-mix-standardised check — a per-trust Black observed/expected ratio — before drawing any conclusion about access.</p></li>
 <li><p><strong>Investigate the Chinese-group gap.</strong> ~24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.</p></li>
-<li><p><strong>Extend to outcomes and timing.</strong> Length of stay is now analysed <a href="#length-of-stay">above</a> — its Pakistani finding (fewer admissions, longer stays) sharpens the case for the Phase 2 timing analysis once the day-of-birth data environment is available. Mortality can be examined descriptively with heavy ascertainment caveats.</p></li>
+<li><p><strong>Extend to outcomes and timing.</strong> Length of stay and a descriptive mortality look are now analysed above (<a href="#length-of-stay">stay length</a>, <a href="#mortality">mortality</a>) — both add Pakistani findings that sharpen the case for the Phase 2 timing analysis once the day-of-birth data environment is available. A definitive mortality analysis needs linked death registrations (MBRRACE territory), not this extract.</p></li>
 <li><p><strong>Follow up the Pakistani stay-length excess.</strong> Fewer admissions plus longer stays once admitted is consistent with a higher effective admission threshold, but equally with greater within-gestation morbidity; distinguishing them needs severity-at-admission data (care level at day 1, organ support) — a planned extension.</p></li>
 </ol>
 </section>
-<section id="limitations" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Limitations</h1>
+<section id="limitations" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Limitations</h1>
 <ol type="1">
 <li><p>Clinical covariate completeness: Birth weight is recorded for ~46% of births and Apgar for ~79%; jointly they limit the sensitivity model to under half the cohort. The primary model uses gestation alone to preserve sample size.</p></li>
 <li><p>Single year of data: Results may not generalise to other time periods.</p></li>
@@ -2311,10 +2625,10 @@ Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and depr
 </ol>
 <hr>
 </section>
-<section id="technical-details" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Technical Details</h1>
+<section id="technical-details" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Technical Details</h1>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2323,7 +2637,7 @@ Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and depr
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Model 2 - Primary (Gestation only):</p>
 <pre><code>NCC_Admitted ~ Gestation_Weeks + Ethnicity_Baby_Grouped + IMD_Quintile + (1 | Delivery_Trust)</code></pre>
@@ -2342,7 +2656,7 @@ Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and depr
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2351,7 +2665,7 @@ Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and depr
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
 <div class="cell-output-display">
@@ -2402,8 +2716,8 @@ Figure&nbsp;7: Adjusted rate ratios for length of NCC stay by ethnicity and depr
 </div>
 </div>
 <hr>
-<p>Report generated: 2026-07-09 15:23:53.911257</p>
-<p>R version: R version 4.6.0 (2026-04-24 ucrt)</p>
+<p>Report generated: 2026-07-10 12:51:19.019791</p>
+<p>R version: R version 4.6.1 (2026-06-24 ucrt)</p>
 
 
 </section>

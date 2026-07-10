@@ -75,6 +75,14 @@ if (file.exists(query_file)) {
     print(table(ncc_base_data$NCC_In_Both_Sources, useNA = "ifany"))
   }
 
+  if ("APCS_Died_In_Hospital" %in% names(ncc_base_data)) {
+    cat("\nAPCS spell outcome (second death source; NA = never linked to APCS):\n")
+    cat("APCS_Died_In_Hospital:\n")
+    print(table(ncc_base_data$APCS_Died_In_Hospital, useNA = "ifany"))
+    cat("APCS_Stillbirth_Coded:\n")
+    print(table(ncc_base_data$APCS_Stillbirth_Coded, useNA = "ifany"))
+  }
+
   # ------------------------------------------------------------------------
   # Phase 2 timing fields (time from birth to first critical-care episode)
   # ------------------------------------------------------------------------

@@ -122,7 +122,8 @@ apcs_link AS (
     apcs.Sex,
     apcs.Age_At_Start_of_Spell_SUS,
     apcs.Der_Postcode_LSOA_2011_Code,
-    apcs.Der_Postcode_MSOA_2011_Code
+    apcs.Der_Postcode_MSOA_2011_Code,
+    apcs.Discharge_Method
 
   FROM UDAL_Warehouse.MESH_APC.APCS_Core_Daily apcs
   -- Mirror the widened CC window above so APCS rows that link the late-March
@@ -205,6 +206,31 @@ ncc_cc_per_baby AS (
     WHERE NCC_CC_NHS_Number IS NOT NULL  -- can't link a spell with no NHS number
   ) ranked
   GROUP BY NCC_CC_NHS_Number
+),
+
+-- ========================================================================
+-- STEP 3c: APCS spell outcome per baby (second, independent death source)
+-- ========================================================================
+-- Aggregates ALL APCS spells in the window (not just CC-linked ones) to
+-- ONE row per pseudo NHS number BEFORE joining, so the LEFT JOIN in the
+-- base dataset cannot change the row count or disturb existing columns.
+-- Discharge_Method national codes: 1-3 = discharged, 4 = died,
+-- 5 = stillbirth (verified unique APCS_Ident in window: 20,989,799 rows =
+-- 20,989,799 distinct idents; scratch_probe_apcs_discharge_method.R).
+-- NULL join result downstream means "baby never linked to any APCS spell",
+-- which is distinct from "linked and did not die" (flag = 0).
+-- ========================================================================
+apcs_outcome_per_baby AS (
+  SELECT
+    Der_Pseudo_NHS_Number,
+    COUNT(*) AS APCS_Spell_Count,
+    MAX(CASE WHEN Discharge_Method = '4' THEN 1 ELSE 0 END) AS APCS_Died_In_Hospital,
+    MAX(CASE WHEN Discharge_Method = '5' THEN 1 ELSE 0 END) AS APCS_Stillbirth_Coded,
+    -- Discharge date of the death spell (for concordance vs MSDS death date)
+    MAX(CASE WHEN Discharge_Method = '4' THEN Discharge_Date END) AS APCS_Death_Spell_Discharge_Date
+  FROM apcs_link
+  WHERE Der_Pseudo_NHS_Number IS NOT NULL
+  GROUP BY Der_Pseudo_NHS_Number
 ),
 
 -- ========================================================================
@@ -859,7 +885,18 @@ base_dataset AS (
     cc_ncc.NCC_CC_Final_Discharge_Destination,
 
     -- Provider (for hospital random effects)
-    cc_ncc.NCC_CC_Provider_Code AS NCC_Hospital_Provider_Code
+    cc_ncc.NCC_CC_Provider_Code AS NCC_Hospital_Provider_Code,
+
+    -- ===================================================================
+    -- APCS SPELL OUTCOME (A5b — second, independent death source)
+    -- ===================================================================
+    -- From ALL APCS spells linked by pseudo NHS number, not just CC-linked
+    -- ones. NULL = baby never linked to an APCS spell in the window;
+    -- 0/1 flags only where a link exists.
+    apcs_out.APCS_Spell_Count,
+    apcs_out.APCS_Died_In_Hospital,
+    apcs_out.APCS_Stillbirth_Coded,
+    apcs_out.APCS_Death_Spell_Discharge_Date
 
   FROM msds_babies baby
 
@@ -895,6 +932,11 @@ base_dataset AS (
   -- linkage window.
   LEFT JOIN ncc_cc_per_baby cc_ncc
     ON baby.NHS_Number_Baby = cc_ncc.NCC_CC_NHS_Number
+
+  -- Link to APCS spell outcome — one row per pseudo NHS number (aggregated
+  -- in apcs_outcome_per_baby), so this join cannot fan out the base.
+  LEFT JOIN apcs_outcome_per_baby apcs_out
+    ON baby.NHS_Number_Baby = apcs_out.Der_Pseudo_NHS_Number
 
   -- Filter: Only babies with a hospital admission/spell
   WHERE labour.Mother_Admission_Date IS NOT NULL

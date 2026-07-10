@@ -54,6 +54,7 @@ This draft responds to feedback from Anna Everton and Katharine Robbins. Changes
 - **[K4]** New [broad MBRRACE-comparable ethnicity grouping](#broad-ethnicity) presented alongside the detailed one: the primary model refitted with the five broad ONS groups, with a comparison figure showing what the aggregation conceals (the within-Asian spread and the Chinese finding).
 - **[A5c]** New [exploratory ethnicity × deprivation interaction](#eth-imd-interaction): a global likelihood-ratio test finds the deprivation gradient is not perfectly uniform across ethnic groups, but the departure is small (information criteria prefer the main-effects model) and the detectable gradient sits within the White British majority — no evidence of a steeper deprivation penalty for minority groups.
 - **[A5a]** New [length-of-stay analysis](#length-of-stay) among admitted babies (negative binomial mixed model on CC days): the crude Black excess in stay length is entirely case-mix (RR 0.98 after gestation adjustment, extending the equitable-access finding); Pakistani and Bangladeshi babies stay ~9–10% longer than expected, which for Pakistani babies is the pattern a higher effective admission threshold would produce; the deprivation gradient in stay length is almost entirely case-mix.
+- **[A5b]** New [descriptive mortality section](#mortality) using a dual-source death flag (MSDS death date + APCS spell discharge method, added in a July 2026 extract refresh; 94% date-concordant where both record a death). Crude rates for Pakistani and Black babies run at twice the White British rate, but gestation-standardisation splits them: the Black excess is mostly gestational mix (O/E 1.18, ns) while the Pakistani excess is emphatically not (O/E 1.81, BH p<0.001) — converging with the admission and length-of-stay findings on the severity-at-admission follow-up. Deprivation gradient survives standardisation. Heavy ascertainment caveats; explicitly deferential to MBRRACE.
 - **Editorial pass (July 2026):** tightened the executive summary and interpretation sections, removed duplicated ICC discussion, fixed typos, and aligned the key messages here and in the [overview report](index.html) with the revised findings.
 
 *(This box is temporary review scaffolding and will be removed before final publication.)*
@@ -1534,6 +1535,136 @@ This analysis conditions on admission, which is itself the outcome of the earlie
 
 ---
 
+# Mortality Among Live Births: A Descriptive Look {#mortality}
+
+```{r a5b_setup, echo=FALSE}
+# [A5b] Mortality — compact summary saved by ncc_a5b_mortality.R.
+a5b <- readRDS("data/a5b_mortality_summary.rds")
+
+fmt_rate <- function(r) sprintf("%.1f (%.1f–%.1f)", r$rate, r$lo, r$hi)
+fmt_oe <- function(o) sprintf("%.2f (%.2f–%.2f)", o$OE, o$lo, o$hi)
+oe_of <- function(tbl, pattern) tbl %>% filter(str_detect(as.character(Group), fixed(pattern)))
+
+oe_pak   <- oe_of(a5b$oe_eth, "Pakistani")
+oe_black <- oe_of(a5b$oe_eth, "Black")
+oe_wo    <- oe_of(a5b$oe_eth, "White Other")
+oe_imd1  <- oe_of(a5b$oe_imd, "1 - Most deprived")
+oe_imd5  <- oe_of(a5b$oe_imd, "5 - Least deprived")
+
+n_deaths <- a5b$crude_overall$deaths
+pct_msds <- percent(a5b$crude_overall$deaths_msds / n_deaths, accuracy = 1)
+pct_apcs <- percent(a5b$crude_overall$deaths_apcs / n_deaths, accuracy = 1)
+n_apcs_only <- a5b$source_overlap$n[a5b$source_overlap$Death_Source == "APCS only"]
+n_msds_only <- a5b$source_overlap$n[a5b$source_overlap$Death_Source == "MSDS only"]
+n_both      <- a5b$source_overlap$n[a5b$source_overlap$Death_Source == "Both sources"]
+```
+
+The final feedback item asks about outcomes. This section is deliberately **descriptive** — no regression model, and heavier caveats than anywhere else in this report — because death ascertainment in this extract is partial in ways that could differ between groups. MBRRACE-UK, with linked death registrations, is the authoritative source on neonatal mortality inequalities; the purpose here is the narrower one of checking whether the mortality patterns visible in *this* data are consistent with the access story told above.
+
+## Measuring death in this data
+
+Mirroring the dual-source design of the NCC admission flag, a baby is counted as having died if **either** source records it: the MSDS death date (deaths known to the maternity service), or — added in a July 2026 extract refresh — a hospital spell in APCS ending with discharge method "died", which also captures deaths *after* maternity discharge in any hospital, up to the end of the extract window (30 April 2024). Among `r format(a5b$n_cohort, big.mark = ",")` live births, `r format(n_deaths, big.mark = ",")` deaths are recorded (`r sprintf("%.2f", a5b$crude_overall$rate)` per 1,000): `r format(n_both, big.mark = ",")` in both sources, `r format(n_apcs_only, big.mark = ",")` in APCS only and `r n_msds_only` in MSDS only. The two sources corroborate each other well — where both record a death, `r a5b$concordance$within_1_day` of `r a5b$concordance$n_both_dates` (`r percent(a5b$concordance$within_1_day / a5b$concordance$n_both_dates, accuracy = 1)`) agree on the date to within a day — but neither alone is complete: MSDS sees `r pct_msds` of the combined total and APCS `r pct_apcs`. A further `r a5b$n_sb_discordant` babies recorded as live births in MSDS but coded as stillbirths in APCS were removed as vital-status-uncertain.
+
+Three properties of this flag must be kept in view. First, it means **"death recorded in hospital or by the maternity service within the extract window"** — not 28-day neonatal mortality. With no day of birth available in this environment, age at death cannot be computed, so no clinically standard mortality window can be constructed. Second, follow-up is uneven: a baby born in March 2024 has around two months of in-window observation against thirteen for an April 2023 birth. In practice this matters little — recorded death rates are flat across birth months (2.6–3.1 per 1,000, with no decline at the end of the year), as expected when most in-hospital infant deaths occur close to birth. Third, deaths outside hospital after discharge are invisible here, and that invisibility need not be evenly distributed across groups.
+
+The flag behaves exactly as clinical reality demands, which is reassuring on validity: rates run from `r sprintf("%.0f", a5b$crude_gest$rate[1])` per 1,000 below 28 weeks' gestation to `r sprintf("%.1f", a5b$crude_gest$rate[5])` per 1,000 at term — a gradient of roughly 350-fold — and NCC-admitted babies die at `r sprintf("%.1f", a5b$crude_ncc$rate[a5b$crude_ncc$NCC_Admitted == 1])` per 1,000 against `r sprintf("%.1f", a5b$crude_ncc$rate[a5b$crude_ncc$NCC_Admitted == 0])` among the never-admitted.
+
+## Crude rates and gestation-standardised ratios
+
+```{r a5b_crude, echo=FALSE}
+crude_fmt <- function(d, label_col) {
+  d %>%
+    mutate(
+      Group = as.character(.data[[label_col]]),
+      n = format(n, big.mark = ","),
+      Deaths = format(deaths, big.mark = ","),
+      `Rate per 1,000 (95% CI)` = fmt_rate(pick(rate, lo, hi))
+    ) %>%
+    dplyr::select(Group, n, Deaths, `Rate per 1,000 (95% CI)`)
+}
+
+crude_tbl <- bind_rows(
+  crude_fmt(a5b$crude_eth, "Ethnicity_Baby_Grouped"),
+  crude_fmt(a5b$crude_imd, "IMD_Quintile")
+)
+
+kable(crude_tbl, align = c("l", "r", "r", "r"),
+      caption = "Crude recorded deaths per 1,000 live births (either source), FY 2023/24. Wilson 95% confidence intervals.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  pack_rows("Ethnicity", 1, nrow(a5b$crude_eth)) %>%
+  pack_rows("IMD quintile", nrow(a5b$crude_eth) + 1, nrow(crude_tbl))
+```
+
+The crude pattern echoes the national picture: rates for Pakistani (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "Pakistani"))` per 1,000) and Black (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "Black"))`) babies run at roughly twice the White British rate (`r fmt_rate(a5b$crude_eth %>% filter(Ethnicity_Baby_Grouped == "White British"))`), and the most deprived quintile at roughly twice the least deprived. But crude rates largely re-describe each group's prematurity mix, so — in place of another regression — each group's observed deaths are compared with the number **expected given its gestational-age distribution** (indirect standardisation over the five gestation bands used in the length-of-stay analysis; exact Poisson intervals; BH adjustment within families; `r format(a5b$n_no_gest, big.mark = ",")` babies with missing or implausible gestation are excluded here — note they carry a grossly elevated death rate, `r format(a5b$deaths_no_gest, big.mark = ",")` deaths, so the standardised analysis is slightly conservative).
+
+```{r a5b_oe_table, echo=FALSE}
+oe_tbl <- bind_rows(a5b$oe_eth, a5b$oe_imd) %>%
+  mutate(
+    Group = as.character(Group),
+    n = format(n, big.mark = ","),
+    Expected = round(expected, 1),
+    `O/E (95% CI)` = fmt_oe(pick(OE, lo, hi)),
+    `p (BH-adj)` = ifelse(p.adj_BH < 0.001, "<0.001", as.character(round(p.adj_BH, 3)))
+  ) %>%
+  dplyr::select(Group, n, Observed = observed, Expected, `O/E (95% CI)`, `p (BH-adj)`)
+
+kable(oe_tbl, align = c("l", "r", "r", "r", "r", "r"),
+      caption = "Observed vs expected deaths, standardised for gestational age (expected counts from national gestation-band-specific rates). O/E above 1: more deaths than the group's gestational mix predicts.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  pack_rows("Ethnicity", 1, nrow(a5b$oe_eth)) %>%
+  pack_rows("IMD quintile", nrow(a5b$oe_eth) + 1, nrow(oe_tbl))
+```
+
+```{r a5b_oe_forest, echo=FALSE, fig.height=5}
+#| label: fig-mortality-oe
+#| fig-cap: "Gestation-standardised mortality ratios (observed/expected recorded deaths) by ethnicity and deprivation, with exact Poisson 95% intervals. Dashed line: deaths in line with the group's gestational-age mix. Descriptive only — ascertainment caveats in the text apply."
+
+oe_plot <- bind_rows(a5b$oe_eth, a5b$oe_imd) %>%
+  mutate(
+    category = ifelse(family == "ethnicity", "Ethnicity", "Deprivation"),
+    Group = str_replace(as.character(Group), "IMD: ", ""),
+    Group = factor(Group, levels = rev(unique(Group)))
+  )
+
+ggplot(oe_plot, aes(x = OE, y = Group, color = category)) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
+  geom_errorbarh(aes(xmin = lo, xmax = hi), height = 0.2, linewidth = 0.8) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Ethnicity" = nhs_blue, "Deprivation" = nhs_pink)) +
+  scale_x_continuous(breaks = seq(0.5, 3, 0.5)) +
+  facet_grid(category ~ ., scales = "free_y", space = "free_y") +
+  labs(
+    title = "Gestation-Standardised Mortality Ratios (Recorded Deaths)",
+    subtitle = "Observed / expected deaths given each group's gestational-age distribution",
+    x = "O/E ratio (95% CI)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 14),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## What standardisation does to the crude picture
+
+**The Black crude excess is mostly gestational mix.** After standardisation the Black O/E is `r fmt_oe(oe_black)` — the crude doubling largely reflects higher preterm rates, the same mechanism as the length-of-stay finding. The residual leans above 1 without reaching significance; MBRRACE, with full death-registration linkage and richer adjustment, does find a genuine residual excess for Black babies, so the near-parity here should be read as limited power and crude adjustment, not as contradicting it.
+
+**The Pakistani excess is emphatically *not* gestational mix.** Pakistani babies show `r round(oe_pak$OE * 100 - 100)`% more recorded deaths than their gestational-age distribution predicts (O/E `r fmt_oe(oe_pak)`, BH-adjusted p < 0.001) — by far the strongest signal in this section, and consistent with MBRRACE findings of elevated perinatal mortality for babies of Pakistani ethnicity at every gestation, in which congenital anomalies are a documented contributor. Set alongside this report's other Pakistani findings — ~11% lower adjusted odds of NCC admission, ~9% longer stays once admitted — a coherent picture accumulates of a group with higher within-gestation clinical need whose access does not appear correspondingly higher. All three signals point at the same follow-up: [severity at admission](#recommendations) (recommendation 6).
+
+**The deprivation gradient survives standardisation.** The most deprived quintile records `r round(oe_imd1$OE * 100 - 100)`% more deaths than its gestational mix predicts (O/E `r fmt_oe(oe_imd1)`) and the least deprived `r abs(round(oe_imd5$OE * 100 - 100))`% fewer (`r fmt_oe(oe_imd5)`), a monotone gradient across quintiles. As with the [admission-model gradient](#deprivation), this is consistent with deprivation-linked morbidity *within* gestation bands (growth restriction rises with deprivation even among term babies — see the [morbidity check](#imd-morbidity)).
+
+**One group is suspiciously low.** White Other babies record `r abs(round(oe_wo$OE * 100 - 100))`% *fewer* deaths than expected (O/E `r fmt_oe(oe_wo)`, BH-adjusted p < 0.001). A genuinely lower risk is possible, but this group plausibly includes families with stronger ties abroad, and a death after leaving the country — or after transfer out of NHS hospital care — is invisible to both sources. It is a concrete reminder that ascertainment, not just risk, can differ by group, which is why this section stays descriptive.
+
+::: {.callout-warning}
+## What this mortality flag is not
+This is **not** neonatal mortality as nationally defined: no age at death can be computed (no day of birth in this environment), deaths are only visible while in hospital or known to the maternity service, and the observation window is administrative (to 30 April 2024) rather than clinical (28 days). Group comparisons assume ascertainment is equal across groups, which the White Other result suggests may not hold. These figures are an internal consistency check on this dataset's access findings — for population inequalities in neonatal mortality, MBRRACE-UK perinatal surveillance is the appropriate reference.
+:::
+
+---
+
 # Recommendations
 
 The analysis is reassuring on its headline question — no signal of national under-access for Black babies — but it surfaces concrete follow-ups. In rough priority order:
@@ -1546,7 +1677,7 @@ The analysis is reassuring on its headline question — no signal of national un
 
 4. **Investigate the Chinese-group gap.** ~24% lower adjusted odds with four candidate explanations this data cannot separate; richer clinical covariates or direct provider engagement would be needed to distinguish need from access or recording.
 
-5. **Extend to outcomes and timing.** Length of stay is now analysed [above](#length-of-stay) — its Pakistani finding (fewer admissions, longer stays) sharpens the case for the Phase 2 timing analysis once the day-of-birth data environment is available. Mortality can be examined descriptively with heavy ascertainment caveats.
+5. **Extend to outcomes and timing.** Length of stay and a descriptive mortality look are now analysed above ([stay length](#length-of-stay), [mortality](#mortality)) — both add Pakistani findings that sharpen the case for the Phase 2 timing analysis once the day-of-birth data environment is available. A definitive mortality analysis needs linked death registrations (MBRRACE territory), not this extract.
 
 6. **Follow up the Pakistani stay-length excess.** Fewer admissions plus longer stays once admitted is consistent with a higher effective admission threshold, but equally with greater within-gestation morbidity; distinguishing them needs severity-at-admission data (care level at day 1, organ support) — a planned extension.
 
