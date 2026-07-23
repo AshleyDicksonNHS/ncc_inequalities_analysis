@@ -103,7 +103,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./modelling_results.html"> 
-<span class="menu-text">Phase 1: Logistic Models</span></a>
+<span class="menu-text">Phase 1: Findings</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./technical_appendix.html"> 
+<span class="menu-text">Phase 1: Technical Appendix</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -189,7 +193,7 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>[A6]</strong> Reconciled the births figures — the primary-model sample (~476,000) is now distinguished from the full cohort (506,656), see <a href="#phase-1-hierarchical-logistic-regression">Methods</a>.</li>
 <li><strong>[K2]</strong> Added a <a href="#data-and-code-availability">Data and Code Availability</a> section.</li>
 </ul>
-<p>The analytical changes (funnel plot, Black under-access test, funnel-outlier completeness diagnostic, deprivation-morbidity check, and others) are in the <a href="modelling_results.html">Phase 1 report</a>. A July 2026 editorial pass tightened both reports and aligned the key messages with the revised findings.</p>
+<p>The analytical changes (funnel plot, Black under-admission test, funnel-outlier completeness diagnostic, deprivation-morbidity check, and others) are in the <a href="modelling_results.html">Findings report</a> and its companion <a href="technical_appendix.html">Technical Appendix</a>. A July 2026 editorial pass tightened both reports and aligned the key messages with the revised findings; a further restructuring split the Phase 1 report into a short Findings document and a separate Technical Appendix, so the findings are readable without the full methodology and diagnostics getting in the way. Nothing was deleted — every number in the Findings report traces back to the appendix.</p>
 <p><em>(Temporary review scaffolding; removed before final publication.)</em></p>
 </div>
 </div>
@@ -199,7 +203,7 @@ ul.task-list li input[type="checkbox"] {
 <p>This analysis examines whether ethnicity, socioeconomic deprivation, and hospital-level factors are associated with inequalities in NCC access in England, using linked NHS administrative data from the Maternity Services Dataset (MSDS) and Critical Care Minimum Dataset (CCMDS).</p>
 <p>The analysis was scoped in two phases, one per question:</p>
 <ol type="1">
-<li>Who gets admitted? Are some groups less likely to receive NCC after adjusting for clinical need? (Phase 1 — complete, reported here and in the <a href="modelling_results.html">Phase 1 report</a>.)</li>
+<li>Who gets admitted? Are some groups less likely to receive NCC after adjusting for clinical need? (Phase 1 — complete, reported here and in the <a href="modelling_results.html">Findings report</a>; full methodology in the <a href="technical_appendix.html">Technical Appendix</a>.)</li>
 <li>How quickly are they admitted? Among babies with clinical need, do some groups wait longer? (Phase 2 — on hold pending better data; see below.)</li>
 </ol>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -233,7 +237,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>This two-model design lets the primary model run on nearly the whole cohort, while the sensitivity model checks the findings hold with fuller clinical adjustment. Ethnicity is coded using disaggregated NHS categories (Indian, Pakistani and Bangladeshi separately, rather than a single “Asian” group); the results bear this choice out, since these groups differ materially.</p>
 <p>Both are mixed-effects (multilevel) models: each trust gets its own baseline admission rate, and the ethnicity and deprivation effects are estimated <em>within</em> trusts. This matters because baseline NCC admission rates vary widely between hospitals — through clinical thresholds, capacity and reporting practice. Without the hospital baseline in the model, a group of babies concentrated in high-admitting hospitals would look over-admitted when the effect is really the hospital’s, not the group’s. The estimates therefore answer a like-for-like question: <em>for two clinically similar babies born in the same trust, does the chance of admission differ by ethnicity or deprivation?</em></p>
-<p>Full results: <a href="modelling_results.html">Phase 1: Logistic Models</a></p>
+<p>Full results: <a href="modelling_results.html">Phase 1: Findings</a> — full methodology and diagnostics: <a href="technical_appendix.html">Phase 1: Technical Appendix</a></p>
 </section>
 <section id="phase-2-cox-proportional-hazards-with-shared-frailty-on-hold" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="phase-2-cox-proportional-hazards-with-shared-frailty-on-hold"><span class="header-section-number">3.2</span> Phase 2: Cox Proportional Hazards with Shared Frailty <em>(on hold)</em></h2>
@@ -284,7 +288,7 @@ ul.task-list li input[type="checkbox"] {
 <ol type="1">
 <li><p>Clinical need drives admission. Gestation is by far the strongest predictor — each additional week of gestation roughly 38% lower odds — and ethnicity and deprivation effects are small by comparison. On its central question, the system looks need-led.</p></li>
 <li><p>No evidence of under-admission for Black babies nationally. Admission rates are almost identical to White British (~13.4%), and stay at parity after clinical adjustment — despite Black babies carrying higher average clinical need. This is a reassuring finding in the context of recent maternity reviews (MBRRACE, Ockenden). A per-trust screen found one trust (out of the 92 with enough Black births to test) with a significantly lower Black admission rate, now flagged for follow-up.</p></li>
-<li><p>Two groups warrant follow-up. Pakistani babies’ modestly lower odds are largely explained by clinical factors — they move to near-parity once birth weight and Apgar are adjusted for — and the Phase 1 report’s length-of-stay and mortality findings show the same pattern, consistent with these babies being admitted only once more seriously unwell. Chinese babies show around 24% lower odds even after adjustment; three broad explanations are consistent with this — unmeasured clinical need, a genuinely smaller and less stable sample, or data/access factors (differences in care-seeking, or under-recording) — and the data cannot yet separate them, so it is a question rather than a conclusion.</p></li>
+<li><p>Two groups warrant follow-up. Pakistani babies’ modestly lower odds are largely explained by clinical factors — they move to near-parity once birth weight and Apgar are adjusted for — and the <a href="technical_appendix.html#length-of-stay">Technical Appendix’s</a> length-of-stay and mortality findings show the same pattern, consistent with these babies being admitted only once more seriously unwell. Chinese babies show around 24% lower odds even after adjustment; three broad explanations are consistent with this — unmeasured clinical need, a genuinely smaller and less stable sample, or data/access factors (differences in care-seeking, or under-recording) — and the data cannot yet separate them, so it is a question rather than a conclusion.</p></li>
 <li><p>The deprivation gradient looks like need, not inequity. Babies from the most deprived areas have around 9% higher adjusted odds of admission, but a direct check shows morbidity itself rises with deprivation (low birth weight among term babies nearly doubles from least to most deprived). Higher admission is consistent with the system responding to genuinely sicker babies.</p></li>
 <li><p>Hospital variation is the largest residual signal, but the extremes reflect recording practice. Where a baby is born matters (ICC ~32%); however, diagnostics on the most extreme trusts show they record NCC for 21–40% of term babies (~7% nationally) — a difference in what is counted as critical care in returns, not in admission practice. Standardising what counts as an NCC day in PbR-CC returns is the highest-value quick win; admission-practice comparisons only become reliable after it.</p></li>
 <li><p>The timing question is still open. Whether some groups wait longer for NCC is a separate question that Phase 1 cannot address; it needs the day-of-birth field unavailable in this environment (Phase 2, on hold).</p></li>
@@ -332,7 +336,7 @@ ul.task-list li input[type="checkbox"] {
 <p>All analysis code is version-controlled and published on GitHub at <a href="https://github.com/AshleyDicksonNHS/ncc_inequalities_analysis">AshleyDicksonNHS/ncc_inequalities_analysis</a>; the rendered reports are served from that repository via GitHub Pages.</p>
 <p>No patient-level data is held in the repository — the <code>.gitignore</code> excludes all data files. The extracted analytical dataset (pseudonymised, record-level) is stored separately in a restricted NHS England SharePoint location for long-term NHSE/DHSC access, consistent with information-governance requirements. The published HTML reports contain only aggregate results.</p>
 <hr>
-<p>Report generated: 2026-07-21 12:31:53.221092</p>
+<p>Report generated: 2026-07-21 14:54:02.033066</p>
 <p>R version: R version 4.6.1 (2026-06-24 ucrt)</p>
 
 

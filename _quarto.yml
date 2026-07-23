@@ -4,6 +4,7 @@ project:
   render:
     - index.qmd
     - modelling_results.qmd
+    - technical_appendix.qmd
 
 website:
   title: "NCC Inequalities Analysis"
@@ -12,7 +13,9 @@ website:
       - href: index.qmd
         text: "Overview"
       - href: modelling_results.qmd
-        text: "Phase 1: Logistic Models"
+        text: "Phase 1: Findings"
+      - href: technical_appendix.qmd
+        text: "Phase 1: Technical Appendix"
 
 format:
   html:
